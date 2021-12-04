@@ -1,0 +1,23 @@
+Metadata-Version: 2.1
+Name: cobind
+Version: 0.0.1
+Summary: cooccurrence, cooccupany, and covariance analysis of genomics regions
+Home-page: UNKNOWN
+Author: Liguo Wang
+Author-email: wangliguo78@gmail.com
+License: UNKNOWN
+Keywords: Genome,overlap,ChIP-seq,ATAC-seq
+Platform: Linux
+Platform: MacOS
+Classifier: Development Status :: 4 - Development
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: GNU General Public License v2 (GPLv2)
+Classifier: Operating System :: MacOS :: MacOS X
+Classifier: Operating System :: POSIX
+Classifier: Programming Language :: Python
+Classifier: Topic :: Scientific/Engineering :: Bio-Informatics
+Requires-Python: >=3.5
+
+UNKNOWN
+

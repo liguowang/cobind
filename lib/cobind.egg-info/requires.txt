@@ -1,0 +1,6 @@
+scipy
+numpy
+pandas
+sklearn
+bx-python
+pyBigWig

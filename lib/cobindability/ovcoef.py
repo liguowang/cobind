@@ -177,6 +177,32 @@ def cal_overlap_coef(file1, file2, n_draws, size = 0.85, bg_size = 1424655930):
 
 	return pd.Series(data=results, index=['coef_obs', 'coef_exp','coef_ratio', 'coef_ratio_low', 'coef_ratio_high'])
 
+def pmi_value(px, py, pxy):
+	if px < 0 or px >1:
+		logging.error("Probability must be in (0,1)")
+	if py < 0 or py >1:
+		logging.error("Probability must be in (0,1)")
+	if pxy < 0 or pxy >1:
+		logging.error("Probability must be in (0,1)")
+	if pxy == 0:
+		return -np.inf
+	else:
+		return np.log2(pxy) - np.log2(px) - np.log2(py)
+
+def npmi_value(px, py, pxy):
+	if px < 0 or px >1:
+		logging.error("Probability must be in (0,1)")
+	if py < 0 or py >1:
+		logging.error("Probability must be in (0,1)")
+	if pxy < 0 or pxy >1:
+		logging.error("Probability must be in (0,1)")
+
+	if pxy == 0:
+		return -1
+	else:
+		return np.log2(px*py)/np.log2(pxy) - 1
+	#return np.log2(pxy) - np.log2(px) - np.log2(py)
+
 
 def cal_pmi(file1, file2, bg_size = 1424655930):
 	"""
@@ -225,16 +251,16 @@ def cal_pmi(file1, file2, bg_size = 1424655930):
 	results['A_and_B'] = overlapBases/bg_size
 	results['Neither_A_nor_B'] = (bg_size - uniqBase1 - uniqBase2 + overlapBases)/bg_size
 
-	results['A_and_B.pmi'] = np.log2(  results['A_and_B'] / (results['A'] * results['B'])  )
-	results['A_and_B.npmi'] = results['A_and_B.pmi']/(-np.log2(results['A_and_B']))
+	results['A_and_B.pmi'] = pmi_value(results['A'], results['B'], results['A_and_B'])
+	results['A_and_B.npmi'] = npmi_value(results['A'], results['B'], results['A_and_B'])
 
-	results['A_not_B.pmi'] = np.log2(  results['A_not_B'] / (results['A'] * results['not_B']  ))
-	results['A_not_B.npmi'] = results['A_not_B.pmi']/(-np.log2(results['A'] * results['not_B']))
+	results['A_not_B.pmi'] = pmi_value(results['A'], results['not_B'], results['A_not_B'])
+	results['A_not_B.npmi'] = npmi_value(results['A'], results['not_B'], results['A_not_B'])
 
-	results['B_not_A.pmi'] = np.log2(  results['B_not_A'] / (results['B'] * results['not_A']  ))
-	results['B_not_A.npmi'] = results['B_not_A.pmi']/(-np.log2(results['B'] * results['not_A']))
+	results['B_not_A.pmi'] = pmi_value(results['B'], results['not_A'], results['B_not_A'])
+	results['B_not_A.npmi'] = npmi_value(results['B'], results['not_A'], results['B_not_A'])
 
-	return pd.Series(data=results,index=['A_name','B_name','A','B','A_not_B','B_not_A','A_and_B','Neither_A_nor_B','A_and_B.pmi','A_and_B.npmi', 'A_not_B.pmi', 'A_not_B.npmi', 'B_not_A.pmi', 'B_not_A.npmi'])
+	return pd.Series(data=results,index=['A_name','B_name','A','not_A','B','not_B','A_not_B','B_not_A','A_and_B','Neither_A_nor_B','A_and_B.pmi','A_and_B.npmi', 'A_not_B.pmi', 'A_not_B.npmi', 'B_not_A.pmi', 'B_not_A.npmi'])
 
 
 

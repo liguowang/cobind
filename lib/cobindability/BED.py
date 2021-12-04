@@ -255,8 +255,8 @@ def bed_overlap_size(bed1,bed2):
 		bits2 = binned_bitsets_from_file( ireader.reader(bed2) )
 
 	bitsets = dict()
-	if bed1 == bed2:
-		return 0.0
+	#if bed1 == bed2:
+	#	return 0.0
 	for key in bits1:
 		if key in bits2:
 			bits1[key].iand( bits2[key] )

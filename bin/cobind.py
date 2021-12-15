@@ -25,8 +25,9 @@ def main():
 	# sub commands and help.
 	commands = {
 	'overlap' : "Calculate the overlapping coefficient between two sets of genomic regions.",
-	'cooccur' : "Calculate the pointwise mutual information (PMI) between two sets of genomic regions.",
-	'covary' : "Calculate the covariance (Pearson and Spearman's coefficient) between two sets of genomic regions.",
+	'pmi' : "Calculate the pointwise mutual information (PMI) between two sets of genomic regions.",
+	'cooccur' : "Calculate the co-occurrence between two sets of genomic regions.",
+	'covary' : "Calculate the covariance (Pearson, Spearman and Kendall coefficients) of binding intensities between two sets of genomic regions.",
 	'bedinfo' : "Report basic statistics of genomic regions.",
 	}
 
@@ -39,10 +40,10 @@ def main():
 	# create sub-parser
 	sub_parsers = parser.add_subparsers(help='Sub-command description:')
 	parser_overlap = sub_parsers.add_parser('overlap', help=commands['overlap'])
+	parser_pmi = sub_parsers.add_parser('pmi', help=commands['pmi'])
 	parser_cooccur = sub_parsers.add_parser('cooccur', help=commands['cooccur'])
 	parser_covary = sub_parsers.add_parser('covary', help=commands['covary'])
 	parser_bedinfo = sub_parsers.add_parser('bedinfo', help=commands['bedinfo'])
-
 
 	# create the parser for the "overlap" sub-command
 	parser_overlap.add_argument("bed1", type=str, metavar ="input_A.bed",help=bed_help)
@@ -52,13 +53,17 @@ def main():
 	parser_overlap.add_argument('-b', '--background', type=int, dest="bgsize", default = 1.4e9, help="The size of the cis-regulatory genomic regions. This is about 1.4Gb For the human genome. (default: %(default)d)")
 	parser_overlap.add_argument("-d", "--debug",action="store_true", help="Print detailed information for debugging.")
 
+	# create the parser for the "pmi" sub-command
+	parser_pmi.add_argument("bed1", type=str, metavar ="input_A.bed",help=bed_help)
+	parser_pmi.add_argument("bed2", type=str, metavar ="input_B.bed",help=bed_help)
+	parser_pmi.add_argument('-b', '--background', type=int, dest="bgsize", default = 1.4e9, help="The size of the cis-regulatory genomic regions. This is about 1.4Gb For the human genome. (default: %(default)d)")
+	parser_pmi.add_argument("-d", "--debug",action="store_true", help="Print detailed information for debugging.")
 
 	# create the parser for the "cooccur" sub-command
 	parser_cooccur.add_argument("bed1", type=str, metavar ="input_A.bed",help=bed_help)
 	parser_cooccur.add_argument("bed2", type=str, metavar ="input_B.bed",help=bed_help)
 	parser_cooccur.add_argument('-b', '--background', type=int, dest="bgsize", default = 1.4e9, help="The size of the cis-regulatory genomic regions. This is about 1.4Gb For the human genome. (default: %(default)d)")
 	parser_cooccur.add_argument("-d", "--debug",action="store_true", help="Print detailed information for debugging.")
-
 
 	# create the parser for the "covary" sub-command
 	parser_covary.add_argument("bed1", type=str, metavar="input_A.bed",help=bed_help)
@@ -73,7 +78,6 @@ def main():
 	parser_covary.add_argument("--nosort", dest="nosort", action="store_true", help="If set, will NOT sort the summary statistical scores.")
 	parser_covary.add_argument("--keepna", dest="keepna", action="store_true", help="If set, a genomic region will be kept even it does not have summary statistical score in either of the two bigWig files. This flag only affects the output .tsv files.")
 	parser_covary.add_argument("-d", "--debug",action="store_true", help="Print detailed information for debugging.")
-
 
 	# create the parser for the "bedinfo" sub-command
 	parser_bedinfo.add_argument("bedfile", type=str, metavar ="input.bed",help=bed_help)
@@ -97,7 +101,7 @@ def main():
 				logging.basicConfig(format = "%(asctime)s [%(levelname)s]  %(message)s",datefmt='%Y-%m-%d %I:%M:%S', level=logging.INFO)
 			result = cal_overlap_coef(args.bed1, args.bed2, n_draws = args.iter, size = args.subsize, bg_size = args.bgsize)
 			print (result)
-		elif command == 'cooccur':
+		elif command == 'pmi':
 			if args.debug:
 				logging.basicConfig(format = "%(asctime)s [%(levelname)s]  %(message)s",datefmt='%Y-%m-%d %I:%M:%S', level=logging.DEBUG)
 			else:
@@ -122,5 +126,7 @@ def main():
 			logging.info("Calculate summay statistics for \"%s\" unique regions ..." % args.bed2)
 			b_corr = bigwig_corr(bed = b, bw1 = args.bw1, bw2 = args.bw2, outfile = args.output + '_bedB_unique.tsv', na_label = args.na_label, score_type = args.score_type, exact_scores = args.exact,  keep_NA = args.keepna, no_sort = args.nosort, top_x = args.top_X)
 			print (b_corr.T)
+		elif command == 'cooccur':
+			pass
 if __name__ == '__main__':
 	main()

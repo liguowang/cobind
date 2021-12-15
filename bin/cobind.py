@@ -1,11 +1,6 @@
 #!/usr/bin/env python
 
-
 import sys
-#import math
-#from bx.bitset import *
-#from bx.bitset_builders import *
-#import scipy.stats as stats
 
 from cobindability.BED import bedinfo,overlap_bed,bedtolist
 from cobindability.ovcoef import cal_overlap_coef, cal_pmi
@@ -17,14 +12,10 @@ __author__ = "Liguo Wang"
 __copyright__ = "Copyleft"
 __credits__ = []
 __license__ = "GPL"
-__version__="0.0.1"
+__version__="0.0.2"
 __maintainer__ = "Liguo Wang"
 __email__ = "wang.liguo@mayo.edu"
 __status__ = "Development"
-
-
-
-
 
 def main():
 	general_help = "**cobind: collocation analyses of genomic regions**"

@@ -1,24 +1,12 @@
 #!/usr/bin/env python
 
-
 import sys
-#from bx.bitset import *
-#from bx.bitset_builders import *
 import math
-#import scipy.stats as stats
-#from cobindability import ireader
 from cobindability.BED import bed_actual_size, bed_genomic_size, bed_overlap_size, bedtolist
 import logging
-#import argparse
-
 import numpy as np
 import pandas as pd
-#import matplotlib.pyplot as plt
-#from scipy.stats import dirichlet, norm, multinomial, gamma
-#from copy import deepcopy
-#from sklearn.utils import resample
 from random import sample
-
 
 __author__ = "Liguo Wang"
 __copyright__ = "Copyleft"

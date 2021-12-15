@@ -9,7 +9,7 @@ Setup script for cobind  -- collocation analysis of genomics regions.
 
 def main():
     setup(  name = "cobind",
-            version = "0.0.1",
+            version = "0.0.2",
             python_requires='>=3.5',
             py_modules = [ 'psyco_full' ],
             packages = find_packages( 'lib' ),
@@ -39,7 +39,7 @@ def main():
                 'Topic :: Scientific/Engineering :: Bio-Informatics',
             ],
 
-            keywords='Genome, overlap, ChIP-seq, ATAC-seq',
+            keywords='genome regions, overlap coefficient, cooccur, pointwise mutual information',
              )
 
 

@@ -3,7 +3,7 @@
 import sys
 #from bx.bitset import *
 from bx.bitset_builders import binned_bitsets_from_file, binned_bitsets_from_list
-#from bx.intervals import *
+from bx.intervals.intersection import Interval, Intersecter
 from cobindability import ireader
 import logging
 import numpy as np
@@ -20,9 +20,38 @@ __status__ = "Development"
 
 
 
-def unionBed3(lst):
-	'''Take the union of 3 column bed files. return a new list'''
-	bitsets = binned_bitsets_from_list(lst)
+def unionBed3(inbed):
+	"""
+	Union or merge BED regions.
+
+	Parameters
+	----------
+	inbed : str or list
+		Name of a BED file or list of BED regions, for example,
+		[(chr1 100 200), (chr2 150  300), (chr2 1000 1200)]
+
+	Returns
+	-------
+	ret_lst : list
+		List of bed regions with the overlapped regions merged.
+
+	Examples
+	--------
+	>>> unionBed3([('chr1', 1, 10), ('chr1', 3, 15), ('chr1', 20, 35), ('chr1', 20, 50)])
+	[['chr1', 1, 15], ['chr1', 20, 50]]
+
+	"""
+	if type(inbed) is list:
+		bitsets = binned_bitsets_from_list(inbed)
+	elif type(inbed) is str:
+		try:
+			bitsets = binned_bitsets_from_file( ireader.reader(inbed) )
+		except:
+			logging.error("invalid input: %s" % inbed)
+			sys.exit(1)
+	else:
+		logging.error("invalid input: %s" % inbed)
+		sys.exit(1)
 	ret_lst=[]
 	for chrom in bitsets:
 		bits = bitsets[chrom]
@@ -35,18 +64,59 @@ def unionBed3(lst):
 	bitsets=dict()
 	return ret_lst
 
-def intersectBed3(lst1,lst2):
-	'''Take the intersection of two bed files (3 column bed files)'''
-	bits1 = binned_bitsets_from_list(lst1)
-	bits2 = binned_bitsets_from_list(lst2)
+def intersectBed3(inbed1,inbed2):
+	"""
+	Interset two BED files ( or lists).
 
+	Parameters
+	----------
+	inbed1 : str or list
+		Name of a BED file or list of BED regions, for example,
+		[(chr1 100 200), (chr2 1000 1200)]
+	inbed2 : str or list
+		Name of a BED file or list of BED regions, for example,
+		[(chr1 150 220), (chr2 1100 1300)]
+
+	Returns
+	-------
+	ret_lst : list
+		List of bed regions shared between the two input BED files ( or lists).
+
+	Examples
+	--------
+	>>> intersectBed3([('chr1', 1, 10), ('chr1', 20, 35)], [('chr1',3, 15), ('chr1',20, 50)])
+	[['chr1', 3, 10], ['chr1', 20, 35]]
+	"""
+
+	if type(inbed1) is list:
+		bits1 = binned_bitsets_from_list(inbed1)
+	elif type(inbed1) is str:
+		try:
+			bits1 = binned_bitsets_from_file(ireader.reader(inbed1))
+		except:
+			logging.error("invalid input: %s" % inbed1)
+			sys.exit(1)
+	else:
+		logging.error("invalid input: %s" % inbed1)
+		sys.exit(1)
+
+	if  type(inbed2) is list:
+		bits2 = binned_bitsets_from_list(inbed2)
+	elif  type(inbed2) is str:
+		try:
+			bits2 = binned_bitsets_from_file(ireader.reader(inbed2))
+		except:
+			logging.error("invalid input: %s" % inbed2)
+			sys.exit(1)
+	else:
+		logging.error("invalid input: %s" % inbed2)
+		sys.exit(1)
 	bitsets = dict()
 	ret_lst = []
 	for key in bits1:
 		if key in bits2:
 			bits1[key].iand( bits2[key] )
 			bitsets[key] = bits1[key]
-
 	for chrom in bitsets:
 		bits = bitsets[chrom]
 		end = 0
@@ -60,12 +130,55 @@ def intersectBed3(lst1,lst2):
 	bitsets.clear()
 	return ret_lst
 
-def subtractBed3(lst1,lst2):
-	'''subtrack lst2 from lst1'''
-	bitsets1 = binned_bitsets_from_list(lst1)
-	bitsets2 = binned_bitsets_from_list(lst2)
+def subtractBed3(inbed1,inbed2):
+	"""
+	Subtract inbed2 from inbed1.
 
-	ret_lst=[]
+	Parameters
+	----------
+	inbed1 : str or list
+		Name of a BED file or list of BED regions, for example,
+		[(chr1 100 200), (chr2 1000 1200)]
+	inbed2 : str or list
+		Name of a BED file or list of BED regions, for example,
+		[(chr1 150 220), (chr2 1100 1300)]
+
+	Returns
+	-------
+	ret_lst : list
+		List of bed regions of inbed1 with those shared regions with inbed2 removed.
+
+	Examples
+	--------
+	>>> subtractBed3([('chr1', 1, 10), ('chr1', 20, 35)], [('chr1',3, 15), ('chr1',20, 50)])
+	[['chr1', 1, 3]]
+
+	"""
+	if type(inbed1) is list:
+		bitsets1 = binned_bitsets_from_list(inbed1)
+	elif type(inbed1) is str:
+		try:
+			bitsets1 = binned_bitsets_from_file(ireader.reader(inbed1))
+		except:
+			logging.error("invalid input: %s" % inbed1)
+			sys.exit(1)
+	else:
+		logging.error("invalid input: %s" % inbed1)
+		sys.exit(1)
+
+	if  type(inbed2) is list:
+		bitsets2 = binned_bitsets_from_list(inbed2)
+	elif  type(inbed2) is str:
+		try:
+			bitsets2 = binned_bitsets_from_file(ireader.reader(inbed2))
+		except:
+			logging.error("invalid input: %s" % inbed2)
+			sys.exit(1)
+	else:
+		logging.error("invalid input: %s" % inbed2)
+		sys.exit(1)
+
+	ret_lst = []
 	for chrom in bitsets1:
 		if chrom not in bitsets1:
 			continue
@@ -184,8 +297,15 @@ def bed_genomic_size(*argv):
 	for arg in argv:
 		if type(arg) is list:
 			bitsets = binned_bitsets_from_list(arg )
+		elif type(arg) is str:
+			try:
+				bitsets = binned_bitsets_from_file( ireader.reader(arg) )
+			except:
+				logging.error("Invalid input: %s" % arg)
+				sys.exit(1)
 		else:
-			bitsets = binned_bitsets_from_file( ireader.reader(arg) )
+			logging.error("Invalid input: %s" % arg)
+			sys.exit(1)
 		union_size = 0
 		for chrom in bitsets:
 			bits = bitsets[chrom]
@@ -255,8 +375,8 @@ def bed_overlap_size(bed1,bed2):
 		bits2 = binned_bitsets_from_file( ireader.reader(bed2) )
 
 	bitsets = dict()
-	#if bed1 == bed2:
-	#	return 0.0
+	if bed1 == bed2:
+		return 0.0
 	for key in bits1:
 		if key in bits2:
 			bits1[key].iand( bits2[key] )
@@ -272,10 +392,6 @@ def bed_overlap_size(bed1,bed2):
 			overlap_size += end - start
 	return overlap_size
 
-
-
-
-
 def bedtolist(bedfile):
 	'''
 	Calculate the total size of BED file.
@@ -288,11 +404,88 @@ def bedtolist(bedfile):
 			continue
 		f = l.split()
 		if len(f) < 3:
-			print("invalid BED file:%s" % l, file=sys.stderr)
+			logging.error("invalid BED line: %s" % l)
 			sys.exit(1)
 		if (int(f[2]) - int(f[1])) < 0:
-			print("invalid BED file:%s" % l, file=sys.stderr)
+			logging.error("invalid BED line: %s" % l)
 			sys.exit(1)
 		regions.append(  (f[0], int(f[1]), int(f[2]))  )
 	return regions
 
+
+def overlap_bed(inbed1, inbed2):
+
+
+	logging.info("Read and union BED file: \"%s\"" % inbed1)
+	bed1_union = unionBed3(inbed1)
+	#logging.info("Original regions of %s : %d" % (inbed1, len(inbed1)))
+	logging.info("Unioned regions of \"%s\" : %d" % (inbed1, len(bed1_union)))
+
+	logging.info("Read and union BED file: \"%s\"" % inbed2)
+	bed2_union = unionBed3(inbed2)
+	#logging.info("Original regions of %s : %d" % (inbed2, len(inbed2)))
+	logging.info("Unioned regions of \"%s\" : %d" % (inbed2, len(bed2_union)))
+
+	logging.info("Merge BED files \"%s\" and \"%s\"" % (inbed1, inbed2))
+	bed12_union = unionBed3(bed1_union + bed2_union)
+	logging.info("Unioned regions of two BED files : %d" % len(bed12_union))
+
+
+	logging.info("Build interval tree for unioned BED file: \"%s\"" % inbed1)
+	maps1 = {}
+	for (ichr1, istart1, iend1) in bed1_union:
+		if ichr1 not in maps1:
+			maps1[ichr1] = Intersecter()
+		maps1[ichr1].add_interval( Interval(istart1, iend1))
+
+	logging.info("Build interval tree for unioned BED file: \"%s\"" % inbed2)
+	maps2 = {}
+	for (ichr2, istart2, iend2) in bed2_union:
+		if ichr2 not in maps2:
+			maps2[ichr2] = Intersecter()
+		maps2[ichr2].add_interval( Interval(istart2, iend2))
+
+	logging.info("Find common and specific regions ...")
+	bed1_uniq = []
+	bed2_uniq = []
+	common = []
+	for (chrom, start, end) in bed12_union:
+		if chrom in maps1 and chrom in maps2:
+			#found in maps1
+			if len( maps1[chrom].find(start, end) ) > 0:
+				#found in maps2
+				if len( maps2[chrom].find(start, end) ) > 0:
+					common.append((chrom, start, end))
+				#not found in maps2
+				else:
+					bed1_uniq.append((chrom, start, end))
+			#not found in maps1
+			else:
+				#found in maps2
+				if len( maps2[chrom].find(start, end) ) > 0:
+					bed2_uniq.append((chrom, start, end))
+				#not found in maps2
+				else:
+					continue
+		elif chrom in maps1:
+			bed1_uniq.append((chrom, start, end))
+		elif  chrom in maps2:
+			bed2_uniq.append((chrom, start, end))
+		else:
+			continue
+	logging.info("\"%s\" unique regions: %d" % (inbed1, len(bed1_uniq)))
+	logging.info("\"%s\" unique regions: %d" % (inbed2, len(bed2_uniq)))
+	logging.info("Common (overlapped) regions: %d" % len(common))
+	return (bed1_uniq, bed2_uniq, common)
+
+def bedtofile(bed_list, bed_file):
+	OUT = open(bed_file,'w')
+	for tmp in bed_list:
+		print ('\t'.join([str(i) for i in tmp]), file=OUT)
+	OUT.close()
+
+if __name__=='__main__':
+	(a, b, common) = overlap_bed(sys.argv[1], sys.argv[2])
+	bedtofile(a,'a')
+	bedtofile(b,'b')
+	bedtofile(common,'common')

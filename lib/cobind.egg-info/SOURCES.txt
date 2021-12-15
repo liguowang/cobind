@@ -1,5 +1,15 @@
+.gitattributes
+.gitignore
+LICENSE
+README.rst
 setup.py
 bin/cobind.py
+cobind.egg-info/PKG-INFO
+cobind.egg-info/SOURCES.txt
+cobind.egg-info/dependency_links.txt
+cobind.egg-info/not-zip-safe
+cobind.egg-info/top_level.txt
+lib/.DS_Store
 lib/cobind.egg-info/PKG-INFO
 lib/cobind.egg-info/SOURCES.txt
 lib/cobind.egg-info/dependency_links.txt
@@ -16,3 +26,8 @@ lib/cobindability/ovcoef.py
 lib/cobindability/overlap_coefficient.liguo.py
 lib/cobindability/overlap_coefficient.py
 lib/cobindability/pairwise.py
+lib/cobindability/__pycache__/BED.cpython-38.pyc
+lib/cobindability/__pycache__/__init__.cpython-38.pyc
+lib/cobindability/__pycache__/bbreader.cpython-38.pyc
+lib/cobindability/__pycache__/ireader.cpython-38.pyc
+lib/cobindability/__pycache__/ovcoef.cpython-38.pyc

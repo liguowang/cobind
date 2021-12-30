@@ -581,10 +581,12 @@ def compare_peak(inbed1, inbed2, na_label='NA'):
 	logging.info("Calculate the overlap coefficient of each genomic region in %s ..." % inbed1)
 	outfile_name1 = pattern.sub('_ovcoef.tsv', os.path.basename(inbed1))
 	BED1OUT = open(outfile_name1, 'w')
-	print('\t'.join(['#chrom','start','end','ov_peaks_n','ov_coef','ov_peaks_list']), file=BED1OUT)
+	print('\t'.join(['#chrom','start','end','ov_peaks_n','ov_bases_n', 'ov_bases_frac','ov_coef','ov_peaks_list']), file=BED1OUT)
 	for chrom, start, end in bed1_union:
 		try:
 			bed_1_size = end - start
+			if bed_1_size <= 0:
+				logging.debug("Skip %s" % (chrom + ':' + str(start) + '-' + str(end)))
 			bed_1_lst = [(chrom, start, end)]
 			bed_2_size = 0
 			bed_2_lst = []
@@ -592,7 +594,7 @@ def compare_peak(inbed1, inbed2, na_label='NA'):
 			overlaps = maps2[chrom].find(start, end)
 			#print (overlaps)
 			if len(overlaps) == 0:
-				print('\t'.join([str(i) for i in (chrom, start, end, 0, na_label, na_label)]), file=BED1OUT)
+				print('\t'.join([str(i) for i in (chrom, start, end, 0, na_label,na_label,na_label, na_label)]), file=BED1OUT)
 			else:
 				for o in overlaps:
 					bed_2_size += (o.end - o.start)
@@ -603,26 +605,28 @@ def compare_peak(inbed1, inbed2, na_label='NA'):
 				except:
 					peak_ov_coef = 0
 				tmp = ','.join([i[0] + ':' + str(i[1]) + '-' + str(i[2]) for i in bed_2_lst])
-				print('\t'.join([str(i) for i in (chrom, start, end, len(bed_2_lst), peak_ov_coef, tmp)]), file=BED1OUT)
+				print('\t'.join([str(i) for i in (chrom, start, end, len(bed_2_lst), overlap_size, overlap_size/bed_1_size, peak_ov_coef, tmp)]), file=BED1OUT)
 		except:
-			print('\t'.join([str(i) for i in (chrom, start, end, len(bed_2_lst), na_label, na_label)]), file=BED1OUT)
+			print('\t'.join([str(i) for i in (chrom, start, end, len(bed_2_lst), na_label, na_label, na_label, na_label)]), file=BED1OUT)
 	BED1OUT.close()
 
 	#overlap bed file 2 with bed file 1
 	logging.info("Calculate the overlap coefficient of each genomic region in %s ..." % inbed2)
 	outfile_name2 = pattern.sub('_ovcoef.tsv', os.path.basename(inbed2))
 	BED2OUT = open(outfile_name2, 'w')
-	print('\t'.join(['#chrom','start','end','ov_peaks_n','ov_coef','ov_peaks_list']), file=BED2OUT)
+	print('\t'.join(['#chrom','start','end','ov_peaks_n','ov_bases_n', 'ov_bases_frac','ov_coef','ov_peaks_list']), file=BED2OUT)
 	for chrom, start, end in bed2_union:
 		try:
 			bed_2_size = end - start
+			if bed_2_size <= 0:
+				logging.debug("Skip %s" % (chrom + ':' + str(start) + '-' + str(end)))
 			bed_2_lst = [(chrom, start, end)]
 			bed_1_size = 0
 			bed_1_lst = []
 
 			overlaps = maps1[chrom].find(start, end)
 			if len(overlaps) == 0:
-				print('\t'.join([str(i) for i in (chrom, start, end, 0, na_label, na_label)]), file=BED2OUT)
+				print('\t'.join([str(i) for i in (chrom, start, end, 0, na_label,na_label,na_label, na_label)]), file=BED2OUT)
 			else:
 				for o in overlaps:
 					bed_1_size += (o.end - o.start)
@@ -633,9 +637,9 @@ def compare_peak(inbed1, inbed2, na_label='NA'):
 				except:
 					peak_ov_coef = 0
 				tmp = ','.join([i[0] + ':' + str(i[1]) + '-' + str(i[2]) for i in bed_1_lst])
-				print('\t'.join([str(i) for i in (chrom, start, end, len(bed_1_lst), peak_ov_coef, tmp)]), file=BED2OUT)
+				print('\t'.join([str(i) for i in (chrom, start, end, len(bed_2_lst), overlap_size, overlap_size/bed_2_size, peak_ov_coef, tmp)]), file=BED2OUT)
 		except:
-			print('\t'.join([str(i) for i in (chrom, start, end, len(bed_1_lst), na_label, na_label)]), file=BED2OUT)
+			print('\t'.join([str(i) for i in (chrom, start, end, len(bed_1_lst), na_label, na_label, na_label, na_label)]), file=BED2OUT)
 	BED2OUT.close()
 
 

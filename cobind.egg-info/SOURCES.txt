@@ -1,6 +1,0 @@
-setup.py
-cobind.egg-info/PKG-INFO
-cobind.egg-info/SOURCES.txt
-cobind.egg-info/dependency_links.txt
-cobind.egg-info/not-zip-safe
-cobind.egg-info/top_level.txt

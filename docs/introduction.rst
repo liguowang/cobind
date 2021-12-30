@@ -25,3 +25,6 @@ widely used, such a straightforward approach has several serious drawbacks. With
   B and C have the same number of TFBS, because the length of TFBS might be significantly different between B and C. 
 
 These problems make the direct comparison of genomic overlapping analysis results difficult even impossible. Cobind is designed to address these problems and provides rigorous quantification of a genomic region overlapping.
+
+Introduction2
+=============

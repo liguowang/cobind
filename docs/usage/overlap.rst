@@ -72,30 +72,31 @@ printed to screen:
  
 
 Check peak-wise overlap coefficients. Using the *CTCF_ENCFF660GHM_ovcoef.tsv* file as an example,
-there are a total of six columns in this file.
+there are a total of 8 columns in this file.
 
 - column 1 to 3: genomic coordinate of CTCF peak.
 - column 4: The number of RAD21 peaks overlapped with this peak.
-- column 5: overlapcoefficient.
-- column 6: RAD21 peak(s) that are overlapped with this peak. 
+- column 5: The number of bases overlapped with this peak.
+- column 6: The ratio between "number of bases overlapped" and "total bases of the peak". 
+- column 7: overlap coefficient.
+- column 8: RAD21 peak(s) that are overlapped with this peak. Multiple peaks will be separated by ",".
 
 ::
 
  $head -5 CTCF_ENCFF660GHM_ovcoef.tsv
  
- #chrom  start end ov_peaks_n  ov_coef ov_peaks_list
- chr12 108043  108283  1 0.770752493308062 chr12:107919-108323
- chr12 153232  153470  1 0.965801796044974 chr12:153236-153458
- chr12 177749  177989  0 NA  NA
- chr12 189165  189405  1 0.770752493308062 chr12:189072-189476
+ #chrom  start end ov_peaks_n  ov_bases_n  ov_bases_frac ov_coef ov_peaks_list
+ chr12 108043  108283  1 240 1.0 0.770752493308062 chr12:107919-108323
+ chr12 153232  153470  1 222 0.9327731092436975  0.965801796044974 chr12:153236-153458
+ chr12 177749  177989  0 NA  NA  NA  NA
+ chr12 189165  189405  1 240 1.0 0.770752493308062 chr12:189072-189476
   
  
  $head -5 RAD21_ENCFF057JFH_ovcoef.tsv
  
- #chrom  start end ov_peaks_n  ov_coef ov_peaks_list
- chr22 16146910  16147314  1 0.770752493308062 chr22:16147004-16147244
- chr22 16391500  16391904  1 0.47198758164566446 chr22:16391656-16391746
- chr22 16441033  16441408  1 0.8 chr22:16441063-16441303
- chr22 16599668  16600072  0 NA  NA
-
+ #chrom  start end ov_peaks_n  ov_bases_n  ov_bases_frac ov_coef ov_peaks_list
+ chr22 16146910  16147314  1 240 0.594059405940594 0.770752493308062 chr22:16147004-16147244
+ chr22 16391500  16391904  1 90  0.22277227722772278 0.47198758164566446 chr22:16391656-16391746
+ chr22 16441033  16441408  1 240 0.64  0.8 chr22:16441063-16441303
+ chr22 16599668  16600072  0 NA  NA  NA  NA
 

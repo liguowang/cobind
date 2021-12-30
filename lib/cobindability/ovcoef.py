@@ -2,7 +2,7 @@
 
 import sys
 import math
-from cobindability.BED import bed_actual_size, bed_genomic_size, bed_overlap_size, bedtolist
+from cobindability.BED import bed_actual_size, bed_genomic_size, bed_overlap_size, bedtolist, bed_counts
 import logging
 import numpy as np
 import pandas as pd
@@ -78,6 +78,7 @@ def exp_coef(set1, set2, bg_size = 1424655930):
 
 def cal_overlap_coef(file1, file2, n_draws, size = 0.85, bg_size = 1424655930):
 	"""
+	Calculate the *overall* overlap coefficient between two BED files.
 
 	Parameters
 	----------
@@ -101,7 +102,12 @@ def cal_overlap_coef(file1, file2, n_draws, size = 0.85, bg_size = 1424655930):
 	Returns
 	-------
 	pandas.Series
-		DESCRIPTION.
+		Pandas Series of 'coef_obs', 'coef_exp','coef_ratio', 'coef_ratio_low', 'coef_ratio_high'.
+		'coef_obs' : Observed overlap coefficient between two BED files.
+		'coef_exp' : Expected overlap coefficient between two BED files.
+		'coef_ratio' : Ratio between 'coef_obs' and 'coef_exp'.
+		'coef_ratio_low' : The lower bound of 95% confidence interval of 'coef_ratio'.
+		'coef_ratio_high' : The upper bound of 95% confidence interval of 'coef_ratio'.
 
 	"""
 
@@ -111,7 +117,8 @@ def cal_overlap_coef(file1, file2, n_draws, size = 0.85, bg_size = 1424655930):
 	file2_lst = bedtolist (file2)
 
 	#calculate bed total size and bed count
-	totalBase1, totalBase2, totalCount1, totalCount2 = bed_actual_size(file1, file2)
+	totalBase1, totalBase2 = bed_actual_size(file1, file2)
+	totalCount1, totalCount2 = bed_counts(file1, file2)
 
 	#calculate bed's genomic size
 	(uniqBase1,uniqBase2) = bed_genomic_size(file1_lst, file2_lst)

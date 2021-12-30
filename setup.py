@@ -9,7 +9,7 @@ Setup script for cobind  -- collocation analysis of genomics regions.
 
 def main():
     setup(  name = "cobind",
-            version = "0.0.2",
+            version = "0.0.3",
             python_requires='>=3.5',
             py_modules = [ 'psyco_full' ],
             packages = find_packages( 'lib' ),
@@ -23,7 +23,7 @@ def main():
             author_email ="wangliguo78@gmail.com",
             platforms = ['Linux','MacOS'],
             requires = [],
-            install_requires = ['scipy', 'numpy', 'pandas', 'sklearn', 'bx-python','pyBigWig'],
+            install_requires = ['scipy', 'numpy', 'pandas', 'bx-python','pyBigWig'],
             description = "collocation analysis of genomics regions",
             url = "",
             zip_safe = False,

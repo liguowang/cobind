@@ -1,13 +1,17 @@
 #!/usr/bin/env python
 
-import sys
-#from bx.bitset import *
-from bx.bitset_builders import binned_bitsets_from_file, binned_bitsets_from_list
-from bx.intervals.intersection import Interval, Intersecter
-from cobindability import ireader
+import sys,os
+import re
+
 import logging
 import numpy as np
 import pandas as pd
+import math
+from scipy.stats import fisher_exact
+from bx.bitset_builders import binned_bitsets_from_file, binned_bitsets_from_list
+from bx.intervals.intersection import Interval, Intersecter
+from cobindability import ireader
+
 
 __author__ = "Liguo Wang"
 __copyright__ = "Copyleft"
@@ -38,7 +42,7 @@ def unionBed3(inbed):
 	Examples
 	--------
 	>>> unionBed3([('chr1', 1, 10), ('chr1', 3, 15), ('chr1', 20, 35), ('chr1', 20, 50)])
-	[['chr1', 1, 15], ['chr1', 20, 50]]
+	[('chr1', 1, 15), ('chr1', 20, 50)]
 
 	"""
 	if type(inbed) is list:
@@ -60,13 +64,14 @@ def unionBed3(inbed):
 			start = bits.next_set( end )
 			if start == bits.size: break
 			end = bits.next_clear( start )
-			ret_lst.append([chrom, start, end])
+			ret_lst.append((chrom, start, end))
 	bitsets=dict()
 	return ret_lst
 
+
 def intersectBed3(inbed1,inbed2):
 	"""
-	Interset two BED files ( or lists).
+	Interset two BED files (or lists).
 
 	Parameters
 	----------
@@ -85,9 +90,8 @@ def intersectBed3(inbed1,inbed2):
 	Examples
 	--------
 	>>> intersectBed3([('chr1', 1, 10), ('chr1', 20, 35)], [('chr1',3, 15), ('chr1',20, 50)])
-	[['chr1', 3, 10], ['chr1', 20, 35]]
+	[('chr1', 3, 10), ('chr1', 20, 35)]
 	"""
-
 	if type(inbed1) is list:
 		bits1 = binned_bitsets_from_list(inbed1)
 	elif type(inbed1) is str:
@@ -99,7 +103,6 @@ def intersectBed3(inbed1,inbed2):
 	else:
 		logging.error("invalid input: %s" % inbed1)
 		sys.exit(1)
-
 	if  type(inbed2) is list:
 		bits2 = binned_bitsets_from_list(inbed2)
 	elif  type(inbed2) is str:
@@ -124,11 +127,12 @@ def intersectBed3(inbed1,inbed2):
 			start = bits.next_set( end )
 			if start == bits.size: break
 			end = bits.next_clear( start )
-			ret_lst.append([chrom, start, end])
+			ret_lst.append((chrom, start, end))
 	bits1.clear()
 	bits2.clear()
 	bitsets.clear()
 	return ret_lst
+
 
 def subtractBed3(inbed1,inbed2):
 	"""
@@ -151,7 +155,7 @@ def subtractBed3(inbed1,inbed2):
 	Examples
 	--------
 	>>> subtractBed3([('chr1', 1, 10), ('chr1', 20, 35)], [('chr1',3, 15), ('chr1',20, 50)])
-	[['chr1', 1, 3]]
+	[('chr1', 1, 3)]
 
 	"""
 	if type(inbed1) is list:
@@ -165,8 +169,7 @@ def subtractBed3(inbed1,inbed2):
 	else:
 		logging.error("invalid input: %s" % inbed1)
 		sys.exit(1)
-
-	if  type(inbed2) is list:
+	if type(inbed2) is list:
 		bitsets2 = binned_bitsets_from_list(inbed2)
 	elif  type(inbed2) is str:
 		try:
@@ -177,7 +180,6 @@ def subtractBed3(inbed1,inbed2):
 	else:
 		logging.error("invalid input: %s" % inbed2)
 		sys.exit(1)
-
 	ret_lst = []
 	for chrom in bitsets1:
 		if chrom not in bitsets1:
@@ -192,7 +194,7 @@ def subtractBed3(inbed1,inbed2):
 			start = bits1.next_set( end )
 			if start == bits1.size: break
 			end = bits1.next_clear( start )
-			ret_lst.append([chrom,start,end])
+			ret_lst.append((chrom,start,end))
 	bitsets1 = dict()
 	bitsets2 = dict()
 	return ret_lst
@@ -207,91 +209,113 @@ def tillingBed(chrName,chrSize,stepSize=10000):
 		else:
 			yield (chrName,start,chrSize)
 
-def bed_actual_size(bed1, bed2):
+
+def bed_actual_size(*argv):
 	'''
-	Calculate the total size of BED file.
+	Calculate the aggregated size of BED file.
 
-	Examples
-	--------
-	$cat test.bed
-		chr1  0  100
-		chr1  50  150
-		chr1  80  180
 
-	Note:
-	1. The *actual* size of 'test.bed' is 300 (bp). However, the *genomic* size is
-	180 (bp), because the overlapped possitions were only counted once!
-	2. "bedfile1" and "bedfile2" can be regular, compressed, or
-	remote files.
-	3. "bedfile1" and "bedfile2" can be bigBed files. The suffix for bigBed file
-	must be one of ('.bb','.bigbed','.bigBed','.BigBed', '.BB',' BIGBED').
-
-	Parameters
-	----------
-	bed1 : str
-		File name of the first BED file.
-	bed2 : str
-		File name of the second BED file.
-
-	Returns
-	-------
-	List (bed1_size, bed2_size, bed1_count, bed2_count).
-
-	'''
-	bed_file1_size = 0
-	bed_file2_size = 0
-	bed_file1_count = 0
-	bed_file2_count = 0
-	#print >>sys.stderr, "reading %s ..." %	 bedfile1
-	for l in ireader.reader(bed1):
-		l = l.strip()
-		if l.startswith(('browser','#','track')):
-			continue
-		f = l.split()
-		if (int(f[2]) - int(f[1])) < 0:
-			logging.error("invalid BED line: %s" % l)
-			sys.exit(1)
-		bed_file1_size += (int(f[2]) - int(f[1]))
-		bed_file1_count += 1
-	#print >>sys.stderr, "reading %s ..." %	 bedfile2
-	for l in ireader.reader(bed2):
-		l = l.strip()
-		if l.startswith(('browser','#','track')):
-			continue
-		f = l.split()
-		if (int(f[2]) - int(f[1])) < 0:
-			logging.error("invalid BED line: %s" % l)
-			sys.exit(1)
-		bed_file2_size += (int(f[2]) - int(f[1]))
-		bed_file2_count += 1
-	return	(bed_file1_size, bed_file2_size, bed_file1_count, bed_file2_count)
-
-def bed_genomic_size(*argv):
-	'''
-	Calculate the *genomic* size of BED file.
-
-	Examples
-	--------
-	$cat test.bed
-		chr1  0  100
-		chr1  50  150
-		chr1  80  180
-	Note:
-	1. The *actual* size of 'test.bed' is 300 (bp). However, the *genomic* size is
-	180 (bp), because the overlapped possitions were only counted once!
-	2. "bedfile1" and "bedfile2" can be regular, compressed, or
-	remote files.
-	3. "bedfile1" and "bedfile2" can be bigBed files. The suffix for bigBed file
-	must be one of ('.bb','.bigbed','.bigBed','.BigBed', '.BB',' BIGBED').
 	Parameters
 	----------
 	argv : list of genomic regions.
-		Each argument can be bed, bed-like or bigBed format file.
-
+		Each argument can be a list, BED-like file, or a bigBed file. BED file
+		can be regular, compressed, or remote file. The suffix of bigBed file
+		must be one of ('.bb','.bigbed','.bigBed','.BigBed', '.BB',' BIGBED').
 
 	Returns
 	-------
-	Pandas Series.
+	List of aggregated size.
+
+	Examples
+	--------
+	>>> bed1 = [('chr1', 1, 10), ('chr1', 20, 35)]
+	>>> bed2 = [('chr1',3, 15), ('chr1',20, 50)]
+	>>> bed_actual_size(bed1, bed2)
+	[24, 42]
+	'''
+	sizes = []
+	for arg in argv:
+		size = 0
+		if type(arg) is list:
+			for chrom,start,end in arg:
+				size += (int(end) - int(start))
+		elif type(arg) is str:
+			for l in ireader.reader(arg):
+				if l.startswith(('browser','#','track')):continue
+				f = l.split()
+				if len(f) < 3:
+					logging.warning("invalid BED line: %s" % l)
+					continue
+				size += (int(f[2]) - int(f[1]))
+		sizes.append(size)
+	return sizes
+
+
+def bed_counts(*argv):
+	'''
+	Calculate the number of regions in BED file.
+
+
+	Parameters
+	----------
+	argv : list of genomic regions.
+		Each argument can be a list, BED-like file, or a bigBed file. BED file
+		can be regular, compressed, or remote file. The suffix of bigBed file
+		must be one of ('.bb','.bigbed','.bigBed','.BigBed', '.BB',' BIGBED').
+
+	Returns
+	-------
+	List of aggregated size.
+
+	Examples
+	--------
+	>>> bed1 = [('chr1', 1, 10), ('chr1', 20, 35)]
+	>>> bed2 = [('chr1',3, 15), ('chr1',20, 50), ('chr2',100,200)]
+	>>> bed_counts(bed1, bed2)
+	[2, 3]
+	'''
+	bed_counts = []
+	for arg in argv:
+		count = 0
+		if type(arg) is list:
+			count = len(arg)
+		elif type(arg) is str:
+			for l in ireader.reader(arg):
+				if l.startswith(('browser','#','track')):continue
+				f = l.split()
+				if len(f) < 3:
+					logging.warning("invalid BED line: %s" % l)
+					continue
+				count += 1
+		bed_counts.append(count)
+	return bed_counts
+
+
+def bed_genomic_size(*argv):
+	'''
+	Calculate the *genomic size* of BED file (or list). Note, genomic_size <= actual_size.
+
+	Parameters
+	----------
+	argv : list of genomic regions.
+		Each argument can be a list, BED-like file, or a bigBed file. BED file
+		can be regular, compressed, or remote file. The suffix of bigBed file
+		must be one of ('.bb','.bigbed','.bigBed','.BigBed', '.BB',' BIGBED').
+
+	Returns
+	-------
+	List of genomic size.
+
+	Example
+	-------
+	>>> bed1 = [('chr1', 0, 100), ('chr1', 50, 150), ('chr1', 80, 180)]
+	>>> bed_genomic_size(bed1)
+	[180]
+	>>> bed2 = [('chr1', 0, 100), ('chr2', 50, 150), ('chr3', 80, 180)]
+	>>> bed_genomic_size(bed2)
+	[300]
+	>>> bed_genomic_size(bed1, bed2)
+	[180, 300]
 	'''
 	union_sizes = []
 	for arg in argv:
@@ -317,6 +341,48 @@ def bed_genomic_size(*argv):
 				union_size += (end - start)
 		union_sizes.append(union_size)
 	return (union_sizes)
+
+def bed_overlap_size(bed1,bed2):
+	"""
+	Calculate the total number of *bases* overlapped between two bed files
+
+	Parameters
+	----------
+	bed1 : str or list
+		File name of the first BED file. Can also be a list, such as
+		[(chr1 100 200), (chr2 150  300), (chr2 1000 1200)]
+	bed2 : str or list
+		File name of the second BED file. Can also be a list, such as
+		[(chr1 100 200), (chr2 150  300), (chr2 1000 1200)]
+
+	Returns
+	-------
+	Int. Overlapped size.
+
+	"""
+	overlap_size = 0
+	if type(bed1) is list:
+		bits1 = binned_bitsets_from_list( bed1 )
+	else:
+		bits1 = binned_bitsets_from_file( ireader.reader(bed1) )
+	if type(bed2) is list:
+		bits2 = binned_bitsets_from_list( bed2 )
+	else:
+		bits2 = binned_bitsets_from_file( ireader.reader(bed2) )
+	bitsets = dict()
+	for key in bits1:
+		if key in bits2:
+			bits1[key].iand( bits2[key] )
+			bitsets[key] = bits1[key]
+	for chrom in bitsets:
+		bits = bitsets[chrom]
+		end = 0
+		while 1:
+			start = bits.next_set( end )
+			if start == bits.size: break
+			end = bits.next_clear( start )
+			overlap_size += end - start
+	return overlap_size
 
 def bedinfo(infile):
 	logging.debug("Gathering teh basic statistics of BED file: %s" % infile)
@@ -346,51 +412,6 @@ def bedinfo(infile):
 
 	return(pd.Series(data = bed_infor, index=['Name','Count', 'Genomic_size', 'Total_size', 'Max_size', 'Mean_size', 'Median_size', 'Min_size']))
 
-def bed_overlap_size(bed1,bed2):
-	"""
-	Calculate the total number of *bases* overlapped between two bed files
-
-	Parameters
-	----------
-	bed1 : str or list
-		File name of the first BED file. Can also be a list, such as
-		[(chr1 100 200), (chr2 150  300), (chr2 1000 1200)]
-	bed2 : str or list
-		File name of the second BED file. Can also be a list, such as
-		[(chr1 100 200), (chr2 150  300), (chr2 1000 1200)]
-
-	Returns
-	-------
-	Int. Overlapped size.
-
-	"""
-	overlap_size = 0
-	if type(bed1) is list:
-		bits1 = binned_bitsets_from_list( bed1 )
-	else:
-		bits1 = binned_bitsets_from_file( ireader.reader(bed1) )
-	if type(bed2) is list:
-		bits2 = binned_bitsets_from_list( bed2 )
-	else:
-		bits2 = binned_bitsets_from_file( ireader.reader(bed2) )
-
-	bitsets = dict()
-	if bed1 == bed2:
-		return 0.0
-	for key in bits1:
-		if key in bits2:
-			bits1[key].iand( bits2[key] )
-			bitsets[key] = bits1[key]
-
-	for chrom in bitsets:
-		bits = bitsets[chrom]
-		end = 0
-		while 1:
-			start = bits.next_set( end )
-			if start == bits.size: break
-			end = bits.next_clear( start )
-			overlap_size += end - start
-	return overlap_size
 
 def bedtolist(bedfile):
 	'''
@@ -413,8 +434,39 @@ def bedtolist(bedfile):
 	return regions
 
 
-def overlap_bed(inbed1, inbed2):
+def compare_bed(inbed1, inbed2):
 
+	"""
+	Compare two BED files (or lists). This function is similar to Linux "comm" command.
+
+	Parameters
+	----------
+	inbed1 : str or list
+		Name of a BED file or list of BED regions, for example,
+		[(chr1 100 200), (chr2 150  300), (chr2 1000 1200)]
+	inbed2 : str or list
+		Name of a BED file or list of BED regions, for example,
+		[(chr1 100 200), (chr2 150  300), (chr2 1000 1200)]
+
+	Returns
+	-------
+	bed1_uniq : list
+		Genomic regions that are inbed1 unique (i.e., regions only present in inbed1 but
+		do not overlap with any regions in inbed2).
+	bed2_uniq : list
+		Genomic regions that are inbed2 unique (i.e., regions only present in inbed2 but
+		do not overlap with any regions in inbed1).
+	common : list
+		Genomic regions overlapped between inbed1 and inbed2. Note, the
+		overlapped regions were merged. For example, (chr1 1 10) and (chr1 5 15)
+		will be merged as (chr1 1 15).
+
+	Note
+	----
+	Overlapped regions *within* input BED files (or lists) are merged before
+	comparison.
+
+	"""
 
 	logging.info("Read and union BED file: \"%s\"" % inbed1)
 	bed1_union = unionBed3(inbed1)
@@ -478,14 +530,316 @@ def overlap_bed(inbed1, inbed2):
 	logging.info("Common (overlapped) regions: %d" % len(common))
 	return (bed1_uniq, bed2_uniq, common)
 
+
+def compare_peak(inbed1, inbed2, na_label='NA'):
+
+	"""
+	Calculates peak-wise overlaps.
+
+	Parameters
+	----------
+	inbed1 : str
+		Name of a BED file.
+	inbed2 : str
+		Name of another BED file.
+	na_label : str
+		String label used to represent missing value.
+
+	Returns
+	-------
+	None
+	"""
+	pattern = re.compile(".bed$", re.IGNORECASE)
+	logging.info("Read and union BED file: \"%s\"" % inbed1)
+	bed1_union = unionBed3(inbed1)
+	logging.info("Unioned regions of \"%s\" : %d" % (inbed1, len(bed1_union)))
+
+	logging.info("Read and union BED file: \"%s\"" % inbed2)
+	bed2_union = unionBed3(inbed2)
+	logging.info("Unioned regions of \"%s\" : %d" % (inbed2, len(bed2_union)))
+
+	#logging.info("Merge BED files \"%s\" and \"%s\"" % (inbed1, inbed2))
+	#bed12_union = unionBed3(bed1_union + bed2_union)
+	#logging.info("Unioned regions of two BED files : %d" % len(bed12_union))
+
+
+	logging.info("Build interval tree for unioned BED file: \"%s\"" % inbed1)
+	maps1 = {}
+	for (ichr1, istart1, iend1) in bed1_union:
+		if ichr1 not in maps1:
+			maps1[ichr1] = Intersecter()
+		maps1[ichr1].add_interval( Interval(istart1, iend1))
+
+	logging.info("Build interval tree for unioned BED file: \"%s\"" % inbed2)
+	maps2 = {}
+	for (ichr2, istart2, iend2) in bed2_union:
+		if ichr2 not in maps2:
+			maps2[ichr2] = Intersecter()
+		maps2[ichr2].add_interval( Interval(istart2, iend2))
+
+	#overlap bed file 1 with bed file 2
+	logging.info("Calculate the overlap coefficient of each genomic region in %s ..." % inbed1)
+	outfile_name1 = pattern.sub('_ovcoef.tsv', os.path.basename(inbed1))
+	BED1OUT = open(outfile_name1, 'w')
+	print('\t'.join(['#chrom','start','end','ov_peaks_n','ov_coef','ov_peaks_list']), file=BED1OUT)
+	for chrom, start, end in bed1_union:
+		try:
+			bed_1_size = end - start
+			bed_1_lst = [(chrom, start, end)]
+			bed_2_size = 0
+			bed_2_lst = []
+
+			overlaps = maps2[chrom].find(start, end)
+			#print (overlaps)
+			if len(overlaps) == 0:
+				print('\t'.join([str(i) for i in (chrom, start, end, 0, na_label, na_label)]), file=BED1OUT)
+			else:
+				for o in overlaps:
+					bed_2_size += (o.end - o.start)
+					bed_2_lst.append((chrom, o.start, o.end))
+				overlap_size = bed_overlap_size(bed_1_lst, bed_2_lst)
+				try:
+					peak_ov_coef = overlap_size/(math.sqrt(bed_1_size * bed_2_size))
+				except:
+					peak_ov_coef = 0
+				tmp = ','.join([i[0] + ':' + str(i[1]) + '-' + str(i[2]) for i in bed_2_lst])
+				print('\t'.join([str(i) for i in (chrom, start, end, len(bed_2_lst), peak_ov_coef, tmp)]), file=BED1OUT)
+		except:
+			print('\t'.join([str(i) for i in (chrom, start, end, len(bed_2_lst), na_label, na_label)]), file=BED1OUT)
+	BED1OUT.close()
+
+	#overlap bed file 2 with bed file 1
+	logging.info("Calculate the overlap coefficient of each genomic region in %s ..." % inbed2)
+	outfile_name2 = pattern.sub('_ovcoef.tsv', os.path.basename(inbed2))
+	BED2OUT = open(outfile_name2, 'w')
+	print('\t'.join(['#chrom','start','end','ov_peaks_n','ov_coef','ov_peaks_list']), file=BED2OUT)
+	for chrom, start, end in bed2_union:
+		try:
+			bed_2_size = end - start
+			bed_2_lst = [(chrom, start, end)]
+			bed_1_size = 0
+			bed_1_lst = []
+
+			overlaps = maps1[chrom].find(start, end)
+			if len(overlaps) == 0:
+				print('\t'.join([str(i) for i in (chrom, start, end, 0, na_label, na_label)]), file=BED2OUT)
+			else:
+				for o in overlaps:
+					bed_1_size += (o.end - o.start)
+					bed_1_lst.append((chrom, o.start, o.end))
+				overlap_size = bed_overlap_size(bed_2_lst, bed_1_lst)
+				try:
+					peak_ov_coef = overlap_size/(math.sqrt(bed_1_size * bed_2_size))
+				except:
+					peak_ov_coef = 0
+				tmp = ','.join([i[0] + ':' + str(i[1]) + '-' + str(i[2]) for i in bed_1_lst])
+				print('\t'.join([str(i) for i in (chrom, start, end, len(bed_1_lst), peak_ov_coef, tmp)]), file=BED2OUT)
+		except:
+			print('\t'.join([str(i) for i in (chrom, start, end, len(bed_1_lst), na_label, na_label)]), file=BED2OUT)
+	BED2OUT.close()
+
+
+def cooccur_peak(inbed1, inbed2, inbed_bg, outfile, n_cut=1, p_cut=0.0):
+
+	"""
+	Evaluate if two peak sets are significantly oc-occurred or mutually exclusive.
+	Using Fisher's exact test.
+
+	Parameters
+	----------
+	inbed1 : str
+		Name of a BED file.
+	inbed2 : str
+		Name of another BED file.
+	inbed_bg : str
+		Name of the background BED file (e.g., all promoters, all enhancers).
+	outfile : str
+		Name of the output file.
+	n_cut : int, optional
+		Threshold of overlap size. For example, the overlap size is 20 for these two
+		regions ('chr1', 0, 100) and ('chr1', 80, 250).
+		default = 1
+	p_put : float, optional
+		Threshold of overlap percentage. In the example above, the overlap percentage
+		for ('chr1', 0, 100) is 20/100 = 0.2.
+		default = 0.0
+	Returns
+	-------
+	None
+	"""
+
+	logging.info("Read and union BED file: \"%s\"" % inbed1)
+	bed1_union = unionBed3(inbed1)
+	logging.info("Number of unioned regions : %d" % (len(bed1_union)))
+
+	logging.info("Read and union BED file: \"%s\"" % inbed2)
+	bed2_union = unionBed3(inbed2)
+	logging.info("Number of unioned regions : %d" % (len(bed2_union)))
+
+	if inbed_bg is None:
+		logging.info("Merge two input BED files \"%s\" and \"%s\" as the background" % (inbed1, inbed2))
+		background = unionBed3(bed1_union + bed2_union)
+		logging.info("Number of unioned background regions : %d" % (len(background)))
+	else:
+		logging.info("Read and union BED file: \"%s\"" % inbed_bg)
+		background = unionBed3(inbed_bg)
+		logging.info("Number of unioned background regions  : %d" % len(background))
+
+
+	logging.info("Build interval tree for : \"%s\"" % inbed1)
+	maps1 = {}
+	for (ichr1, istart1, iend1) in bed1_union:
+		if ichr1 not in maps1:
+			maps1[ichr1] = Intersecter()
+		maps1[ichr1].add_interval( Interval(istart1, iend1))
+
+	logging.info("Build interval tree for: \"%s\"" % inbed2)
+	maps2 = {}
+	for (ichr2, istart2, iend2) in bed2_union:
+		if ichr2 not in maps2:
+			maps2[ichr2] = Intersecter()
+		maps2[ichr2].add_interval( Interval(istart2, iend2))
+
+	#background regions will be divided into 4 categories
+	bed1_only = 0
+	bed2_only = 0
+	cooccur = 0
+	neither = 0
+	OUT = open(outfile, 'w')
+
+	results = {}
+	for chrom, start, end in background:
+		line = chrom + '\t' + str(start) + '\t' + str(end)
+		bed1_flag = False
+		bed2_flag = False
+
+		if (chrom not in maps1) and (chrom not in maps2):
+			pass
+		elif (chrom not in maps1) and (chrom in maps2):
+			bed2_overlaps = maps2[chrom].find(start, end)
+			if len(bed2_overlaps) == 0:
+				pass
+			else:
+				bed2_overlap_lst = []
+				for o in bed2_overlaps:
+					bed2_overlap_lst.append((chrom, o.start, o.end))
+				bed2_overlap_size = bed_overlap_size([(chrom, start, end)], bed2_overlap_lst)
+				bed2_genomic_size = bed_genomic_size(bed2_overlap_lst)
+				try:
+					bed2_overlap_ratio = bed2_overlap_size/bed2_genomic_size
+				except:
+					bed2_overlap_ratio = 0
+				if bed2_overlap_size >= n_cut and bed2_overlap_ratio >= p_cut:
+					bed2_flag = True
+		elif (chrom in maps1) and (chrom not in maps2):
+			bed1_overlaps = maps1[chrom].find(start, end)
+			if len(bed2_overlaps) == 0:
+				pass
+			else:
+				bed1_overlap_lst = []
+				for o in bed1_overlaps:
+					bed1_overlap_lst.append((chrom, o.start, o.end))
+				bed1_overlap_size = bed_overlap_size([(chrom, start, end)], bed1_overlap_lst)
+				bed1_genomic_size = bed_genomic_size(bed1_overlap_lst)
+				try:
+					bed1_overlap_ratio = bed1_overlap_size/bed1_genomic_size
+				except:
+					bed1_overlap_ratio = 0
+				if bed1_overlap_size >= n_cut and bed1_overlap_ratio >= p_cut:
+					bed1_flag = True
+		else:
+			#overlaps with inbed1
+			bed1_overlaps = maps1[chrom].find(start, end)
+			#overlaps with inbed2
+			bed2_overlaps = maps2[chrom].find(start, end)
+			if len(bed1_overlaps) == 0:
+				if len(bed2_overlaps) == 0:
+					pass
+				elif len(bed2_overlaps) > 0:
+					bed2_overlap_lst = []
+					for o in bed2_overlaps:
+						bed2_overlap_lst.append((chrom, o.start, o.end))
+					bed2_overlap_size = bed_overlap_size([(chrom, start, end)], bed2_overlap_lst)
+					bed2_genomic_size = bed_genomic_size(bed2_overlap_lst)
+					try:
+						bed2_overlap_ratio = bed2_overlap_size/bed2_genomic_size
+					except:
+						bed2_overlap_ratio = 0
+					if bed2_overlap_size >= n_cut and bed2_overlap_ratio >= p_cut:
+						bed2_flag = True
+			elif len(bed1_overlaps) > 0:
+				bed1_overlap_lst = []
+				for o in bed1_overlaps:
+					bed1_overlap_lst.append((chrom, o.start, o.end))
+				bed1_overlap_size = bed_overlap_size([(chrom, start, end)], bed1_overlap_lst)
+				bed1_genomic_size = bed_genomic_size(bed1_overlap_lst)
+				try:
+					bed1_overlap_ratio = bed1_overlap_size/bed1_genomic_size
+				except:
+					bed1_overlap_ratio = 0
+				if bed1_overlap_size >= n_cut and bed1_overlap_ratio >= p_cut:
+					bed1_flag = True
+
+				if len(bed2_overlaps) == 0:
+					pass
+				elif len(bed2_overlaps) > 0:
+					bed2_overlap_lst = []
+					for o in bed2_overlaps:
+						bed2_overlap_lst.append((chrom, o.start, o.end))
+					bed2_overlap_size = bed_overlap_size([(chrom, start, end)], bed2_overlap_lst)
+					bed2_genomic_size = bed_genomic_size(bed2_overlap_lst)
+					try:
+						bed2_overlap_ratio = bed2_overlap_size/bed2_genomic_size
+					except:
+						bed2_overlap_ratio = 0
+					if bed2_overlap_size >= n_cut and bed2_overlap_ratio >= p_cut:
+						bed2_flag = True
+		if bed1_flag:
+			if bed2_flag:
+				cooccur += 1
+				print (line + '\tCooccur', file=OUT)
+			else:
+				bed1_only += 1
+				print (line + '\t%s_only' % os.path.basename(inbed1), file=OUT)
+		else:
+			if bed2_flag:
+				bed2_only += 1
+				print (line + '\t%s_only' % os.path.basename(inbed2), file=OUT)
+			else:
+				neither += 1
+				print (line + '\tNeither', file=OUT)
+	#print (bed1_only, bed2_only, cooccur, neither)
+	results['bed1_name'] = os.path.basename(inbed1)
+	results['bed2_name'] = os.path.basename(inbed2)
+	results['bed1+,bed2-'] = bed1_only
+	results['bed1-,bed2+'] = bed2_only
+	results['bed1+,bed2+'] = cooccur
+	results['bed1-,bed2-'] = neither
+
+	results['Jaccard index'] = cooccur/(cooccur + neither + bed1_only + bed2_only)
+	if bed1_only > bed2_only:
+		table = np.array([[neither, bed1_only], [bed2_only, cooccur]])
+	else:
+		table = np.array([[neither, bed2_only], [bed1_only, cooccur]])
+	print (table)
+	oddsr,p = fisher_exact(table, alternative='greater')
+	results['odds-ratio'] = oddsr
+	results['p-value'] = p
+	return pd.Series(data=results, index=['bed1_name', 'bed2_name','bed1+,bed2-', 'bed1-,bed2+', 'bed1+,bed2+', 'bed1-,bed2-','odds-ratio', 'p-value', 'Jaccard index'], name = "Fisher's exact test result")
+
+
 def bedtofile(bed_list, bed_file):
+	''' Save list of genomic regions to file'''
 	OUT = open(bed_file,'w')
 	for tmp in bed_list:
 		print ('\t'.join([str(i) for i in tmp]), file=OUT)
 	OUT.close()
 
 if __name__=='__main__':
-	(a, b, common) = overlap_bed(sys.argv[1], sys.argv[2])
-	bedtofile(a,'a')
-	bedtofile(b,'b')
-	bedtofile(common,'common')
+	#(a, b, common) = compare_bed(sys.argv[1], sys.argv[2])
+	#bedtofile(a,'a')
+	#bedtofile(b,'b')
+	#bedtofile(common,'common')
+
+	a = cooccur_peak(sys.argv[1], sys.argv[2], sys.argv[3])
+	print (a)

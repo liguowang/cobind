@@ -12,7 +12,7 @@ import pandas as pd
 import numpy as np
 from scipy.stats import pearsonr, spearmanr, kendalltau
 
-def bigwig_corr(bed, bw1, bw2, outfile, na_label = 'nan', score_type='mean', exact_scores = True, keep_NA = False, no_sort = False, top_x = 0.25):
+def bigwig_corr(bed, bw1, bw2, outfile, na_label = 'nan', score_type='mean', exact_scores = True, keep_NA = False, top_x = 1.0, min_sig = 0):
 	"""
 	Calculate Pearson's and Spearman's correlations between two bigWig files
 
@@ -37,12 +37,15 @@ def bigwig_corr(bed, bw1, bw2, outfile, na_label = 'nan', score_type='mean', exa
 	keep_NA : bool, optional
 		If set, all genomic regions will be kept even they do not have summary
 		statistic scores in either of the two bigWig files. Default: False
-	no_sort : bool, optional
-		If set, do NOT sort the summary statistic scores in descending order.
-		Default: False
-	top_x : float
+	top_x : float, optional
 		Percentage ( if top_x in (0,1]) or number (if top_x > 1) of genomic
 		regions used to calculate Pearson, Spearman, Kendall's correlations.
+		default: 1.0 (i.e., use all genomic regions to calculate correlation coefficients)
+	min_sig : float, optional
+		Genomic regions with summary statistic equal or less than this value will be
+		filtered out.
+		default: 0 (i.e., use all genomic regions to calculate correlation coefficients)
+
 
 	Returns
 	-------
@@ -92,27 +95,26 @@ def bigwig_corr(bed, bw1, bw2, outfile, na_label = 'nan', score_type='mean', exa
 	bw1_name = os.path.basename(bw1) + '.' + score_type
 	bw2_name = os.path.basename(bw2) + '.' + score_type
 	df = pd.DataFrame(data={bw1_name : scores_1, bw2_name : scores_2 }, index=names, dtype=float)
-	if no_sort:
-		logging.info("Skip sorting data frame ...")
-		pass
-	else:
-		logging.info("Sort dataframe by summary statistical scores ...")
-		df.sort_values(by=[bw1_name, bw1_name], ascending=False, ignore_index=False, inplace=True)
+
+	logging.info("Sort dataframe by summary statistical scores ...")
+	df.sort_values(by=[bw1_name, bw1_name], ascending=False, ignore_index=False, inplace=True)
 
 	logging.info("Save dataframe to: \"%s\"" % outfile)
 	df.to_csv(outfile, na_rep=na_label, sep="\t", index=True, header=True, index_label="region_id")
 
 	#Still remove NAs, in order to calculate correlations
-	if keep_NA:
-		df.dropna(axis=0, inplace=True)
+	#if keep_NA:
+	df = df[df > min_sig]
+	df.dropna(axis=0, inplace=True)
 
 	if top_x > 0 and top_x <= 1:
 		top_n = int(len(df)* top_x)
+		logging.info("Select %d regions ..." % top_n)
+		df = df.head(top_n)
 	elif top_x > 1:
 		top_n = top_x
-
-	logging.info("Select %d regions with highest signal ..." % top_n)
-	df = df.head(top_n)
+		logging.info("Select %d regions ..." % top_n)
+		df = df.head(top_n)
 
 
 	(pearson_cor, pearson_p) = pearsonr(np.log2(df[bw1_name]), np.log2(df[bw2_name]))

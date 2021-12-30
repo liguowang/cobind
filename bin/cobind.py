@@ -1,18 +1,18 @@
 #!/usr/bin/env python
 
 import sys
-
-from cobindability.BED import bedinfo,overlap_bed,bedtolist
-from cobindability.ovcoef import cal_overlap_coef, cal_pmi
-from cobindability.bw import bigwig_corr
 import logging
 import argparse
+from cobindability.BED import bedinfo,compare_bed,bedtolist,compare_peak,cooccur_peak
+from cobindability.ovcoef import cal_overlap_coef, cal_pmi
+from cobindability.bw import bigwig_corr
+
 
 __author__ = "Liguo Wang"
 __copyright__ = "Copyleft"
 __credits__ = []
 __license__ = "GPL"
-__version__="0.0.2"
+__version__="0.0.3"
 __maintainer__ = "Liguo Wang"
 __email__ = "wang.liguo@mayo.edu"
 __status__ = "Development"
@@ -20,22 +20,22 @@ __status__ = "Development"
 def main():
 	general_help = "**cobind: collocation analyses of genomic regions**"
 	bed_help = "Genomic regions in BED, BED-like or bigBed format. The BED-like format includes:\
-		'bed3', 'bed4', 'bed6', 'bed12', 'bedgraph', 'narrowpeak', 'broadpeak', 'gappedpeak'. BED and BED-like format can be plain text, compressed (.gz, .z, .bz, .bz2, .bzip2) \
-		or remote (http://, https://, ftp://) files. Do not compress BigBed foramt. BigBed file can also be a remote file."
+		'bed3', 'bed4', 'bed6', 'bed12', 'bedgraph', 'narrowpeak', 'broadpeak', 'gappedpeak'.\
+		BED and BED-like format can be plain text, compressed (.gz, .z, .bz, .bz2, .bzip2) \
+		or remote (http://, https://, ftp://) files. Do not compress BigBed foramt.\
+		BigBed file can also be a remote file."
 	# sub commands and help.
 	commands = {
 	'overlap' : "Calculate the overlapping coefficient between two sets of genomic regions.",
-	'pmi' : "Calculate the pointwise mutual information (PMI) between two sets of genomic regions.",
-	'cooccur' : "Calculate the co-occurrence between two sets of genomic regions.",
+	'pmi' : "Calculate the PMI (pointwise mutual information) and NPMI (normalized pointwise mutual information) between two sets of genomic regions.",
+	'cooccur' : "Evaluate if two sets of genomic regions are significantly overlapped in given background regions.",
 	'covary' : "Calculate the covariance (Pearson, Spearman and Kendall coefficients) of binding intensities between two sets of genomic regions.",
 	'bedinfo' : "Report basic statistics of genomic regions.",
 	}
 
 	#create parse
 	parser = argparse.ArgumentParser(description=general_help, epilog='', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-
 	parser.add_argument('-v', '--version', action='version', version='%s %s' %  ('cobind', __version__))
-
 
 	# create sub-parser
 	sub_parsers = parser.add_subparsers(help='Sub-command description:')
@@ -51,6 +51,7 @@ def main():
 	parser_overlap.add_argument('-n', '--ndraws', type=int, dest="iter", default = 50, help="Times of resampling to estimate confidence intervals. Set to '0' to turn off resampling.(default: %(default)d)")
 	parser_overlap.add_argument('-s', '--size', type=int, dest="subsize", default = 0.85, help="Size of the subset during resampling. If the original BED file contains 10000 regions, '--size = 0.85' means 8500 regions will be resampled. (default: %(default).2f)")
 	parser_overlap.add_argument('-b', '--background', type=int, dest="bgsize", default = 1.4e9, help="The size of the cis-regulatory genomic regions. This is about 1.4Gb For the human genome. (default: %(default)d)")
+	parser_overlap.add_argument("-o", "--save", action="store_true", help="If set, will save peak-wise overlapping coefficients to files (\"input_A_ovcoef.tsv\" and \"input_B_ovcoef.tsv\").")
 	parser_overlap.add_argument("-d", "--debug",action="store_true", help="Print detailed information for debugging.")
 
 	# create the parser for the "pmi" sub-command
@@ -62,7 +63,10 @@ def main():
 	# create the parser for the "cooccur" sub-command
 	parser_cooccur.add_argument("bed1", type=str, metavar ="input_A.bed",help=bed_help)
 	parser_cooccur.add_argument("bed2", type=str, metavar ="input_B.bed",help=bed_help)
-	parser_cooccur.add_argument('-b', '--background', type=int, dest="bgsize", default = 1.4e9, help="The size of the cis-regulatory genomic regions. This is about 1.4Gb For the human genome. (default: %(default)d)")
+	parser_cooccur.add_argument("bed3", type=str, metavar ="background.bed",help="Genomic regions as the background (e.g., all promoters, all enhancers).")
+	parser_cooccur.add_argument("output", type=str, metavar ="output.tsv",help="For each genomic region in the background BED file, add another column indicating if this region is \"input_A specific\", \"input_B specific\", \"co-occur\" or \"neither\". ")
+	parser_cooccur.add_argument('--ncut', type=int, dest="n_cut",  default = 1, help="The minimum overlap size. default: %(default)d)")
+	parser_cooccur.add_argument('--pcut', type=float, dest="p_cut",  default = 0.0, help="The minimum overlap percentage. default: %(default)f)")
 	parser_cooccur.add_argument("-d", "--debug",action="store_true", help="Print detailed information for debugging.")
 
 	# create the parser for the "covary" sub-command
@@ -73,9 +77,9 @@ def main():
 	parser_covary.add_argument("output", type=str,metavar="output_prefix", help="Prefix of output files. Three files will be generated: \"output_prefix_bedA_unique.tsv\" (input_A.bed specific regions and their bigWig scores), \"output_prefix_bedB_unique.tsv\" (input_B.bed specific regions and their bigWig scores), and \"output_prefix_common.tsv\"(input_A.bed and input_B.bed overlapped regions and their bigWig scores).")
 	parser_covary.add_argument("--na", type=str, dest="na_label", default = 'nan', help="Symbols used to represent the missing values. (default: %(default)s)")
 	parser_covary.add_argument('--type', type=str, dest="score_type", choices=['mean', 'min', 'max'],  default = 'mean', help="Summary statistic score type ('min','mean' or 'max') of a genomic region. (default: %(default)s)")
-	parser_covary.add_argument('--topx', type=float, dest="top_X",  default = 0.1, help="Fraction/percentage (if top_X in (0,1]) or number (if top_X > 1) of genomic regions used to calculate Pearson, Spearman, Kendall's correlations. If TOP_X == 1, all (i.e., 100%%) genomic regions will be used to calculate correlations. (default: %(default)s)")
+	parser_covary.add_argument('--topx', type=float, dest="top_X",  default = 1.0, help="Fraction (if 0 < top_X <= 1) or number (if top_X > 1) of genomic regions used to calculate Pearson, Spearman, Kendall's correlations. If TOP_X == 1 (i.e., 100%%), all the genomic regions will be used to calculate correlations. (default: %(default)s)")
+	parser_covary.add_argument('--min_sig', type=float, dest="min_signal", default = 0, help="Genomic region with summary statistic score <= this will be removed. (default: %(default)s)")
 	parser_covary.add_argument("--exact", dest="exact", action="store_true", help="If set, calculate the \"exact\" summary statistic score rather than \"zoom-level\" score for each genomic region.")
-	parser_covary.add_argument("--nosort", dest="nosort", action="store_true", help="If set, will NOT sort the summary statistical scores.")
 	parser_covary.add_argument("--keepna", dest="keepna", action="store_true", help="If set, a genomic region will be kept even it does not have summary statistical score in either of the two bigWig files. This flag only affects the output .tsv files.")
 	parser_covary.add_argument("-d", "--debug",action="store_true", help="Print detailed information for debugging.")
 
@@ -99,8 +103,12 @@ def main():
 				logging.basicConfig(format = "%(asctime)s [%(levelname)s]  %(message)s",datefmt='%Y-%m-%d %I:%M:%S', level=logging.DEBUG)
 			else:
 				logging.basicConfig(format = "%(asctime)s [%(levelname)s]  %(message)s",datefmt='%Y-%m-%d %I:%M:%S', level=logging.INFO)
+			logging.info("Calculate overall overlapping coefficient ...")
 			result = cal_overlap_coef(args.bed1, args.bed2, n_draws = args.iter, size = args.subsize, bg_size = args.bgsize)
 			print (result)
+			if args.save:
+				logging.info("Calculate peak-wise overlapping coefficient ...")
+				compare_peak(args.bed1, args.bed2)
 		elif command == 'pmi':
 			if args.debug:
 				logging.basicConfig(format = "%(asctime)s [%(levelname)s]  %(message)s",datefmt='%Y-%m-%d %I:%M:%S', level=logging.DEBUG)
@@ -114,19 +122,24 @@ def main():
 			else:
 				logging.basicConfig(format = "%(asctime)s [%(levelname)s]  %(message)s",datefmt='%Y-%m-%d %I:%M:%S', level=logging.INFO)
 
-			a,b,c = overlap_bed(args.bed1, args.bed2)
+			a_uniq_lst,b_uniq_lst,common_lst = compare_bed(args.bed1, args.bed2)
 			logging.info("Calculate summay statistics for overlapped regions ...")
-			c_corr = bigwig_corr(bed = c, bw1 = args.bw1, bw2 = args.bw2, outfile = args.output + '_common.tsv', na_label = args.na_label, score_type = args.score_type, exact_scores = args.exact, keep_NA = args.keepna, no_sort = args.nosort, top_x = args.top_X)
+			c_corr = bigwig_corr(bed = common_lst, bw1 = args.bw1, bw2 = args.bw2, outfile = args.output + '_common.tsv', na_label = args.na_label, score_type = args.score_type, exact_scores = args.exact, keep_NA = args.keepna, top_x = args.top_X, min_sig = args.min_signal)
 			print (c_corr.T)
 
 			logging.info("Calculate summay statistics for \"%s\" unique regions ..." % args.bed1)
-			a_corr = bigwig_corr(bed = a, bw1 = args.bw1, bw2 = args.bw2, outfile = args.output + '_bedA_unique.tsv', na_label = args.na_label, score_type = args.score_type, exact_scores = args.exact,  keep_NA = args.keepna, no_sort = args.nosort, top_x = args.top_X)
+			a_corr = bigwig_corr(bed = a_uniq_lst, bw1 = args.bw1, bw2 = args.bw2, outfile = args.output + '_bedA_unique.tsv', na_label = args.na_label, score_type = args.score_type, exact_scores = args.exact,  keep_NA = args.keepna, top_x = args.top_X, min_sig = args.min_signal)
 			print (a_corr.T)
 
 			logging.info("Calculate summay statistics for \"%s\" unique regions ..." % args.bed2)
-			b_corr = bigwig_corr(bed = b, bw1 = args.bw1, bw2 = args.bw2, outfile = args.output + '_bedB_unique.tsv', na_label = args.na_label, score_type = args.score_type, exact_scores = args.exact,  keep_NA = args.keepna, no_sort = args.nosort, top_x = args.top_X)
+			b_corr = bigwig_corr(bed = b_uniq_lst, bw1 = args.bw1, bw2 = args.bw2, outfile = args.output + '_bedB_unique.tsv', na_label = args.na_label, score_type = args.score_type, exact_scores = args.exact,  keep_NA = args.keepna, top_x = args.top_X, min_sig = args.min_signal)
 			print (b_corr.T)
 		elif command == 'cooccur':
-			pass
+			if args.debug:
+				logging.basicConfig(format = "%(asctime)s [%(levelname)s]  %(message)s",datefmt='%Y-%m-%d %I:%M:%S', level=logging.DEBUG)
+			else:
+				logging.basicConfig(format = "%(asctime)s [%(levelname)s]  %(message)s",datefmt='%Y-%m-%d %I:%M:%S', level=logging.INFO)
+				results = cooccur_peak(inbed1 = args.bed1, inbed2 = args.bed2, inbed_bg = args.bed3, outfile = args.output, n_cut = args.n_cut, p_cut = args.p_cut)
+				print (results)
 if __name__ == '__main__':
 	main()

@@ -21,4 +21,3 @@ Upgrade CpGtools
 
 Documentation
 --------------
-https://cpgtools.readthedocs.io/en/latest/

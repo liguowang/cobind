@@ -1,5 +1,11 @@
 build/*
 test/*
 dist/*
+sdist/*
 docs/_build/*
 .DS_Store
+*.egg-info/
+*.egg
+.eggs/
+.installed.cfg
+

@@ -581,7 +581,7 @@ def compare_peak(inbed1, inbed2, na_label='NA'):
 	logging.info("Calculate the overlap coefficient of each genomic region in %s ..." % inbed1)
 	outfile_name1 = pattern.sub('_ovcoef.tsv', os.path.basename(inbed1))
 	BED1OUT = open(outfile_name1, 'w')
-	print('\t'.join(['#chrom','start','end','ov_peaks_n','ov_bases_n', 'ov_bases_frac','ov_coef','ov_peaks_list']), file=BED1OUT)
+	print('\t'.join(['chrom','start','end','ov_peaks_n','ov_bases_n', 'ov_bases_frac','ov_coef','ov_peaks_list']), file=BED1OUT)
 	for chrom, start, end in bed1_union:
 		try:
 			bed_1_size = end - start
@@ -614,7 +614,7 @@ def compare_peak(inbed1, inbed2, na_label='NA'):
 	logging.info("Calculate the overlap coefficient of each genomic region in %s ..." % inbed2)
 	outfile_name2 = pattern.sub('_ovcoef.tsv', os.path.basename(inbed2))
 	BED2OUT = open(outfile_name2, 'w')
-	print('\t'.join(['#chrom','start','end','ov_peaks_n','ov_bases_n', 'ov_bases_frac','ov_coef','ov_peaks_list']), file=BED2OUT)
+	print('\t'.join(['chrom','start','end','ov_peaks_n','ov_bases_n', 'ov_bases_frac','ov_coef','ov_peaks_list']), file=BED2OUT)
 	for chrom, start, end in bed2_union:
 		try:
 			bed_2_size = end - start
@@ -838,6 +838,200 @@ def bedtofile(bed_list, bed_file):
 	for tmp in bed_list:
 		print ('\t'.join([str(i) for i in tmp]), file=OUT)
 	OUT.close()
+
+def is_overlap(chr1, st1, end1, chr2, st2, end2):
+	'''
+	Check if two regios are overlap.
+
+	Parameters
+	----------
+	chr1 : str
+		Chromosome ID of the first genomic region
+	st1 : int
+		Start coordinate of the first genomic region
+	end1 : int
+		End coordinate of the first genomic region
+	chr2 : str
+		Chromosome ID of the second genomic region
+	st2 : int
+		Start coordinate of the second genomic region
+	end2 : int
+		End coordinate of the second genomic region
+	Return
+	------
+		0: non overlap
+		positive integer [1,): overlap
+	'''
+	#genome coordinate is left-open, right-close.
+	st1 = st1 +1
+	end1 = end1
+	st2 = st2 +1
+	end2 = end2
+	if chr1 != chr2:
+		return 0
+	else:
+		return len(range(max(st1, st2), min(end1, end2)+1))
+
+def srogcode(lst1, lst2):
+	"""
+	Determine the spatial relations of genomic regions (SROG)
+
+	Parameters
+	----------
+	lst1 : tuple
+		A tuple of genomic interval. Eg. ('chr1', 1, 100).
+	lst2 : tuple
+		A tuple of genomic interval. Eg. ('chr1', 15, 60)..
+
+	Returns
+	-------
+	return_code : str
+		Return one of ('disjoint','touch','equal','overlap','contain','within').
+
+	"""
+	return_code = ''
+	try:
+		chrom_1 = lst1[0]
+		start_1 = int(lst1[1])
+		end_1 = int(lst1[2])
+		chrom_2 = lst2[0]
+		start_2 = int(lst2[1])
+		end_2 = int(lst2[2])
+	except:
+		return_code = 'unknown'
+		return return_code
+	ov_size = is_overlap(chrom_1, start_1, end_1, chrom_2, start_2, end_2)
+	if ov_size == 0:
+		if chrom_1 != chrom_2:
+			return_code = 'disjoint'
+		else:
+			if start_1 == end_2 or end_1 == start_2:
+				return_code = 'touch'
+			else:
+				return_code = 'disjoint'
+	elif ov_size > 0:
+		if start_1 == start_2 and end_1 == end_2:
+			return_code = 'equal'
+		elif start_1 >= start_2 and end_1 < end_2:
+			return_code = 'within'
+		elif start_1 > start_2 and end_1 <= end_2:
+			return_code = 'within'
+		elif start_1 > start_2 and end_1 < end_2:
+			return_code = 'within'
+		elif start_1 <= start_2 and end_1 > end_2:
+			return_code = 'contain'
+		elif start_1 < start_2 and end_1 >= end_2:
+			return_code = 'contain'
+		elif start_1 < start_2 and end_1 > end_2:
+			return_code = 'contain'
+		else:
+			return_code = 'overlap'
+	return return_code
+
+
+def srog_peak(inbed1, inbed2, outfile, n_up = 1, n_down = 1):
+
+	"""
+	Calculates SROG code for each region in inbed1
+
+	Parameters
+	----------
+	inbed1 : str
+		Name of a BED file.
+	inbed2 : str
+		Name of another BED file.
+	outfile : str
+		Name of output file.
+
+	Returns
+	-------
+	None
+	"""
+
+	maps = {}
+	OUTPUT = open(outfile, 'w')
+	logging.info("Build interval tree from file: \"%s\"" % inbed2)
+	for l in ireader.reader(inbed2):
+		if l.startswith(('browser','#','track')):continue
+		f = l.split()
+		if len(f) < 3:
+			logging.warning("Invalid BED line (Requires at least 3 columns: chrom, start, end): %s" % l)
+			continue
+		chrom, start, end = f[0], int(f[1]), int(f[2])
+		if start > end:
+			logging.warning("invalid BED line (start > end): %s" % l)
+			continue
+
+		#try to get name from the 4th column
+		try:
+			name = f[3]
+		except:
+			name = f[0] + ':' + f[1] + '-' + f[2]
+
+		#try to get strand from the 6th column
+		try:
+			strandness = f[5]
+			if strandness not in ('+','-'):
+				strandness = '+'
+		except:
+			strandness = '+'
+
+		if chrom not in maps:
+			maps[chrom] = Intersecter()
+		maps[chrom].add_interval( Interval(start, end, value = name, strand = strandness))
+
+	logging.info("Reading BED file: \"%s\"" % inbed1)
+	for l in ireader.reader(inbed1):
+		if l.startswith(('browser','#','track')):continue
+		f = l.split()
+		if len(f) < 3:
+			logging.warning("Invalid BED line (Requires at least 3 columns: chrom, start, end): %s" % l)
+			continue
+		chrom, start, end = f[0], int(f[1]), int(f[2])
+		if start > end:
+			logging.warning("Invalid BED line (start > end): %s" % l)
+			continue
+
+		#try to get name from the 4th column
+		try:
+			name = f[3]
+		except:
+			name = f[0] + ':' + f[1] + '-' + f[2]
+
+		#try to get strand from the 6th column
+		try:
+			strandness = f[5]
+			if strandness not in ('+','-'):
+				strandness = '+'
+		except:
+			strandness = '+'
+
+		if chrom not in maps:
+			print (l + '\t' + 'NA' + '\t' + 'NA', file=OUTPUT)
+			continue
+		overlaps = maps[chrom].find(start, end)
+		if len(overlaps) == 0:
+			up_interval =  maps[chrom].upstream_of_interval(Interval(start, end, strand = strandness), num_intervals = n_up)
+			down_interval =  maps[chrom].downstream_of_interval(Interval(start, end, strand = strandness), num_intervals = n_down)
+			if len(up_interval) == 0:
+				up_interval_name = 'NA'
+			else:
+				up_interval_name = str(up_interval[0].value)
+			if len(down_interval) == 0:
+				down_interval_name = 'NA'
+			else:
+				down_interval_name = str(down_interval[0].value)
+			print (l + '\t' + 'disjoint' + '\t' + 'UpInterval=' + up_interval_name + ',' + 'DownInterval=' + down_interval_name, file=OUTPUT)
+		else:
+			srog_codes = []
+			target_names = []
+			for o in overlaps:
+				tmp = srogcode((chrom, start, end), (chrom, o.start, o.end))
+				srog_codes.append(tmp)
+				target_names.append(o.value)
+			print (l + '\t' + ','.join(srog_codes) + '\t' + ','.join(target_names), file=OUTPUT)
+
+
 
 if __name__=='__main__':
 	#(a, b, common) = compare_bed(sys.argv[1], sys.argv[2])

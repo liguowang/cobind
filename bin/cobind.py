@@ -3,7 +3,7 @@
 import sys
 import logging
 import argparse
-from cobindability.BED import bedinfo,compare_bed,bedtolist,compare_peak,cooccur_peak
+from cobindability.BED import bedinfo,compare_bed,compare_peak,cooccur_peak,srog_peak
 from cobindability.ovcoef import cal_overlap_coef, cal_pmi
 from cobindability.bw import bigwig_corr
 
@@ -12,7 +12,7 @@ __author__ = "Liguo Wang"
 __copyright__ = "Copyleft"
 __credits__ = []
 __license__ = "GPL"
-__version__="0.0.3"
+__version__="0.0.4"
 __maintainer__ = "Liguo Wang"
 __email__ = "wang.liguo@mayo.edu"
 __status__ = "Development"
@@ -30,6 +30,7 @@ def main():
 	'pmi' : "Calculate the PMI (pointwise mutual information) and NPMI (normalized pointwise mutual information) between two sets of genomic regions.",
 	'cooccur' : "Evaluate if two sets of genomic regions are significantly overlapped in given background regions.",
 	'covary' : "Calculate the covariance (Pearson, Spearman and Kendall coefficients) of binding intensities between two sets of genomic regions.",
+	'srog' : "Report the code of SROG (Spatial Relation Of Genomic regions). SROG codes include 'disjoint','touch','equal','overlap','contain','within'.",
 	'bedinfo' : "Report basic statistics of genomic regions.",
 	}
 
@@ -43,7 +44,15 @@ def main():
 	parser_pmi = sub_parsers.add_parser('pmi', help=commands['pmi'])
 	parser_cooccur = sub_parsers.add_parser('cooccur', help=commands['cooccur'])
 	parser_covary = sub_parsers.add_parser('covary', help=commands['covary'])
+	parser_srog = sub_parsers.add_parser('srog', help=commands['srog'])
 	parser_bedinfo = sub_parsers.add_parser('bedinfo', help=commands['bedinfo'])
+
+
+	# create the parser for the "srog" sub-command
+	parser_srog.add_argument("bed1", type=str, metavar ="input_A.bed",help="Genomic regions in BED, BED-like or bigBed format. If 'name' (the 4th column) is not provided, the default name is \"chrom:start-end\". If strand (the 6th column) is not provided, the default strand is \"+\".")
+	parser_srog.add_argument("bed2", type=str, metavar ="input_B.bed",help="Genomic regions in BED, BED-like or bigBed format. If 'name' (the 4th column) is not provided, the default name is \"chrom:start-end\". If strand (the 6th column) is not provided, the default strand is \"+\". ")
+	parser_srog.add_argument("output", type=str, metavar ="output.tsv",help="Generate spatial relation code for each genomic interval in \"input_A.bed\"")
+
 
 	# create the parser for the "overlap" sub-command
 	parser_overlap.add_argument("bed1", type=str, metavar ="input_A.bed",help=bed_help)
@@ -94,10 +103,12 @@ def main():
 		parser.print_help(sys.stderr)
 		sys.exit(0)
 	elif len(sys.argv) >= 2:
-		command = sys.argv[1].lower()
+		command = sys.argv[1]
 		if command =='bedinfo':
 			info = bedinfo(args.bedfile)
 			print (info)
+		elif command == 'srog':
+			srog_peak(args.bed1, args.bed2, args.output)
 		elif command == 'overlap':
 			if args.debug:
 				logging.basicConfig(format = "%(asctime)s [%(levelname)s]  %(message)s",datefmt='%Y-%m-%d %I:%M:%S', level=logging.DEBUG)

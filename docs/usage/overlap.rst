@@ -77,7 +77,7 @@ there are a total of 8 columns in this file.
 - column 1 to 3: genomic coordinate of CTCF peak.
 - column 4: The number of RAD21 peaks overlapped with this peak.
 - column 5: The number of bases overlapped with this peak.
-- column 6: The ratio between "number of bases overlapped" and "total bases of the peak". 
+- column 6: Fraction of CTCF peak overlapped with RAD21.
 - column 7: overlap coefficient.
 - column 8: RAD21 peak(s) that are overlapped with this peak. Multiple peaks will be separated by ",".
 

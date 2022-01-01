@@ -16,11 +16,11 @@ Typically, the *percentage of overlap* is used to quantify the overlapping betwe
 widely used, such a straightforward approach has several serious drawbacks. Without loss of generality, let us assume we identified
 1000 TFBSs for protein A and 10,000 TFBSs for protein B, and we found 500 sites were overlapped with at least one nucleotide.
 
-- Problem 1: We have to *arbitrarily* define a threshold before doing the overlapping. One nucleotide overlap? Ten nucleotide overlap?
+- Problem 1: Arbitrary. We have to *arbitrarily* define a threshold before doing the overlapping. One nucleotide overlap? Ten nucleotide overlap?
   or 10% overlap? Is this criterion reciprocal? A reciprocal cutoff is also problematic when one genomic interval is significantly larger than another. 
-- Problem 2: 50% (500/1000) of A's binding sites were overlapped with B, while only 5% (500/10000) of B's binding sites were overlapped with A. 
+- Problem 2: Non-symmetric.  50% (500/1000) of A's binding sites were overlapped with B, while only 5% (500/10000) of B's binding sites were overlapped with A. 
   Which *percentage of overlap* to report?
-- Problem 3: Suppose we did another analysis and found only 20% of A's binding sites were overlapped with **protein C**. Can we reach the conclusion 
+- Problem 3: Incomparable. Suppose we did another analysis and found only 20% of A's binding sites were overlapped with **protein C**. Can we reach the conclusion 
   that A's binding sites overlap better with B than C? The answer is "no" because B and C might have different number of TFBS. The answer is still "no" even
   B and C have the same number of TFBS, because the length of TFBS might be significantly different between B and C. 
 

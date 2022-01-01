@@ -17,6 +17,7 @@ cobind's documentation
    change_log
    input_format
    dataset
+   definition
 
 .. toctree::
    :caption: Usage Information

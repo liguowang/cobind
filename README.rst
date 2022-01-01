@@ -1,9 +1,5 @@
 |Documentation Status|
 
-.. |Documentation Status| image:: https://readthedocs.org/projects/ansicolortags/badge/?version=latest
-   :target: https://cpgtools.readthedocs.io/en/latest/
-
-   
 Install cobind using pip3 
 ----------------------------
 ::
@@ -12,7 +8,7 @@ Install cobind using pip3
  or 
  $ pip3 install git+https://github.com/liguowang/cobind.git
  
-Upgrade CpGtools
+Upgrade
 -----------------
 ::
 

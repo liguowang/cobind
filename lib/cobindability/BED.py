@@ -950,6 +950,7 @@ def srog_peak(inbed1, inbed2, outfile, n_up = 1, n_down = 1):
 
 	maps = {}
 	OUTPUT = open(outfile, 'w')
+	srog_summary = {'disjoint':0, 'overlap':0, 'contain':0, 'within':0, 'touch':0, 'equal':0, 'other':0}
 	logging.info("Build interval tree from file: \"%s\"" % inbed2)
 	for l in ireader.reader(inbed2):
 		if l.startswith(('browser','#','track')):continue
@@ -1007,10 +1008,13 @@ def srog_peak(inbed1, inbed2, outfile, n_up = 1, n_down = 1):
 			strandness = '+'
 
 		if chrom not in maps:
+			srog_summary['disjoint'] += 1
 			print (l + '\t' + 'NA' + '\t' + 'NA', file=OUTPUT)
 			continue
+
 		overlaps = maps[chrom].find(start, end)
 		if len(overlaps) == 0:
+			srog_summary['disjoint'] += 1
 			up_interval =  maps[chrom].upstream_of_interval(Interval(start, end, strand = strandness), num_intervals = n_up)
 			down_interval =  maps[chrom].downstream_of_interval(Interval(start, end, strand = strandness), num_intervals = n_down)
 			if len(up_interval) == 0:
@@ -1030,7 +1034,9 @@ def srog_peak(inbed1, inbed2, outfile, n_up = 1, n_down = 1):
 				srog_codes.append(tmp)
 				target_names.append(o.value)
 			print (l + '\t' + ','.join(srog_codes) + '\t' + ','.join(target_names), file=OUTPUT)
-
+			for code in srog_codes:
+				srog_summary[code] += 1
+	return pd.Series(data=srog_summary)
 
 
 if __name__=='__main__':

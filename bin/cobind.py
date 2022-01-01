@@ -51,8 +51,8 @@ def main():
 	# create the parser for the "srog" sub-command
 	parser_srog.add_argument("bed1", type=str, metavar ="input_A.bed",help="Genomic regions in BED, BED-like or bigBed format. If 'name' (the 4th column) is not provided, the default name is \"chrom:start-end\". If strand (the 6th column) is not provided, the default strand is \"+\".")
 	parser_srog.add_argument("bed2", type=str, metavar ="input_B.bed",help="Genomic regions in BED, BED-like or bigBed format. If 'name' (the 4th column) is not provided, the default name is \"chrom:start-end\". If strand (the 6th column) is not provided, the default strand is \"+\". ")
-	parser_srog.add_argument("output", type=str, metavar ="output.tsv",help="Generate spatial relation code for each genomic interval in \"input_A.bed\"")
-
+	parser_srog.add_argument("output", type=str, metavar ="output.tsv",help="Generate spatial relation code (disjoint, touch, equal, overlap, contain, within) for each genomic interval in \"input_A.bed\".")
+	parser_srog.add_argument("-d", "--debug",action="store_true", help="Print detailed information for debugging.")
 
 	# create the parser for the "overlap" sub-command
 	parser_overlap.add_argument("bed1", type=str, metavar ="input_A.bed",help=bed_help)
@@ -108,7 +108,12 @@ def main():
 			info = bedinfo(args.bedfile)
 			print (info)
 		elif command == 'srog':
-			srog_peak(args.bed1, args.bed2, args.output)
+			if args.debug:
+				logging.basicConfig(format = "%(asctime)s [%(levelname)s]  %(message)s",datefmt='%Y-%m-%d %I:%M:%S', level=logging.DEBUG)
+			else:
+				logging.basicConfig(format = "%(asctime)s [%(levelname)s]  %(message)s",datefmt='%Y-%m-%d %I:%M:%S', level=logging.INFO)
+			summary = srog_peak(args.bed1, args.bed2, args.output)
+			print (summary)
 		elif command == 'overlap':
 			if args.debug:
 				logging.basicConfig(format = "%(asctime)s [%(levelname)s]  %(message)s",datefmt='%Y-%m-%d %I:%M:%S', level=logging.DEBUG)

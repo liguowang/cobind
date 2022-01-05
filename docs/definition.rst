@@ -14,13 +14,17 @@ The spacial realtions between two genomic regions (A and B) is defined as below:
 Overlap coefficient
 -------------------
 Peak set A contains *m* bases, and peak set B contains *n* bases. A and B overlap *k* bases. 
-The overlap coefficient (*o*) between A and B is calculated as:
+The overlap coefficient (**O**) between A and B is calculated as:
 
 .. image:: _static/ov_coef_1.png
   :width: 200
   :alt: Alternative text
 
-The overlap coefficient (*o*) is a value between [0, 1] with 0 (when k = 0) indicating 'no overlap', and 1 (when k = m = n) indicating '100% overlap' (i.e., **equal** as shown in the above SROG chart).
+.. image:: _static/ov_coef_3.png
+  :width: 250
+  :alt: Alternative text
+
+The overlap coefficient (*O*) is a value between [0, 1] with 0 (when k = 0) indicating 'no overlap', and 1 (when k = m = n) indicating '100% overlap' (i.e., **equal** as shown in the above SROG chart).
 
 
 The geometrical interpretation of o^2 is illustrated as below:
@@ -33,17 +37,76 @@ The geometrical interpretation of o^2 is illustrated as below:
 - **peakwise overlap coefficient**: The overlap coefficient between two genomic regions (A protein-bound genomic region is called "peak" in `ChIP-seq <https://en.wikipedia.org/wiki/ChIP_sequencing>`_ experiment). 
 
 
-Pointwise mutual information
-----------------------------  
 
-`Pointwise mutual information (PMI) <https://en.wikipedia.org/wiki/Pointwise_mutual_information>`_ is one of the standard association measures in collocation analysis. 
-It measures how much the observed overlaps differ from what we would expect them to be. Assume A and B represents two sets of genomic regions bound by `transcription factor <https://en.wikipedia.org/wiki/Transcription_factor>`_ A and B, respectively, PMI measures if A and B bind together or separately.
+Jaccard coefficient 
+-------------------
+The `Jaccard coefficient <https://en.wikipedia.org/wiki/Jaccard_index>`_, also known as the Jaccard index. It is the ratio between **intersection** and **union**.
 
 In the figure below, for simplicity, both A and B contain only one genomic region.
 
 .. image:: _static/pmi_background.png
   :width: 600
   :alt: Alternative text
+
+.. image:: _static/jaccard_1.png
+  :width: 400
+  :alt: Alternative text
+
+.. image:: _static/jaccard_2.png
+  :width: 180
+  :alt: Alternative text
+
+Similar to overlap coefficient (**O**), J is a value between [0, 1] with 0 indicating 'no overlap', and 1 (when A = B) indicating '100% overlap'.
+
+
+- **overall Jaccard coefficient**: The Jaccard coefficient between two **sets** of genomic regions. 
+- **peakwise Jaccard coefficient**: The Jaccard coefficient between two genomic regions (A protein-bound genomic region is called "peak" in `ChIP-seq <https://en.wikipedia.org/wiki/ChIP_sequencing>`_ experiment).
+
+
+
+.. list-table:: **overlap coefficient** (*O*) vs **Jaccard coefficient** (*J*)
+   :widths: 30,30,30,30,30,30
+   :header-rows: 1
+
+   * - Interval_A (size)
+     - Interval_B (size)
+     - Overlap (size)
+     - Union (size)
+     - *O*
+     - *J*
+   * - 1000
+     - 1000
+     - 1000
+     - 1000
+     - 1
+     - 1
+   * - 1000
+     - 1000
+     - 0
+     - 2000
+     - 0
+     - 0
+   * - 100
+     - 1000
+     - 50
+     - 1050
+     - 0.158
+     - 0.0476
+   * - 100
+     - 1000
+     - 100
+     - 1000
+     - 0.316
+     - 0.1
+
+These comparisons show that:
+ - Both **overlap coefficient** and **Jaccard coefficient** are within the range of [0, 1].
+ - When the size are significantly different between two sets of genomic intervals, **overlap coefficient** gives more weight to the smaller set, while **Jaccard coefficient** gives more weight to the larger set.
+
+Pointwise mutual information
+----------------------------
+`Pointwise mutual information (PMI) <https://en.wikipedia.org/wiki/Pointwise_mutual_information>`_ is one of the standard association measures in collocation analysis. 
+It measures how much the observed overlaps differ from what we would expect them to be. Assume A and B represents two sets of genomic regions bound by `transcription factor <https://en.wikipedia.org/wiki/Transcription_factor>`_ A and B, respectively, PMI measures if A and B bind together or separately.
 
 
 PMI is calculated as:
@@ -52,7 +115,7 @@ PMI is calculated as:
   :width: 300
   :alt: Alternative text
 
-where, *p(A) = A/g*, *p(B) = B/g*, *p(A and B) = {A and B}/g*. 
+where, *p(A) = A/g*, *p(B) = B/g*, *p(A and B) = {A and B}/g* as shown in Fig. 3.
 
 - **PMI = 0** indicates A and B are independent.
 - **PMI > 0** indicates the overlapping between A and B is in a frequency *highe* than what we would expect if A and B are independent (i.e, A and B tend to bind together). 

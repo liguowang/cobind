@@ -13,11 +13,12 @@ cobind's documentation
    :maxdepth: 2
    
    introduction
+   definition
    installation
-   change_log
    input_format
    dataset
-   definition
+   change_log
+   
 
 .. toctree::
    :caption: Usage Information

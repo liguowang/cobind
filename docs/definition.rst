@@ -97,6 +97,8 @@ overall Jaccard coefficient
 peakwise Jaccard coefficient
   The Jaccard coefficient between two genomic regions (A protein-bound genomic region is called "peak" in `ChIP-seq <https://en.wikipedia.org/wiki/ChIP_sequencing>`_ experiment).
 
+..note:..
+  if both A and B are empty, define J(A,B) = 1.
 
 Sørensen–Dice (SD) coefficient
 ------------------------------

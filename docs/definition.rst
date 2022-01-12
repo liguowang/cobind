@@ -41,8 +41,8 @@ There are six different spacial relations between two genomic regions (A and B):
   :alt: Alternative text
 
 
-Overlap coefficient
--------------------
+Overlap coefficient (O)
+-----------------------
 The overlap coefficient between A and B is calculated as the ratio between *intersection of A and B* and the *geometric mean of A and B*.
 
  - O(A,B) is a value between [0, 1] with 0 indicating 'no overlap', and 1 indicating '100% overlap' (i.e., A and B are identical). 
@@ -71,8 +71,8 @@ peakwise overlap coefficient
 
 
 
-Jaccard coefficient
--------------------
+Jaccard coefficient (J)
+-------------------------
 The `Jaccard similarity coefficient <https://en.wikipedia.org/wiki/Jaccard_index>`_, also known as the Jaccard index. It is the ratio between **intersection** and **union**.
 
 
@@ -102,7 +102,7 @@ peakwise Jaccard coefficient
 
 
 
-Sørensen–Dice (SD) coefficient
+Sørensen–Dice coefficient (SD)
 ------------------------------
 `Sørensen–Dice coefficient <https://en.wikipedia.org/wiki/S%C3%B8rensen%E2%80%93Dice_coefficient>`_,  also called *Sørensen–Dice index*, *Sørensen index* or *Dice's coefficient*.
 
@@ -120,55 +120,79 @@ Jaccard coefficient (J) can be converted into Sørensen–Dice coefficient (SD) 
 
 *J = SD/(2-SD)* and *SD = 2J/(1+J)*
 
+Szymkiewicz–Simpson coefficient (SS)
+-------------------------------------
+`Szymkiewicz–Simpson coefficient <https://en.wikipedia.org/wiki/Overlap_coefficient>`_ is defined as the size of the intersection divided by the smaller of the size of the two sets.
 
-Jaccard/SD coefficient vs Overlap coefficient
-----------------------------------------------
+.. image:: _static/SS.jpg
+  :width: 250
+  :alt: Alternative text
 
-**O(A,B)**, **J(A,B)** and **SD(A,B)** are all within [0, 1] with 0 indicating 'no overlap', and 1 indicating '100% overlap'. However, When the sizes of two genomic regions are significantly different, the **O(A,B)** gives more weight to the smaller genomic region, while the **J(A,B)** and **SD(A,B)** give more weight to the larger genomic region.
+.. image:: _static/SS_bound.jpg
+  :width: 180
+  :alt: Alternative text
 
-.. list-table:: **O(A,B)** vs **J(A,B)** vs **SD(A,B)** 
-   :widths: 20,20,20,20,20,20,20
+
+Coefficients comparison
+------------------------
+
+ - **O(A,B)**, **J(A,B)**, and **SD(A,B)** are all within [0, 1] with 0 indicating 'no overlap', and 1 indicating '100% overlap' (i.e., A equals B).
+ - **SS(A,B)** is different, with 0 indicating 'no overlap', and 1 indicating "A equals B", or "A within B" or "B within A" .
+ - When the sizes of two genomic regions are significantly different, the **SS(A,B)** gives more weight to the smaller genomic region, while the **J(A,B)** and **SD(A,B)** give more weight to the larger genomic region, **O(A,B)** is a compromised index between the two extremes. 
+
+.. list-table:: **O(A,B)** vs **J(A,B)** vs **SD(A,B)** vs **SS(A,B)**
+   :widths: 15,15,15,15,15,15,15,15,20
    :header-rows: 1
 
-   * - Interval_A (size)
-     - Interval_B (size)
-     - Overlap (size)
-     - Union (size)
+   * - *SROG*
+     - \|A\|
+     - \|B\|
+     - \|A ∩ B\|
+     - \|A ∪ B\|
      - *O*
      - *J*
      - *SD*
-   * - 1000
+     - *SS*
+   * - A equals B
+     - 1000
      - 1000
      - 1000
      - 1000
      - 1
      - 1
      - 1
-   * - 1000
+     - 1
+   * - A disjoint B 
+     - 1000
      - 1000
      - 0
      - 2000
      - 0
      - 0
      - 0
-   * - 100
+     - 0
+   * - A overlaps B 
+     - 100
      - 1000
      - 50
      - 1050
      - 0.158
      - 0.0476
      - 0.0909
-   * - 100
+     - 0.5
+   * - A within B 
+     - 100
      - 1000
      - 100
      - 1000
      - 0.316
      - 0.1
      - 0.182
+     - 1
 
 
-Pointwise mutual information
-----------------------------
+Pointwise mutual information (PMI)
+----------------------------------
 `Pointwise mutual information (PMI) <https://en.wikipedia.org/wiki/Pointwise_mutual_information>`_ is one of the standard association measures in collocation analysis. 
 It measures how much the observed overlaps differ from what we would expect them to be. Assume A and B represent two sets of genomic regions bound by `transcription factor <https://en.wikipedia.org/wiki/Transcription_factor>`_ A and B; respectively, PMI measures if A and B bind together or separately.
 
@@ -199,8 +223,8 @@ Note, PMI has no boundaries:
   :width: 500
   :alt: Alternative text
 
-Normalized pointwise mutual information
----------------------------------------
+Normalized pointwise mutual information (NPMI)
+----------------------------------------------
 Normalized pointwise mutual information (NPMI) is calculated as:
 
 .. image:: _static/npmi.jpg

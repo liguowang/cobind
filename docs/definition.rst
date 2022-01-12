@@ -43,9 +43,10 @@ There are six different spacial relations between two genomic regions (A and B):
 
 Overlap coefficient
 -------------------
-Peak set A contains *m* bases, and peak set B contains *n* bases. A and B overlap *k* bases. 
-The overlap coefficient (**O**) between A and B is calculated as the ratio between *intersection of A and B* and the *geometric mean of A and B*.
-O(A,B) is a value between [0, 1] with 0 indicating 'no overlap', and 1 indicating '100% overlap' (i.e., A and B are identical).
+The overlap coefficient between A and B is calculated as the ratio between *intersection of A and B* and the *geometric mean of A and B*.
+
+ - O(A,B) is a value between [0, 1] with 0 indicating 'no overlap', and 1 indicating '100% overlap' (i.e., A and B are identical). 
+ - O(A, B) is defined as 0 when \|A\| = 0 or \|B\| = 0, or  \|A\| = \|B\| = 0.
 
 .. image:: _static/ov_coef_1.jpg
   :width: 250
@@ -83,6 +84,8 @@ The `Jaccard similarity coefficient <https://en.wikipedia.org/wiki/Jaccard_index
   :width: 180
   :alt: Alternative text
 
+J(A, B) is defined as 0 when \|A\| = 0 or \|B\| = 0, or  \|A\| = \|B\| = 0.
+
 The Jaccard distance *Dj* is calculated as:
 
 .. image:: _static/jaccard_3.jpg
@@ -97,8 +100,7 @@ overall Jaccard coefficient
 peakwise Jaccard coefficient
   The Jaccard coefficient between two genomic regions (A protein-bound genomic region is called "peak" in `ChIP-seq <https://en.wikipedia.org/wiki/ChIP_sequencing>`_ experiment).
 
-..note:..
-  if both A and B are empty, define J(A,B) = 1.
+
 
 Sørensen–Dice (SD) coefficient
 ------------------------------
@@ -111,6 +113,8 @@ Sørensen–Dice (SD) coefficient
 .. image:: _static/SD_2.jpg
   :width: 180
   :alt: Alternative text
+
+SD(A, B) is defined as 0 when \|A\| = 0 or \|B\| = 0, or  \|A\| = \|B\| = 0.
 
 Jaccard coefficient (J) can be converted into Sørensen–Dice coefficient (SD) and vice versa:
 

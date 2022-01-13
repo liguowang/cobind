@@ -2,37 +2,37 @@
 
 import sys,os
 import re
-
 import logging
 import numpy as np
 import pandas as pd
-import math
+from os.path import basename
 from scipy.stats import fisher_exact
 from bx.bitset_builders import binned_bitsets_from_file, binned_bitsets_from_list
 from bx.intervals.intersection import Interval, Intersecter
 from cobindability import ireader
-
+from cobindability import version
+from cobindability.coefcal import ov_coef, ov_jaccard, ov_ss, ov_sd
 
 __author__ = "Liguo Wang"
 __copyright__ = "Copyleft"
 __credits__ = []
-__license__ = "GPL"
-__version__="0.1.0"
+__license__ = "MIT"
+__version__ = version.version
 __maintainer__ = "Liguo Wang"
 __email__ = "wang.liguo@mayo.edu"
 __status__ = "Development"
 
 
-
 def unionBed3(inbed):
 	"""
-	Union or merge BED regions.
+	Merge/union genomic intervals. If input is a BED file, only consider the
+	first three columns (chrom, start, end), other columns will be ignored.
 
 	Parameters
 	----------
 	inbed : str or list
-		Name of a BED file or list of BED regions, for example,
-		[(chr1 100 200), (chr2 150  300), (chr2 1000 1200)]
+		Name of a BED file or list of genomic regions (for example,
+		[(chr1 100 200), (chr2 150  300), (chr2 1000 1200)])
 
 	Returns
 	-------
@@ -71,21 +71,23 @@ def unionBed3(inbed):
 
 def intersectBed3(inbed1,inbed2):
 	"""
-	Interset two BED files (or lists).
+	Interset genomic intervals. Inputs are two BED files or two lists of genomic
+	intervals. If input is a BED file, only consider the first three columns
+	(chrom, start, end), other columns will be ignored.
 
 	Parameters
 	----------
 	inbed1 : str or list
-		Name of a BED file or list of BED regions, for example,
+		Name of a BED file or list of genomic intervals, for example,
 		[(chr1 100 200), (chr2 1000 1200)]
 	inbed2 : str or list
-		Name of a BED file or list of BED regions, for example,
+		Name of a BED file or list of genomic intervalss, for example,
 		[(chr1 150 220), (chr2 1100 1300)]
 
 	Returns
 	-------
 	ret_lst : list
-		List of bed regions shared between the two input BED files ( or lists).
+		List of genomic intervals shared between the two input BED files (or lists).
 
 	Examples
 	--------
@@ -141,16 +143,16 @@ def subtractBed3(inbed1,inbed2):
 	Parameters
 	----------
 	inbed1 : str or list
-		Name of a BED file or list of BED regions, for example,
+		Name of a BED file or list of genomic intervals, for example,
 		[(chr1 100 200), (chr2 1000 1200)]
 	inbed2 : str or list
-		Name of a BED file or list of BED regions, for example,
+		Name of a BED file or list of genomic intervals, for example,
 		[(chr1 150 220), (chr2 1100 1300)]
 
 	Returns
 	-------
 	ret_lst : list
-		List of bed regions of inbed1 with those shared regions with inbed2 removed.
+		List of genomic intervals from inbed1 with those shared regions with inbed2 removed.
 
 	Examples
 	--------
@@ -199,21 +201,9 @@ def subtractBed3(inbed1,inbed2):
 	bitsets2 = dict()
 	return ret_lst
 
-def tillingBed(chrName,chrSize,stepSize=10000):
-	'''tilling whome genome into small sizes'''
-	#tilling genome
-	for start in range(0,chrSize,stepSize):
-		end = start + stepSize
-		if end < chrSize:
-			yield (chrName,start,end)
-		else:
-			yield (chrName,start,chrSize)
-
-
 def bed_actual_size(*argv):
 	'''
-	Calculate the aggregated size of BED file.
-
+	Calculate the aggregated size of genomic intervals.
 
 	Parameters
 	----------
@@ -228,9 +218,9 @@ def bed_actual_size(*argv):
 
 	Examples
 	--------
-	>>> bed1 = [('chr1', 1, 10), ('chr1', 20, 35)]
-	>>> bed2 = [('chr1',3, 15), ('chr1',20, 50)]
-	>>> bed_actual_size(bed1, bed2)
+	>>> intervals_1 = [('chr1', 1, 10), ('chr1', 20, 35)]
+	>>> intervals_2 = [('chr1',3, 15), ('chr1',20, 50)]
+	>>> bed_actual_size(intervals_1, intervals_2)
 	[24, 42]
 	'''
 	sizes = []
@@ -246,14 +236,17 @@ def bed_actual_size(*argv):
 				if len(f) < 3:
 					logging.warning("invalid BED line: %s" % l)
 					continue
-				size += (int(f[2]) - int(f[1]))
+				tmp = int(f[2]) - int(f[1])
+				if tmp < 0:
+					continue
+				size += tmp
 		sizes.append(size)
 	return sizes
 
 
 def bed_counts(*argv):
 	'''
-	Calculate the number of regions in BED file.
+	Calculate the number of genomic intervals in BED file.
 
 
 	Parameters
@@ -293,7 +286,8 @@ def bed_counts(*argv):
 
 def bed_genomic_size(*argv):
 	'''
-	Calculate the *genomic size* of BED file (or list). Note, genomic_size <= actual_size.
+	Calculate the *genomic/unique size* of BED files (or lists of genomic intervals).
+	Note, genomic_size <= actual_size.
 
 	Parameters
 	----------
@@ -344,7 +338,8 @@ def bed_genomic_size(*argv):
 
 def bed_overlap_size(bed1,bed2):
 	"""
-	Calculate the total number of *bases* overlapped between two bed files
+	Calculate the total number of *bases* overlapped between two bed files or
+	two lists of genomic intervals.
 
 	Parameters
 	----------
@@ -385,9 +380,12 @@ def bed_overlap_size(bed1,bed2):
 	return overlap_size
 
 def bedinfo(infile):
+	"""
+	Basic information of genomic intervals.
+	"""
 	logging.debug("Gathering teh basic statistics of BED file: %s" % infile)
 	bed_infor={}
-	bed_infor['Name'] = infile
+	bed_infor['Name'] = basename(infile)
 	bed_infor['Genomic_size'] = bed_genomic_size(infile)[0]
 	bed_infor['Total_size'] = 0
 	bed_infor['Count'] = 0
@@ -409,14 +407,15 @@ def bedinfo(infile):
 	bed_infor['Median_size'] = np.median(sizes)
 	bed_infor['Min_size'] = np.min(sizes)
 	bed_infor['Max_size'] = np.max(sizes)
+	bed_infor['STD'] = np.std(sizes, ddof=1) #
 
-	return(pd.Series(data = bed_infor, index=['Name','Count', 'Genomic_size', 'Total_size', 'Max_size', 'Mean_size', 'Median_size', 'Min_size']))
+	return bed_infor
 
 
 def bedtolist(bedfile):
-	'''
-	Calculate the total size of BED file.
-	'''
+	"""
+	Convert BED file into a list.
+	"""
 	regions = []
 	#print >>sys.stderr, "reading %s ..." %	 bedfile1
 	for l in ireader.reader(bedfile):
@@ -531,10 +530,10 @@ def compare_bed(inbed1, inbed2):
 	return (bed1_uniq, bed2_uniq, common)
 
 
-def compare_peak(inbed1, inbed2, na_label='NA'):
+def peakwise_ovcoef(inbed1, inbed2, na_label='NA', method='O'):
 
 	"""
-	Calculates peak-wise overlaps.
+	Calculates peak-wise overlap .
 
 	Parameters
 	----------
@@ -544,6 +543,12 @@ def compare_peak(inbed1, inbed2, na_label='NA'):
 		Name of another BED file.
 	na_label : str
 		String label used to represent missing value.
+	method : str
+		One of ('O', 'J', 'SS', and 'SD')
+		O: overlap coefficient
+		J: Jaccard's coefficient
+		SS: Szymkiewicz–Simpson coefficient
+		SD: Sørensen–Dice coefficient
 
 	Returns
 	-------
@@ -600,10 +605,16 @@ def compare_peak(inbed1, inbed2, na_label='NA'):
 					bed_2_size += (o.end - o.start)
 					bed_2_lst.append((chrom, o.start, o.end))
 				overlap_size = bed_overlap_size(bed_1_lst, bed_2_lst)
-				try:
-					peak_ov_coef = overlap_size/(math.sqrt(bed_1_size * bed_2_size))
-				except:
-					peak_ov_coef = 0
+
+				if method == 'O':
+					peak_ov_coef = ov_coef(bed_1_size, bed_2_size, overlap_size)
+				elif method == 'J':
+					peak_ov_coef = ov_jaccard(bed_1_size, bed_2_size, overlap_size)
+				elif method == 'SS':
+					peak_ov_coef = ov_ss(bed_1_size, bed_2_size, overlap_size)
+				elif method == 'SD':
+					peak_ov_coef = ov_sd(bed_1_size, bed_2_size, overlap_size)
+
 				tmp = ','.join([i[0] + ':' + str(i[1]) + '-' + str(i[2]) for i in bed_2_lst])
 				print('\t'.join([str(i) for i in (chrom, start, end, len(bed_2_lst), overlap_size, overlap_size/bed_1_size, peak_ov_coef, tmp)]), file=BED1OUT)
 		except:
@@ -632,10 +643,17 @@ def compare_peak(inbed1, inbed2, na_label='NA'):
 					bed_1_size += (o.end - o.start)
 					bed_1_lst.append((chrom, o.start, o.end))
 				overlap_size = bed_overlap_size(bed_2_lst, bed_1_lst)
-				try:
-					peak_ov_coef = overlap_size/(math.sqrt(bed_1_size * bed_2_size))
-				except:
-					peak_ov_coef = 0
+
+				if method == 'O':
+					peak_ov_coef = ov_coef(bed_1_size, bed_2_size, overlap_size)
+				elif method == 'J':
+					peak_ov_coef = ov_jaccard(bed_1_size, bed_2_size, overlap_size)
+				elif method == 'SS':
+					peak_ov_coef = ov_ss(bed_1_size, bed_2_size, overlap_size)
+				elif method == 'SD':
+					peak_ov_coef = ov_sd(bed_1_size, bed_2_size, overlap_size)
+
+
 				tmp = ','.join([i[0] + ':' + str(i[1]) + '-' + str(i[2]) for i in bed_1_lst])
 				print('\t'.join([str(i) for i in (chrom, start, end, len(bed_2_lst), overlap_size, overlap_size/bed_2_size, peak_ov_coef, tmp)]), file=BED2OUT)
 		except:
@@ -820,7 +838,7 @@ def cooccur_peak(inbed1, inbed2, inbed_bg, outfile, n_cut=1, p_cut=0.0):
 	results['bed1+,bed2+'] = cooccur
 	results['bed1-,bed2-'] = neither
 
-	results['Jaccard index'] = cooccur/(cooccur + neither + bed1_only + bed2_only)
+	#results['Jaccard index'] = cooccur/(cooccur + neither + bed1_only + bed2_only)
 	if bed1_only > bed2_only:
 		table = np.array([[neither, bed1_only], [bed2_only, cooccur]])
 	else:
@@ -829,7 +847,7 @@ def cooccur_peak(inbed1, inbed2, inbed_bg, outfile, n_cut=1, p_cut=0.0):
 	oddsr,p = fisher_exact(table, alternative='greater')
 	results['odds-ratio'] = oddsr
 	results['p-value'] = p
-	return pd.Series(data=results, index=['bed1_name', 'bed2_name','bed1+,bed2-', 'bed1-,bed2+', 'bed1+,bed2+', 'bed1-,bed2-','odds-ratio', 'p-value', 'Jaccard index'], name = "Fisher's exact test result")
+	return pd.Series(data=results, index=['bed1_name', 'bed2_name','bed1+,bed2-', 'bed1-,bed2+', 'bed1+,bed2+', 'bed1-,bed2-','odds-ratio', 'p-value'], name = "Fisher's exact test result")
 
 
 def bedtofile(bed_list, bed_file):
@@ -838,6 +856,7 @@ def bedtofile(bed_list, bed_file):
 	for tmp in bed_list:
 		print ('\t'.join([str(i) for i in tmp]), file=OUT)
 	OUT.close()
+
 
 def is_overlap(chr1, st1, end1, chr2, st2, end2):
 	'''
@@ -929,7 +948,7 @@ def srogcode(lst1, lst2):
 	return return_code
 
 
-def srog_peak(inbed1, inbed2, outfile, n_up = 1, n_down = 1):
+def srog_peak(inbed1, inbed2, outfile, n_up = 1, n_down = 1, max_dist = 250000000):
 
 	"""
 	Calculates SROG code for each region in inbed1
@@ -945,7 +964,7 @@ def srog_peak(inbed1, inbed2, outfile, n_up = 1, n_down = 1):
 
 	Returns
 	-------
-	None
+	pd Series
 	"""
 
 	maps = {}
@@ -1015,8 +1034,10 @@ def srog_peak(inbed1, inbed2, outfile, n_up = 1, n_down = 1):
 		overlaps = maps[chrom].find(start, end)
 		if len(overlaps) == 0:
 			srog_summary['disjoint'] += 1
-			up_interval =  maps[chrom].upstream_of_interval(Interval(start, end, strand = strandness), num_intervals = n_up)
-			down_interval =  maps[chrom].downstream_of_interval(Interval(start, end, strand = strandness), num_intervals = n_down)
+			up_interval =  maps[chrom].upstream_of_interval(Interval(start, end, strand = strandness), num_intervals = n_up, max_dist = max_dist)
+			down_interval =  maps[chrom].downstream_of_interval(Interval(start, end, strand = strandness), num_intervals = n_down, max_dist = max_dist)
+			#print ("UP",up_interval)
+			#print ("Down",down_interval)
 			if len(up_interval) == 0:
 				up_interval_name = 'NA'
 			else:

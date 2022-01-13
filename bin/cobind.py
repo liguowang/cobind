@@ -3,21 +3,28 @@
 import sys
 import logging
 import argparse
-from cobindability.BED import bedinfo,compare_bed,compare_peak,cooccur_peak,srog_peak
-from cobindability.ovcoef import cal_overlap_coef, cal_pmi
+import pandas as pd
+from cobindability.BED import compare_bed,peakwise_ovcoef,cooccur_peak,srog_peak
+from cobindability.ovcoef import cal_overlap_coef
+from cobindability.ovpmi import cal_pmi
 from cobindability.bw import bigwig_corr
+from cobindability.ovstat import ov_stats
+from cobindability import version
+from cobindability.ovjaccard import cal_jaccard_coef
+
 
 
 __author__ = "Liguo Wang"
 __copyright__ = "Copyleft"
 __credits__ = []
 __license__ = "GPL"
-__version__="0.0.4"
+__version__ = version.version
 __maintainer__ = "Liguo Wang"
 __email__ = "wang.liguo@mayo.edu"
 __status__ = "Development"
 
 def main():
+	pd.set_option('display.float_format', lambda x: '%.4f' % x)
 	general_help = "**cobind: collocation analyses of genomic regions**"
 	bed_help = "Genomic regions in BED, BED-like or bigBed format. The BED-like format includes:\
 		'bed3', 'bed4', 'bed6', 'bed12', 'bedgraph', 'narrowpeak', 'broadpeak', 'gappedpeak'.\
@@ -29,9 +36,10 @@ def main():
 	'overlap' : "Calculate the overlapping coefficient between two sets of genomic regions.",
 	'pmi' : "Calculate the PMI (pointwise mutual information) and NPMI (normalized pointwise mutual information) between two sets of genomic regions.",
 	'cooccur' : "Evaluate if two sets of genomic regions are significantly overlapped in given background regions.",
+	'jaccard' : "Calculate the Jaccard similarity coefficient (a.k.a. Jaccard index) and Sørensen–Dice coefficient (a.k.a. SD index).",
 	'covary' : "Calculate the covariance (Pearson, Spearman and Kendall coefficients) of binding intensities between two sets of genomic regions.",
 	'srog' : "Report the code of SROG (Spatial Relation Of Genomic regions). SROG codes include 'disjoint','touch','equal','overlap','contain','within'.",
-	'bedinfo' : "Report basic statistics of genomic regions.",
+	'stat' : "Wrapper function. Report basic statistics of genomic regions. Calculate overlap coefficient, Jaccard coefficient, Sørensen–Dice coefficient, Szymkiewicz–Simpson coefficient, PMI (pointwise mutual information) and NPMI (normalized pointwise mutual information) without bootstrapping or generating peakwise indices.",
 	}
 
 	#create parse
@@ -43,25 +51,37 @@ def main():
 	parser_overlap = sub_parsers.add_parser('overlap', help=commands['overlap'])
 	parser_pmi = sub_parsers.add_parser('pmi', help=commands['pmi'])
 	parser_cooccur = sub_parsers.add_parser('cooccur', help=commands['cooccur'])
+	parser_jaccard = sub_parsers.add_parser('jaccard', help=commands['jaccard'])
 	parser_covary = sub_parsers.add_parser('covary', help=commands['covary'])
 	parser_srog = sub_parsers.add_parser('srog', help=commands['srog'])
-	parser_bedinfo = sub_parsers.add_parser('bedinfo', help=commands['bedinfo'])
+	parser_stat = sub_parsers.add_parser('stat', help=commands['stat'])
 
 
 	# create the parser for the "srog" sub-command
 	parser_srog.add_argument("bed1", type=str, metavar ="input_A.bed",help="Genomic regions in BED, BED-like or bigBed format. If 'name' (the 4th column) is not provided, the default name is \"chrom:start-end\". If strand (the 6th column) is not provided, the default strand is \"+\".")
 	parser_srog.add_argument("bed2", type=str, metavar ="input_B.bed",help="Genomic regions in BED, BED-like or bigBed format. If 'name' (the 4th column) is not provided, the default name is \"chrom:start-end\". If strand (the 6th column) is not provided, the default strand is \"+\". ")
 	parser_srog.add_argument("output", type=str, metavar ="output.tsv",help="Generate spatial relation code (disjoint, touch, equal, overlap, contain, within) for each genomic interval in \"input_A.bed\".")
+	parser_cooccur.add_argument('--dist', type=int, dest="max_dist",  default = 250000000, help="When intervals are disjoint, find the closest up- and down-stream intervals that are no further than `max_dist` away. default: %(default)d)")
 	parser_srog.add_argument("-d", "--debug",action="store_true", help="Print detailed information for debugging.")
 
 	# create the parser for the "overlap" sub-command
 	parser_overlap.add_argument("bed1", type=str, metavar ="input_A.bed",help=bed_help)
 	parser_overlap.add_argument("bed2", type=str, metavar ="input_B.bed",help=bed_help)
-	parser_overlap.add_argument('-n', '--ndraws', type=int, dest="iter", default = 50, help="Times of resampling to estimate confidence intervals. Set to '0' to turn off resampling.(default: %(default)d)")
-	parser_overlap.add_argument('-s', '--size', type=int, dest="subsize", default = 0.85, help="Size of the subset during resampling. If the original BED file contains 10000 regions, '--size = 0.85' means 8500 regions will be resampled. (default: %(default).2f)")
+	parser_overlap.add_argument('-n', '--ndraws', type=int, dest="iter", default = 20, help="Times of resampling to estimate confidence intervals. Set to '0' to turn off resampling.(default: %(default)d)")
+	parser_overlap.add_argument('-s', '--size', type=int, dest="subsize", default = 0.75, help="Size of the subset during resampling. If the original BED file contains 10000 regions, '--size = 0.85' means 8500 regions will be resampled. (default: %(default).2f)")
 	parser_overlap.add_argument('-b', '--background', type=int, dest="bgsize", default = 1.4e9, help="The size of the cis-regulatory genomic regions. This is about 1.4Gb For the human genome. (default: %(default)d)")
 	parser_overlap.add_argument("-o", "--save", action="store_true", help="If set, will save peak-wise overlapping coefficients to files (\"input_A_ovcoef.tsv\" and \"input_B_ovcoef.tsv\").")
 	parser_overlap.add_argument("-d", "--debug",action="store_true", help="Print detailed information for debugging.")
+
+
+	# create the parser for the "jaccard" sub-command
+	parser_jaccard.add_argument("bed1", type=str, metavar ="input_A.bed",help=bed_help)
+	parser_jaccard.add_argument("bed2", type=str, metavar ="input_B.bed",help=bed_help)
+	parser_jaccard.add_argument('-n', '--ndraws', type=int, dest="iter", default = 20, help="Times of resampling to estimate confidence intervals. Set to '0' to turn off resampling.(default: %(default)d)")
+	parser_jaccard.add_argument('-s', '--size', type=int, dest="subsize", default = 0.75, help="Size of the subset during resampling. If the original BED file contains 10000 regions, '--size = 0.85' means 8500 regions will be resampled. (default: %(default).2f)")
+	parser_jaccard.add_argument('-b', '--background', type=int, dest="bgsize", default = 1.4e9, help="The size of the cis-regulatory genomic regions. This is about 1.4Gb For the human genome. (default: %(default)d)")
+	parser_jaccard.add_argument("-o", "--save", action="store_true", help="If set, will save peak-wise overlapping coefficients to files (\"input_A_ovcoef.tsv\" and \"input_B_ovcoef.tsv\").")
+	parser_jaccard.add_argument("-d", "--debug",action="store_true", help="Print detailed information for debugging.")
 
 	# create the parser for the "pmi" sub-command
 	parser_pmi.add_argument("bed1", type=str, metavar ="input_A.bed",help=bed_help)
@@ -92,8 +112,11 @@ def main():
 	parser_covary.add_argument("--keepna", dest="keepna", action="store_true", help="If set, a genomic region will be kept even it does not have summary statistical score in either of the two bigWig files. This flag only affects the output .tsv files.")
 	parser_covary.add_argument("-d", "--debug",action="store_true", help="Print detailed information for debugging.")
 
-	# create the parser for the "bedinfo" sub-command
-	parser_bedinfo.add_argument("bedfile", type=str, metavar ="input.bed",help=bed_help)
+	# create the parser for the "stat" sub-command
+	parser_stat.add_argument("bed1", type=str, metavar ="input_A.bed",help=bed_help)
+	parser_stat.add_argument("bed2", type=str, metavar ="input_B.bed",help=bed_help)
+	parser_stat.add_argument('-b', '--background', type=int, dest="bgsize", default = 1.4e9, help="The size of the cis-regulatory genomic regions. This is about 1.4Gb For the human genome. (default: %(default)d)")
+	parser_stat.add_argument("-d", "--debug",action="store_true", help="Print detailed information for debugging.")
 
 
 	args = parser.parse_args()
@@ -104,27 +127,34 @@ def main():
 		sys.exit(0)
 	elif len(sys.argv) >= 2:
 		command = sys.argv[1]
-		if command =='bedinfo':
-			info = bedinfo(args.bedfile)
+		if command =='stat':
+			if args.debug:
+				logging.basicConfig(format = "%(asctime)s [%(levelname)s]  %(message)s",datefmt='%Y-%m-%d %I:%M:%S', level=logging.DEBUG)
+			else:
+				logging.basicConfig(format = "%(asctime)s [%(levelname)s]  %(message)s",datefmt='%Y-%m-%d %I:%M:%S', level=logging.INFO)
+
+			info = ov_stats(args.bed1, args.bed2, bg_size = args.bgsize)
 			print (info)
 		elif command == 'srog':
 			if args.debug:
 				logging.basicConfig(format = "%(asctime)s [%(levelname)s]  %(message)s",datefmt='%Y-%m-%d %I:%M:%S', level=logging.DEBUG)
 			else:
 				logging.basicConfig(format = "%(asctime)s [%(levelname)s]  %(message)s",datefmt='%Y-%m-%d %I:%M:%S', level=logging.INFO)
-			summary = srog_peak(args.bed1, args.bed2, args.output)
+			summary = srog_peak(inbed1 = args.bed1, inbed2 = args.bed2, outfile = args.output, max_dist =  args.max_dist)
 			print (summary)
+
 		elif command == 'overlap':
 			if args.debug:
 				logging.basicConfig(format = "%(asctime)s [%(levelname)s]  %(message)s",datefmt='%Y-%m-%d %I:%M:%S', level=logging.DEBUG)
 			else:
 				logging.basicConfig(format = "%(asctime)s [%(levelname)s]  %(message)s",datefmt='%Y-%m-%d %I:%M:%S', level=logging.INFO)
 			logging.info("Calculate overall overlapping coefficient ...")
-			result = cal_overlap_coef(args.bed1, args.bed2, n_draws = args.iter, size = args.subsize, bg_size = args.bgsize)
+			result = cal_overlap_coef(args.bed1, args.bed2, n_draws = args.iter, fraction = args.subsize, bg_size = args.bgsize)
 			print (result)
 			if args.save:
 				logging.info("Calculate peak-wise overlapping coefficient ...")
-				compare_peak(args.bed1, args.bed2)
+				peakwise_ovcoef(args.bed1, args.bed2, method = 'O')
+
 		elif command == 'pmi':
 			if args.debug:
 				logging.basicConfig(format = "%(asctime)s [%(levelname)s]  %(message)s",datefmt='%Y-%m-%d %I:%M:%S', level=logging.DEBUG)
@@ -132,12 +162,12 @@ def main():
 				logging.basicConfig(format = "%(asctime)s [%(levelname)s]  %(message)s",datefmt='%Y-%m-%d %I:%M:%S', level=logging.INFO)
 			result = cal_pmi(args.bed1, args.bed2, bg_size = args.bgsize)
 			print (result)
+
 		elif command == 'covary':
 			if args.debug:
 				logging.basicConfig(format = "%(asctime)s [%(levelname)s]  %(message)s",datefmt='%Y-%m-%d %I:%M:%S', level=logging.DEBUG)
 			else:
 				logging.basicConfig(format = "%(asctime)s [%(levelname)s]  %(message)s",datefmt='%Y-%m-%d %I:%M:%S', level=logging.INFO)
-
 			a_uniq_lst,b_uniq_lst,common_lst = compare_bed(args.bed1, args.bed2)
 			logging.info("Calculate summay statistics for overlapped regions ...")
 			c_corr = bigwig_corr(bed = common_lst, bw1 = args.bw1, bw2 = args.bw2, outfile = args.output + '_common.tsv', na_label = args.na_label, score_type = args.score_type, exact_scores = args.exact, keep_NA = args.keepna, top_x = args.top_X, min_sig = args.min_signal)
@@ -150,12 +180,21 @@ def main():
 			logging.info("Calculate summay statistics for \"%s\" unique regions ..." % args.bed2)
 			b_corr = bigwig_corr(bed = b_uniq_lst, bw1 = args.bw1, bw2 = args.bw2, outfile = args.output + '_bedB_unique.tsv', na_label = args.na_label, score_type = args.score_type, exact_scores = args.exact,  keep_NA = args.keepna, top_x = args.top_X, min_sig = args.min_signal)
 			print (b_corr.T)
+
 		elif command == 'cooccur':
 			if args.debug:
 				logging.basicConfig(format = "%(asctime)s [%(levelname)s]  %(message)s",datefmt='%Y-%m-%d %I:%M:%S', level=logging.DEBUG)
 			else:
 				logging.basicConfig(format = "%(asctime)s [%(levelname)s]  %(message)s",datefmt='%Y-%m-%d %I:%M:%S', level=logging.INFO)
-				results = cooccur_peak(inbed1 = args.bed1, inbed2 = args.bed2, inbed_bg = args.bed3, outfile = args.output, n_cut = args.n_cut, p_cut = args.p_cut)
-				print (results)
+			results = cooccur_peak(inbed1 = args.bed1, inbed2 = args.bed2, inbed_bg = args.bed3, outfile = args.output, n_cut = args.n_cut, p_cut = args.p_cut)
+			print (results)
+
+		elif command == 'jaccard':
+			if args.debug:
+				logging.basicConfig(format = "%(asctime)s [%(levelname)s]  %(message)s",datefmt='%Y-%m-%d %I:%M:%S', level=logging.DEBUG)
+			else:
+				logging.basicConfig(format = "%(asctime)s [%(levelname)s]  %(message)s",datefmt='%Y-%m-%d %I:%M:%S', level=logging.INFO)
+			result = cal_jaccard_coef(args.bed1, args.bed2, n_draws = args.iter, fraction = args.subsize, bg_size = args.bgsize)
+			print (result)
 if __name__ == '__main__':
 	main()

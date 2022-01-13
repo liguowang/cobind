@@ -11,6 +11,17 @@ import pyBigWig
 import pandas as pd
 import numpy as np
 from scipy.stats import pearsonr, spearmanr, kendalltau
+from cobindability import version
+
+__author__ = "Liguo Wang"
+__copyright__ = "Copyleft"
+__credits__ = []
+__license__ = "MIT"
+__version__ = version.version
+__maintainer__ = "Liguo Wang"
+__email__ = "wang.liguo@mayo.edu"
+__status__ = "Development"
+
 
 def bigwig_corr(bed, bw1, bw2, outfile, na_label = 'nan', score_type='mean', exact_scores = True, keep_NA = False, top_x = 1.0, min_sig = 0):
 	"""

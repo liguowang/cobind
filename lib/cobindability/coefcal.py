@@ -20,7 +20,7 @@ __maintainer__ = "Liguo Wang"
 __email__ = "wang.liguo@mayo.edu"
 __status__ = "Development"
 
-def ov_coef(x, y, xy):
+def ov_coef(x, y, xy, g):
 	"""
 	Calculate the overlap coefficient.
 
@@ -32,6 +32,9 @@ def ov_coef(x, y, xy):
 		The cardinality of B.
 	xy : int
 		The cardinality of A AND B.
+	g : int
+		The cardinality of background.
+
 	Returns
 	-------
 	float
@@ -46,7 +49,7 @@ def ov_coef(x, y, xy):
 	else:
 		return xy/(math.sqrt(x * y))
 
-def ov_jaccard(x, y, xy):
+def ov_jaccard(x, y, xy, g):
 	"""
 	Calculate the Jaccard's coefficient (https://en.wikipedia.org/wiki/Jaccard_index).
 
@@ -58,6 +61,9 @@ def ov_jaccard(x, y, xy):
 		The cardinality of B.
 	xy : int
 		The cardinality of A AND B.
+	g : int
+		The cardinality of background.
+
 	Returns
 	-------
 	float
@@ -72,7 +78,7 @@ def ov_jaccard(x, y, xy):
 	else:
 		return xy/(x + y - xy)
 
-def ov_ss(x, y, xy):
+def ov_ss(x, y, xy, g):
 	"""
 	Calculate the Szymkiewicz–Simpson coefficient, (https://en.wikipedia.org/wiki/Overlap_coefficient).
 
@@ -84,6 +90,9 @@ def ov_ss(x, y, xy):
 		The cardinality of B.
 	xy : int
 		The cardinality of A AND B.
+	g : int
+		The cardinality of background.
+
 	Returns
 	-------
 	float
@@ -98,7 +107,7 @@ def ov_ss(x, y, xy):
 	else:
 		return xy/min(x,y)
 
-def ov_sd(x, y, xy):
+def ov_sd(x, y, xy, g):
 	"""
 	Calculate the Sørensen–Dice coefficient (https://en.wikipedia.org/wiki/Sørensen–Dice_coefficient).
 	Sørensen–Dice coefficient also called "Sørensen–Dice index", "Sørensen index" or "Dice's coefficient".
@@ -111,6 +120,9 @@ def ov_sd(x, y, xy):
 		The cardinality of B.
 	xy : int
 		The cardinality of A AND B.
+	g : int
+		The cardinality of background.
+
 	Returns
 	-------
 	float

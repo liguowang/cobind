@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import sys,os
-import re
 import logging
 import numpy as np
 import pandas as pd
@@ -31,13 +30,13 @@ def unionBed3(inbed):
 	Parameters
 	----------
 	inbed : str or list
-		Name of a BED file or list of genomic regions (for example,
+		Name of a BED file or list of genomic intervals (for example,
 		[(chr1 100 200), (chr2 150  300), (chr2 1000 1200)])
 
 	Returns
 	-------
-	ret_lst : list
-		List of bed regions with the overlapped regions merged.
+	unioned_intervals : list
+		List of genomic intervals with the overlapped regions merged.
 
 	Examples
 	--------
@@ -45,8 +44,12 @@ def unionBed3(inbed):
 	[('chr1', 1, 15), ('chr1', 20, 50)]
 
 	"""
+	unioned_intervals = []
 	if type(inbed) is list:
-		bitsets = binned_bitsets_from_list(inbed)
+		if len(inbed) == 0:
+			return unioned_intervals
+		else:
+			bitsets = binned_bitsets_from_list(inbed)
 	elif type(inbed) is str:
 		try:
 			bitsets = binned_bitsets_from_file( ireader.reader(inbed) )
@@ -56,7 +59,7 @@ def unionBed3(inbed):
 	else:
 		logging.error("invalid input: %s" % inbed)
 		sys.exit(1)
-	ret_lst=[]
+
 	for chrom in bitsets:
 		bits = bitsets[chrom]
 		end = 0
@@ -64,16 +67,17 @@ def unionBed3(inbed):
 			start = bits.next_set( end )
 			if start == bits.size: break
 			end = bits.next_clear( start )
-			ret_lst.append((chrom, start, end))
+			unioned_intervals.append((chrom, start, end))
 	bitsets=dict()
-	return ret_lst
+	return unioned_intervals
 
 
 def intersectBed3(inbed1,inbed2):
 	"""
-	Interset genomic intervals. Inputs are two BED files or two lists of genomic
-	intervals. If input is a BED file, only consider the first three columns
-	(chrom, start, end), other columns will be ignored.
+	Return the shared genomic intervals beetween inbed1 and inbed2. Inputs are
+	two BED files or two lists of genomic intervals. If input is a BED file,
+	only consider the first three columns (chrom, start, end), other columns
+	will be ignored.
 
 	Parameters
 	----------
@@ -86,7 +90,7 @@ def intersectBed3(inbed1,inbed2):
 
 	Returns
 	-------
-	ret_lst : list
+	shared_intervals : list
 		List of genomic intervals shared between the two input BED files (or lists).
 
 	Examples
@@ -94,8 +98,13 @@ def intersectBed3(inbed1,inbed2):
 	>>> intersectBed3([('chr1', 1, 10), ('chr1', 20, 35)], [('chr1',3, 15), ('chr1',20, 50)])
 	[('chr1', 3, 10), ('chr1', 20, 35)]
 	"""
+	shared_intervals = []
+	# read inbed1
 	if type(inbed1) is list:
-		bits1 = binned_bitsets_from_list(inbed1)
+		if len(inbed1) == 0:
+			return shared_intervals
+		else:
+			bits1 = binned_bitsets_from_list(inbed1)
 	elif type(inbed1) is str:
 		try:
 			bits1 = binned_bitsets_from_file(ireader.reader(inbed1))
@@ -105,8 +114,13 @@ def intersectBed3(inbed1,inbed2):
 	else:
 		logging.error("invalid input: %s" % inbed1)
 		sys.exit(1)
+
+	# read inbed2
 	if  type(inbed2) is list:
-		bits2 = binned_bitsets_from_list(inbed2)
+		if len(inbed2) == 0:
+			return shared_intervals
+		else:
+			bits2 = binned_bitsets_from_list(inbed2)
 	elif  type(inbed2) is str:
 		try:
 			bits2 = binned_bitsets_from_file(ireader.reader(inbed2))
@@ -117,7 +131,8 @@ def intersectBed3(inbed1,inbed2):
 		logging.error("invalid input: %s" % inbed2)
 		sys.exit(1)
 	bitsets = dict()
-	ret_lst = []
+
+	# determine the shared intervals
 	for key in bits1:
 		if key in bits2:
 			bits1[key].iand( bits2[key] )
@@ -129,16 +144,16 @@ def intersectBed3(inbed1,inbed2):
 			start = bits.next_set( end )
 			if start == bits.size: break
 			end = bits.next_clear( start )
-			ret_lst.append((chrom, start, end))
+			shared_intervals.append((chrom, start, end))
 	bits1.clear()
 	bits2.clear()
 	bitsets.clear()
-	return ret_lst
+	return shared_intervals
 
 
 def subtractBed3(inbed1,inbed2):
 	"""
-	Subtract inbed2 from inbed1.
+	Subtract inbed2 from inbed1 (inbed1 - inbed2)
 
 	Parameters
 	----------
@@ -151,7 +166,7 @@ def subtractBed3(inbed1,inbed2):
 
 	Returns
 	-------
-	ret_lst : list
+	remain_intervals : list
 		List of genomic intervals from inbed1 with those shared regions with inbed2 removed.
 
 	Examples
@@ -160,8 +175,13 @@ def subtractBed3(inbed1,inbed2):
 	[('chr1', 1, 3)]
 
 	"""
+	remain_intervals = []
+	# read inbed1
 	if type(inbed1) is list:
-		bitsets1 = binned_bitsets_from_list(inbed1)
+		if len(inbed1) == 0:
+			return remain_intervals
+		else:
+			bitsets1 = binned_bitsets_from_list(inbed1)
 	elif type(inbed1) is str:
 		try:
 			bitsets1 = binned_bitsets_from_file(ireader.reader(inbed1))
@@ -171,8 +191,15 @@ def subtractBed3(inbed1,inbed2):
 	else:
 		logging.error("invalid input: %s" % inbed1)
 		sys.exit(1)
+	# read inbed2
 	if type(inbed2) is list:
-		bitsets2 = binned_bitsets_from_list(inbed2)
+		if len(inbed2) == 0:
+			if type(inbed1) is list:
+				return inbed1
+			else:
+				return bedtolist(inbed1)
+		else:
+			bitsets2 = binned_bitsets_from_list(inbed2)
 	elif  type(inbed2) is str:
 		try:
 			bitsets2 = binned_bitsets_from_file(ireader.reader(inbed2))
@@ -182,7 +209,6 @@ def subtractBed3(inbed1,inbed2):
 	else:
 		logging.error("invalid input: %s" % inbed2)
 		sys.exit(1)
-	ret_lst = []
 	for chrom in bitsets1:
 		if chrom not in bitsets1:
 			continue
@@ -196,10 +222,10 @@ def subtractBed3(inbed1,inbed2):
 			start = bits1.next_set( end )
 			if start == bits1.size: break
 			end = bits1.next_clear( start )
-			ret_lst.append((chrom,start,end))
+			remain_intervals.append((chrom,start,end))
 	bitsets1 = dict()
 	bitsets2 = dict()
-	return ret_lst
+	return remain_intervals
 
 def bed_actual_size(*argv):
 	'''
@@ -237,7 +263,7 @@ def bed_actual_size(*argv):
 					logging.warning("invalid BED line: %s" % l)
 					continue
 				tmp = int(f[2]) - int(f[1])
-				if tmp < 0:
+				if tmp <= 0:
 					continue
 				size += tmp
 		sizes.append(size)
@@ -314,7 +340,7 @@ def bed_genomic_size(*argv):
 	union_sizes = []
 	for arg in argv:
 		if type(arg) is list:
-			bitsets = binned_bitsets_from_list(arg )
+			bitsets = binned_bitsets_from_list(arg)
 		elif type(arg) is str:
 			try:
 				bitsets = binned_bitsets_from_file( ireader.reader(arg) )
@@ -530,7 +556,7 @@ def compare_bed(inbed1, inbed2):
 	return (bed1_uniq, bed2_uniq, common)
 
 
-def peakwise_ovcoef(inbed1, inbed2, na_label='NA', method='O'):
+def peakwise_ovcoef(inbed1, inbed2, score_func, na_label='NA'):
 
 	"""
 	Calculates peak-wise overlap .
@@ -541,20 +567,16 @@ def peakwise_ovcoef(inbed1, inbed2, na_label='NA', method='O'):
 		Name of a BED file.
 	inbed2 : str
 		Name of another BED file.
+	score_func : function
+		Function to calculate overlap index. Include ov_coef, ov_jaccard, ov_ss, ov_sd.
 	na_label : str
 		String label used to represent missing value.
-	method : str
-		One of ('O', 'J', 'SS', and 'SD')
-		O: overlap coefficient
-		J: Jaccard's coefficient
-		SS: Szymkiewicz–Simpson coefficient
-		SD: Sørensen–Dice coefficient
 
 	Returns
 	-------
 	None
 	"""
-	pattern = re.compile(".bed$", re.IGNORECASE)
+	#pattern = re.compile(".bed$", re.IGNORECASE)
 	logging.info("Read and union BED file: \"%s\"" % inbed1)
 	bed1_union = unionBed3(inbed1)
 	logging.info("Unioned regions of \"%s\" : %d" % (inbed1, len(bed1_union)))
@@ -566,7 +588,6 @@ def peakwise_ovcoef(inbed1, inbed2, na_label='NA', method='O'):
 	#logging.info("Merge BED files \"%s\" and \"%s\"" % (inbed1, inbed2))
 	#bed12_union = unionBed3(bed1_union + bed2_union)
 	#logging.info("Unioned regions of two BED files : %d" % len(bed12_union))
-
 
 	logging.info("Build interval tree for unioned BED file: \"%s\"" % inbed1)
 	maps1 = {}
@@ -584,9 +605,9 @@ def peakwise_ovcoef(inbed1, inbed2, na_label='NA', method='O'):
 
 	#overlap bed file 1 with bed file 2
 	logging.info("Calculate the overlap coefficient of each genomic region in %s ..." % inbed1)
-	outfile_name1 = pattern.sub('_ovcoef.tsv', os.path.basename(inbed1))
+	outfile_name1 =  os.path.basename(inbed1) + '_peakwise_scores.tsv'
 	BED1OUT = open(outfile_name1, 'w')
-	print('\t'.join(['chrom','start','end','ov_peaks_n','ov_bases_n', 'ov_bases_frac','ov_coef','ov_peaks_list']), file=BED1OUT)
+	print('\t'.join(['chrom','start','end','ov_peaks_n','ov_bases_n', 'ov_bases_frac', 'ov_index','ov_peaks_list']), file=BED1OUT)
 	for chrom, start, end in bed1_union:
 		try:
 			bed_1_size = end - start
@@ -605,27 +626,19 @@ def peakwise_ovcoef(inbed1, inbed2, na_label='NA', method='O'):
 					bed_2_size += (o.end - o.start)
 					bed_2_lst.append((chrom, o.start, o.end))
 				overlap_size = bed_overlap_size(bed_1_lst, bed_2_lst)
-
-				if method == 'O':
-					peak_ov_coef = ov_coef(bed_1_size, bed_2_size, overlap_size)
-				elif method == 'J':
-					peak_ov_coef = ov_jaccard(bed_1_size, bed_2_size, overlap_size)
-				elif method == 'SS':
-					peak_ov_coef = ov_ss(bed_1_size, bed_2_size, overlap_size)
-				elif method == 'SD':
-					peak_ov_coef = ov_sd(bed_1_size, bed_2_size, overlap_size)
-
+				peak_ov_coef = score_func(bed_1_size, bed_2_size, overlap_size)
 				tmp = ','.join([i[0] + ':' + str(i[1]) + '-' + str(i[2]) for i in bed_2_lst])
 				print('\t'.join([str(i) for i in (chrom, start, end, len(bed_2_lst), overlap_size, overlap_size/bed_1_size, peak_ov_coef, tmp)]), file=BED1OUT)
 		except:
 			print('\t'.join([str(i) for i in (chrom, start, end, len(bed_2_lst), na_label, na_label, na_label, na_label)]), file=BED1OUT)
 	BED1OUT.close()
+	logging.info("Save peakwise scores to %s ..." % outfile_name1)
 
 	#overlap bed file 2 with bed file 1
 	logging.info("Calculate the overlap coefficient of each genomic region in %s ..." % inbed2)
-	outfile_name2 = pattern.sub('_ovcoef.tsv', os.path.basename(inbed2))
+	outfile_name2 =  os.path.basename(inbed2) + '_peakwise_scores.tsv'
 	BED2OUT = open(outfile_name2, 'w')
-	print('\t'.join(['chrom','start','end','ov_peaks_n','ov_bases_n', 'ov_bases_frac','ov_coef','ov_peaks_list']), file=BED2OUT)
+	print('\t'.join(['chrom','start','end','ov_peaks_n','ov_bases_n', 'ov_bases_frac', 'ov_index' ,'ov_peaks_list']), file=BED2OUT)
 	for chrom, start, end in bed2_union:
 		try:
 			bed_2_size = end - start
@@ -643,23 +656,13 @@ def peakwise_ovcoef(inbed1, inbed2, na_label='NA', method='O'):
 					bed_1_size += (o.end - o.start)
 					bed_1_lst.append((chrom, o.start, o.end))
 				overlap_size = bed_overlap_size(bed_2_lst, bed_1_lst)
-
-				if method == 'O':
-					peak_ov_coef = ov_coef(bed_1_size, bed_2_size, overlap_size)
-				elif method == 'J':
-					peak_ov_coef = ov_jaccard(bed_1_size, bed_2_size, overlap_size)
-				elif method == 'SS':
-					peak_ov_coef = ov_ss(bed_1_size, bed_2_size, overlap_size)
-				elif method == 'SD':
-					peak_ov_coef = ov_sd(bed_1_size, bed_2_size, overlap_size)
-
-
+				peak_ov_coef = score_func(bed_1_size, bed_2_size, overlap_size)
 				tmp = ','.join([i[0] + ':' + str(i[1]) + '-' + str(i[2]) for i in bed_1_lst])
 				print('\t'.join([str(i) for i in (chrom, start, end, len(bed_2_lst), overlap_size, overlap_size/bed_2_size, peak_ov_coef, tmp)]), file=BED2OUT)
 		except:
 			print('\t'.join([str(i) for i in (chrom, start, end, len(bed_1_lst), na_label, na_label, na_label, na_label)]), file=BED2OUT)
 	BED2OUT.close()
-
+	logging.info("Save peakwise scores to %s ..." % outfile_name2)
 
 def cooccur_peak(inbed1, inbed2, inbed_bg, outfile, n_cut=1, p_cut=0.0):
 
@@ -882,9 +885,9 @@ def is_overlap(chr1, st1, end1, chr2, st2, end2):
 		positive integer [1,): overlap
 	'''
 	#genome coordinate is left-open, right-close.
-	st1 = st1 +1
+	st1 = st1 + 1
 	end1 = end1
-	st2 = st2 +1
+	st2 = st2 + 1
 	end2 = end2
 	if chr1 != chr2:
 		return 0
@@ -1036,8 +1039,6 @@ def srog_peak(inbed1, inbed2, outfile, n_up = 1, n_down = 1, max_dist = 25000000
 			srog_summary['disjoint'] += 1
 			up_interval =  maps[chrom].upstream_of_interval(Interval(start, end, strand = strandness), num_intervals = n_up, max_dist = max_dist)
 			down_interval =  maps[chrom].downstream_of_interval(Interval(start, end, strand = strandness), num_intervals = n_down, max_dist = max_dist)
-			#print ("UP",up_interval)
-			#print ("Down",down_interval)
 			if len(up_interval) == 0:
 				up_interval_name = 'NA'
 			else:
@@ -1065,6 +1066,5 @@ if __name__=='__main__':
 	#bedtofile(a,'a')
 	#bedtofile(b,'b')
 	#bedtofile(common,'common')
-
 	a = cooccur_peak(sys.argv[1], sys.argv[2], sys.argv[3])
 	print (a)

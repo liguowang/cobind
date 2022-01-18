@@ -52,7 +52,7 @@ The overlap coefficient between A and B is calculated as the ratio between *inte
   :width: 250
   :alt: Alternative text
 
-.. image:: _static/ov_coef_3.jpeg
+.. image:: _static/ov_coef_3.jpg
   :width: 200
   :alt: Alternative text
 

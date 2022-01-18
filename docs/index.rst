@@ -26,7 +26,12 @@ cobind's documentation
    :glob:
    :maxdepth: 2
 
-   usage/*
+   usage/overlap.rst
+   usage/jaccard.rst
+   usage/SD.rst
+   usage/SS.rst
+   usage/PMI.rst
+   usage/NPMI.rst
 
 .. toctree::
    :caption: Liscense

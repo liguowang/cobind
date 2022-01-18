@@ -1,10 +1,10 @@
-Overlap coefficient (O)
-=======================
+Co-occurrence
+==============
 
 Description
 -------------
 
-Calculate the overlap coefficient [#f1]_ between two sets of genomic regions. 
+Evaluate if two sets of genomic regions are significantly overlapped in given background regions.
 
 .. image:: ../_static/ov_coef_1.jpg
   :width: 250
@@ -17,37 +17,33 @@ Calculate the overlap coefficient [#f1]_ between two sets of genomic regions.
 Command (getting help)
 ----------------------
 
-:code:`cobind.py overlap -h`
+:code:`cobind.py cooccur -h`
 
 ::
 
- usage: cobind.py overlap [-h] [-n ITER] [-f SUBSAMPLE] [-b BGSIZE] [-o] [-d] input_A.bed input_B.bed
+ usage: cobind.py cooccur [-h] [--ncut N_CUT] [--pcut P_CUT] [-d] [--dist MAX_DIST] input_A.bed input_B.bed background.bed output.tsv
  
  positional arguments:
-   input_A.bed           Genomic regions in BED, BED-like or bigBed format. The BED-like format
-                         includes: 'bed3', 'bed4', 'bed6', 'bed12', 'bedgraph', 'narrowpeak',
-                         'broadpeak', 'gappedpeak'. BED and BED-like format can be plain text,
-                         compressed (.gz, .z, .bz, .bz2, .bzip2) or remote (http://, https://, ftp://)
-                         files. Do not compress BigBed foramt. BigBed file can also be a remote file.
-   input_B.bed           Genomic regions in BED, BED-like or bigBed format. The BED-like format
-                         includes: 'bed3', 'bed4', 'bed6', 'bed12', 'bedgraph', 'narrowpeak',
-                         'broadpeak', 'gappedpeak'. BED and BED-like format can be plain text,
-                         compressed (.gz, .z, .bz, .bz2, .bzip2) or remote (http://, https://, ftp://)
-                         files. Do not compress BigBed foramt. BigBed file can also be a remote file.
+   input_A.bed      Genomic regions in BED, BED-like or bigBed format. The BED-like format includes: 'bed3', 'bed4', 'bed6', 'bed12',
+                    'bedgraph', 'narrowpeak', 'broadpeak', 'gappedpeak'. BED and BED-like format can be plain text, compressed (.gz, .z,
+                    .bz, .bz2, .bzip2) or remote (http://, https://, ftp://) files. Do not compress BigBed foramt. BigBed file can also
+                    be a remote file.
+   input_B.bed      Genomic regions in BED, BED-like or bigBed format. The BED-like format includes: 'bed3', 'bed4', 'bed6', 'bed12',
+                    'bedgraph', 'narrowpeak', 'broadpeak', 'gappedpeak'. BED and BED-like format can be plain text, compressed (.gz, .z,
+                    .bz, .bz2, .bzip2) or remote (http://, https://, ftp://) files. Do not compress BigBed foramt. BigBed file can also
+                    be a remote file.
+   background.bed   Genomic regions as the background (e.g., all promoters, all enhancers).
+   output.tsv       For each genomic region in the background BED file, add another column indicating if this region is "input_A
+                    specific", "input_B specific", "co-occur" or "neither".
  
  optional arguments:
-   -h, --help            show this help message and exit
-   -n ITER, --ndraws ITER
-                         Times of resampling to estimate confidence intervals. Set to '0' to turn off
-                         resampling.(default: 20)
-   -f SUBSAMPLE, --fraction SUBSAMPLE
-                         Resampling fraction. (default: 0.75)
-   -b BGSIZE, --background BGSIZE
-                         The size of the cis-regulatory genomic regions. This is about 1.4Gb For the
-                         human genome. (default: 1400000000)
-   -o, --save            If set, will save peak-wise coefficients to files
-                         ("input_A_peakwise_scores.tsv" and "input_B_peakwise_scores.tsv").
-   -d, --debug           Print detailed information for debugging
+   -h, --help       show this help message and exit
+   --ncut N_CUT     The minimum overlap size. default: 1)
+   --pcut P_CUT     The minimum overlap percentage. default: 0.000000)
+   -d, --debug      Print detailed information for debugging.
+   --dist MAX_DIST  When intervals are disjoint, find the closest up- and down-stream intervals that are no further than `max_dist` away.
+                    default: 250000000)
+
 
 
 Command (example)

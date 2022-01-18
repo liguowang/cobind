@@ -8,9 +8,7 @@ from os.path import basename
 from scipy.stats import fisher_exact
 from bx.bitset_builders import binned_bitsets_from_file, binned_bitsets_from_list
 from bx.intervals.intersection import Interval, Intersecter
-from cobindability import ireader
-from cobindability import version
-from cobindability.coefcal import ov_coef, ov_jaccard, ov_ss, ov_sd
+from cobindability import ireader, version
 
 __author__ = "Liguo Wang"
 __copyright__ = "Copyleft"
@@ -556,7 +554,7 @@ def compare_bed(inbed1, inbed2):
 	return (bed1_uniq, bed2_uniq, common)
 
 
-def peakwise_ovcoef(inbed1, inbed2, score_func, na_label='NA'):
+def peakwise_ovcoef(inbed1, inbed2, score_func, g, na_label='NA'):
 
 	"""
 	Calculates peak-wise overlap .
@@ -569,6 +567,8 @@ def peakwise_ovcoef(inbed1, inbed2, score_func, na_label='NA'):
 		Name of another BED file.
 	score_func : function
 		Function to calculate overlap index. Include ov_coef, ov_jaccard, ov_ss, ov_sd.
+	g : int
+		Size of the genomic background.
 	na_label : str
 		String label used to represent missing value.
 
@@ -607,7 +607,7 @@ def peakwise_ovcoef(inbed1, inbed2, score_func, na_label='NA'):
 	logging.info("Calculate the overlap coefficient of each genomic region in %s ..." % inbed1)
 	outfile_name1 =  os.path.basename(inbed1) + '_peakwise_scores.tsv'
 	BED1OUT = open(outfile_name1, 'w')
-	print('\t'.join(['chrom','start','end','ov_peaks_n','ov_bases_n', 'ov_bases_frac', 'ov_index','ov_peaks_list']), file=BED1OUT)
+	print('\t'.join(['chrom','start','end','A.size','B.size', 'A∩B', 'A∪B','B.list', 'Score']), file=BED1OUT)
 	for chrom, start, end in bed1_union:
 		try:
 			bed_1_size = end - start
@@ -620,17 +620,18 @@ def peakwise_ovcoef(inbed1, inbed2, score_func, na_label='NA'):
 			overlaps = maps2[chrom].find(start, end)
 			#print (overlaps)
 			if len(overlaps) == 0:
-				print('\t'.join([str(i) for i in (chrom, start, end, 0, na_label,na_label,na_label, na_label)]), file=BED1OUT)
+				print('\t'.join([str(i) for i in (chrom, start, end, bed_1_size, na_label, na_label, na_label, na_label, na_label)]), file=BED1OUT)
 			else:
 				for o in overlaps:
 					bed_2_size += (o.end - o.start)
 					bed_2_lst.append((chrom, o.start, o.end))
 				overlap_size = bed_overlap_size(bed_1_lst, bed_2_lst)
-				peak_ov_coef = score_func(bed_1_size, bed_2_size, overlap_size)
-				tmp = ','.join([i[0] + ':' + str(i[1]) + '-' + str(i[2]) for i in bed_2_lst])
-				print('\t'.join([str(i) for i in (chrom, start, end, len(bed_2_lst), overlap_size, overlap_size/bed_1_size, peak_ov_coef, tmp)]), file=BED1OUT)
+				union_size = bed_genomic_size(bed_1_lst + bed_2_lst)[0]
+				peak_ov_coef = score_func(bed_1_size, bed_2_size, overlap_size, g)
+				target_list = ','.join([i[0] + ':' + str(i[1]) + '-' + str(i[2]) for i in bed_2_lst])
+				print('\t'.join([str(i) for i in (chrom, start, end, bed_1_size, bed_2_size, overlap_size, union_size, target_list, peak_ov_coef)]), file=BED1OUT)
 		except:
-			print('\t'.join([str(i) for i in (chrom, start, end, len(bed_2_lst), na_label, na_label, na_label, na_label)]), file=BED1OUT)
+			print('\t'.join([str(i) for i in (chrom, start, end, bed_1_size, na_label, na_label, na_label, na_label, na_label)]), file=BED1OUT)
 	BED1OUT.close()
 	logging.info("Save peakwise scores to %s ..." % outfile_name1)
 
@@ -638,7 +639,7 @@ def peakwise_ovcoef(inbed1, inbed2, score_func, na_label='NA'):
 	logging.info("Calculate the overlap coefficient of each genomic region in %s ..." % inbed2)
 	outfile_name2 =  os.path.basename(inbed2) + '_peakwise_scores.tsv'
 	BED2OUT = open(outfile_name2, 'w')
-	print('\t'.join(['chrom','start','end','ov_peaks_n','ov_bases_n', 'ov_bases_frac', 'ov_index' ,'ov_peaks_list']), file=BED2OUT)
+	print('\t'.join(['chrom','start','end','A.size','B.size', 'A∩B', 'A∪B','B.list', 'Score']), file=BED2OUT)
 	for chrom, start, end in bed2_union:
 		try:
 			bed_2_size = end - start
@@ -650,17 +651,17 @@ def peakwise_ovcoef(inbed1, inbed2, score_func, na_label='NA'):
 
 			overlaps = maps1[chrom].find(start, end)
 			if len(overlaps) == 0:
-				print('\t'.join([str(i) for i in (chrom, start, end, 0, na_label,na_label,na_label, na_label)]), file=BED2OUT)
+				print('\t'.join([str(i) for i in (chrom, start, end, bed_1_size, na_label, na_label, na_label, na_label, na_label)]), file=BED2OUT)
 			else:
 				for o in overlaps:
 					bed_1_size += (o.end - o.start)
 					bed_1_lst.append((chrom, o.start, o.end))
 				overlap_size = bed_overlap_size(bed_2_lst, bed_1_lst)
-				peak_ov_coef = score_func(bed_1_size, bed_2_size, overlap_size)
-				tmp = ','.join([i[0] + ':' + str(i[1]) + '-' + str(i[2]) for i in bed_1_lst])
-				print('\t'.join([str(i) for i in (chrom, start, end, len(bed_2_lst), overlap_size, overlap_size/bed_2_size, peak_ov_coef, tmp)]), file=BED2OUT)
+				peak_ov_coef = score_func(bed_1_size, bed_2_size, overlap_size, g)
+				target_list = ','.join([i[0] + ':' + str(i[1]) + '-' + str(i[2]) for i in bed_1_lst])
+				print('\t'.join([str(i) for i in (chrom, start, end, bed_1_size, bed_2_size, overlap_size, union_size, target_list, peak_ov_coef)]), file=BED2OUT)
 		except:
-			print('\t'.join([str(i) for i in (chrom, start, end, len(bed_1_lst), na_label, na_label, na_label, na_label)]), file=BED2OUT)
+			print('\t'.join([str(i) for i in (chrom, start, end, bed_1_size, na_label, na_label, na_label, na_label, na_label)]), file=BED2OUT)
 	BED2OUT.close()
 	logging.info("Save peakwise scores to %s ..." % outfile_name2)
 
@@ -834,23 +835,23 @@ def cooccur_peak(inbed1, inbed2, inbed_bg, outfile, n_cut=1, p_cut=0.0):
 				neither += 1
 				print (line + '\tNeither', file=OUT)
 	#print (bed1_only, bed2_only, cooccur, neither)
-	results['bed1_name'] = os.path.basename(inbed1)
-	results['bed2_name'] = os.path.basename(inbed2)
-	results['bed1+,bed2-'] = bed1_only
-	results['bed1-,bed2+'] = bed2_only
-	results['bed1+,bed2+'] = cooccur
-	results['bed1-,bed2-'] = neither
+	results['A.name'] = os.path.basename(inbed1)
+	results['B.name'] = os.path.basename(inbed2)
+	results['A+,B-'] = bed1_only
+	results['A-,B+'] = bed2_only
+	results['A+,B+'] = cooccur
+	results['A-,B-'] = neither
 
 	#results['Jaccard index'] = cooccur/(cooccur + neither + bed1_only + bed2_only)
 	if bed1_only > bed2_only:
 		table = np.array([[neither, bed1_only], [bed2_only, cooccur]])
 	else:
 		table = np.array([[neither, bed2_only], [bed1_only, cooccur]])
-	print (table)
+	#print (table)
 	oddsr,p = fisher_exact(table, alternative='greater')
 	results['odds-ratio'] = oddsr
 	results['p-value'] = p
-	return pd.Series(data=results, index=['bed1_name', 'bed2_name','bed1+,bed2-', 'bed1-,bed2+', 'bed1+,bed2+', 'bed1-,bed2-','odds-ratio', 'p-value'], name = "Fisher's exact test result")
+	return pd.Series(data=results, name = "Fisher's exact test result")
 
 
 def bedtofile(bed_list, bed_file):

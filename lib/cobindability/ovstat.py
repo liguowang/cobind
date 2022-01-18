@@ -106,10 +106,10 @@ def ov_stats(file1, file2, bg_size = 1400000000):
 	results['Neither_A_nor_B.size'] = bg_size - uniqBase1 - uniqBase2 + overlapBases
 
 
-	results['coef.Overlap'] = ov_coef(uniqBase1, uniqBase2, overlapBases)
-	results['coef.Jaccard'] = ov_jaccard(uniqBase1, uniqBase2, overlapBases)
-	results['coef.Dice'] = ov_sd(uniqBase1, uniqBase2, overlapBases)
-	results['coef.SS'] = ov_ss(uniqBase1, uniqBase2, overlapBases)
+	results['coef.Overlap'] = ov_coef(uniqBase1, uniqBase2, overlapBases, bg_size)
+	results['coef.Jaccard'] = ov_jaccard(uniqBase1, uniqBase2, overlapBases, bg_size)
+	results['coef.Dice'] = ov_sd(uniqBase1, uniqBase2, overlapBases, bg_size)
+	results['coef.SS'] = ov_ss(uniqBase1, uniqBase2, overlapBases, bg_size)
 	results['A_and_B.PMI'] = pmi_value(uniqBase1, uniqBase2, overlapBases, bg_size)
 	results['A_and_B.NPMI'] = npmi_value(uniqBase1, uniqBase2, overlapBases, bg_size)
 

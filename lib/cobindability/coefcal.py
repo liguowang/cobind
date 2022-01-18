@@ -169,11 +169,10 @@ def pmi_value(x, y, xy, g):
 	px = x/g
 	py = y/g
 	pxy = xy/g
-
 	if pxy == 0:
 		return -np.inf
 	else:
-		return np.log2(pxy) - np.log2(px) - np.log2(py)
+		return np.log(pxy) - np.log(px) - np.log(py)
 
 def npmi_value(x, y, xy, g):
 	"""
@@ -195,7 +194,6 @@ def npmi_value(x, y, xy, g):
 	float
 		Normalized pointwise mutual information.
 	"""
-
 	if g <= 0:
 		logging.error("The cardinality of background must be a postive integer.")
 	if xy > x or xy > y:
@@ -207,8 +205,7 @@ def npmi_value(x, y, xy, g):
 	px = x/g
 	py = y/g
 	pxy = xy/g
-
 	if pxy == 0:
 		return -1
 	else:
-		return np.log2(px*py)/np.log2(pxy) - 1
+		return np.log(px*py)/np.log(pxy) - 1

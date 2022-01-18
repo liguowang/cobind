@@ -5,12 +5,12 @@ import logging
 import argparse
 import pandas as pd
 from cobindability.BED import compare_bed,peakwise_ovcoef,cooccur_peak,srog_peak
-from cobindability.ovpmi import cal_pmi
+#from cobindability.ovpmi import cal_pmi
 from cobindability.bw import bigwig_corr
 from cobindability.ovstat import ov_stats
 from cobindability import version
-from cobindability.ovbootstrap import bootstrap_coef
-from cobindability.coefcal import ov_coef, ov_jaccard, ov_ss, ov_sd
+from cobindability.ovbootstrap import bootstrap_coef,bootstrap_npmi
+from cobindability.coefcal import ov_coef, ov_jaccard, ov_ss, ov_sd, pmi_value, npmi_value
 
 
 
@@ -34,15 +34,16 @@ def main():
 		BigBed file can also be a remote file."
 	# sub commands and help.
 	commands = {
-	'overlap' : "Calculate the overlapping coefficient between two sets of genomic regions.",
-	'jaccard' : "Calculate the Jaccard similarity coefficient (a.k.a. Jaccard index).",
-	'dice' : "Calculate the Sørensen–Dice coefficient (a.k.a. SD index).",
-	'simpson' : "Calculate the Szymkiewicz–Simpson coefficient (a.k.a. SS index).",
-	'pmi' : "Calculate the PMI (pointwise mutual information) and NPMI (normalized pointwise mutual information) between two sets of genomic regions.",
+	'overlap' : "Calculate the overlapping coefficient (O) between two sets of genomic regions. O = |A and B| / (|A|*|B|)**0.5",
+	'jaccard' : "Calculate the Jaccard similarity coefficient (J) between two sets of genomic regions. J = |A and B| / |A or B|",
+	'dice' : "Calculate the Sørensen–Dice coefficient (SD) between two sets of genomic regions. SD = 2*|A and B| / (|A| + |B|)",
+	'simpson' : "Calculate the Szymkiewicz–Simpson coefficient (SS) between two sets of genomic regions. SS = |A and B| / min(|A|, |B|)",
+	'pmi' : "Calculate the pointwise mutual information (PMI) between two sets of genomic regions. PMI = log(p(|A and B|)) - log(p(|A|)) - log(p(|B|))",
+	'npmi' : "Calculate the normalized pointwise mutual information (NPMI) between two sets of genomic regions. NPMI = log(p(|A|)*p(|B|)) / log(p(|A and B|)) - 1",
 	'cooccur' : "Evaluate if two sets of genomic regions are significantly overlapped in given background regions.",
 	'covary' : "Calculate the covariance (Pearson, Spearman and Kendall coefficients) of binding intensities between two sets of genomic regions.",
-	'srog' : "Report the code of SROG (Spatial Relation Of Genomic regions). SROG codes include 'disjoint','touch','equal','overlap','contain','within'.",
-	'stat' : "Wrapper function. Report basic statistics of genomic regions. Calculate overlap coefficient, Jaccard coefficient, Sørensen–Dice coefficient, Szymkiewicz–Simpson coefficient, PMI (pointwise mutual information) and NPMI (normalized pointwise mutual information) without bootstrapping or generating peakwise indices.",
+	'srog' : "Report the code of Spatial Relation Of Genomic (SROG) regions. SROG codes include 'disjoint','touch','equal','overlap','contain','within'.",
+	'stat' : "Wrapper function. Report basic statistics of genomic regions, and calculate overlapping measurements, including \"O\", \"J\", \"SD\", \"SS\", \"PMI\", \"NPMI\", without bootstrap resampling or generating peakwise measurements.",
 	}
 
 	#create parse
@@ -56,6 +57,7 @@ def main():
 	parser_dice = sub_parsers.add_parser('dice', help=commands['dice'])
 	parser_simpson = sub_parsers.add_parser('simpson', help=commands['simpson'])
 	parser_pmi = sub_parsers.add_parser('pmi', help=commands['pmi'])
+	parser_npmi = sub_parsers.add_parser('npmi', help=commands['npmi'])
 	parser_cooccur = sub_parsers.add_parser('cooccur', help=commands['cooccur'])
 	parser_covary = sub_parsers.add_parser('covary', help=commands['covary'])
 	parser_srog = sub_parsers.add_parser('srog', help=commands['srog'])
@@ -66,7 +68,7 @@ def main():
 	parser_overlap.add_argument("bed1", type=str, metavar ="input_A.bed",help=bed_help)
 	parser_overlap.add_argument("bed2", type=str, metavar ="input_B.bed",help=bed_help)
 	parser_overlap.add_argument('-n', '--ndraws', type=int, dest="iter", default = 20, help="Times of resampling to estimate confidence intervals. Set to '0' to turn off resampling.(default: %(default)d)")
-	parser_overlap.add_argument('-s', '--size', type=int, dest="subsize", default = 0.75, help="Size of the subset during resampling. If the original BED file contains 10000 regions, '--size = 0.85' means 8500 regions will be resampled. (default: %(default).2f)")
+	parser_overlap.add_argument('-f', '--fraction', type=int, dest="subsample", default = 0.75, help="Resampling fraction. (default: %(default).2f)")
 	parser_overlap.add_argument('-b', '--background', type=int, dest="bgsize", default = 1.4e9, help="The size of the cis-regulatory genomic regions. This is about 1.4Gb For the human genome. (default: %(default)d)")
 	parser_overlap.add_argument("-o", "--save", action="store_true", help="If set, will save peak-wise coefficients to files (\"input_A_peakwise_scores.tsv\" and \"input_B_peakwise_scores.tsv\").")
 	parser_overlap.add_argument("-d", "--debug",action="store_true", help="Print detailed information for debugging.")
@@ -76,7 +78,7 @@ def main():
 	parser_jaccard.add_argument("bed1", type=str, metavar ="input_A.bed",help=bed_help)
 	parser_jaccard.add_argument("bed2", type=str, metavar ="input_B.bed",help=bed_help)
 	parser_jaccard.add_argument('-n', '--ndraws', type=int, dest="iter", default = 20, help="Times of resampling to estimate confidence intervals. Set to '0' to turn off resampling.(default: %(default)d)")
-	parser_jaccard.add_argument('-s', '--size', type=int, dest="subsize", default = 0.75, help="Size of the subset during resampling. If the original BED file contains 10000 regions, '--size = 0.85' means 8500 regions will be resampled. (default: %(default).2f)")
+	parser_jaccard.add_argument('-f', '--fraction', type=int, dest="subsample", default = 0.75, help="Resampling fraction. (default: %(default).2f)")
 	parser_jaccard.add_argument('-b', '--background', type=int, dest="bgsize", default = 1.4e9, help="The size of the cis-regulatory genomic regions. This is about 1.4Gb For the human genome. (default: %(default)d)")
 	parser_jaccard.add_argument("-o", "--save", action="store_true", help="If set, will save peak-wise coefficients to files (\"input_A_peakwise_scores.tsv\" and \"input_B_peakwise_scores.tsv\").")
 	parser_jaccard.add_argument("-d", "--debug",action="store_true", help="Print detailed information for debugging.")
@@ -85,7 +87,7 @@ def main():
 	parser_dice.add_argument("bed1", type=str, metavar ="input_A.bed",help=bed_help)
 	parser_dice.add_argument("bed2", type=str, metavar ="input_B.bed",help=bed_help)
 	parser_dice.add_argument('-n', '--ndraws', type=int, dest="iter", default = 20, help="Times of resampling to estimate confidence intervals. Set to '0' to turn off resampling.(default: %(default)d)")
-	parser_dice.add_argument('-s', '--size', type=int, dest="subsize", default = 0.75, help="Size of the subset during resampling. If the original BED file contains 10000 regions, '--size = 0.85' means 8500 regions will be resampled. (default: %(default).2f)")
+	parser_dice.add_argument('-f', '--fraction', type=int, dest="subsample", default = 0.75, help="Resampling fraction. (default: %(default).2f)")
 	parser_dice.add_argument('-b', '--background', type=int, dest="bgsize", default = 1.4e9, help="The size of the cis-regulatory genomic regions. This is about 1.4Gb For the human genome. (default: %(default)d)")
 	parser_dice.add_argument("-o", "--save", action="store_true", help="If set, will save peak-wise coefficients to files (\"input_A_peakwise_scores.tsv\" and \"input_B_peakwise_scores.tsv\").")
 	parser_dice.add_argument("-d", "--debug",action="store_true", help="Print detailed information for debugging.")
@@ -95,17 +97,29 @@ def main():
 	parser_simpson.add_argument("bed1", type=str, metavar ="input_A.bed",help=bed_help)
 	parser_simpson.add_argument("bed2", type=str, metavar ="input_B.bed",help=bed_help)
 	parser_simpson.add_argument('-n', '--ndraws', type=int, dest="iter", default = 20, help="Times of resampling to estimate confidence intervals. Set to '0' to turn off resampling.(default: %(default)d)")
-	parser_simpson.add_argument('-s', '--size', type=int, dest="subsize", default = 0.75, help="Size of the subset during resampling. If the original BED file contains 10000 regions, '--size = 0.85' means 8500 regions will be resampled. (default: %(default).2f)")
+	parser_simpson.add_argument('-f', '--fraction', type=int, dest="subsample", default = 0.75, help="Resampling fraction. (default: %(default).2f)")
 	parser_simpson.add_argument('-b', '--background', type=int, dest="bgsize", default = 1.4e9, help="The size of the cis-regulatory genomic regions. This is about 1.4Gb For the human genome. (default: %(default)d)")
 	parser_simpson.add_argument("-o", "--save", action="store_true", help="If set, will save peak-wise coefficients to files (\"input_A_peakwise_scores.tsv\" and \"input_B_peakwise_scores.tsv\").")
 	parser_simpson.add_argument("-d", "--debug",action="store_true", help="Print detailed information for debugging.")
 
-
 	# create the parser for the "pmi" sub-command
 	parser_pmi.add_argument("bed1", type=str, metavar ="input_A.bed",help=bed_help)
 	parser_pmi.add_argument("bed2", type=str, metavar ="input_B.bed",help=bed_help)
+	parser_pmi.add_argument('-n', '--ndraws', type=int, dest="iter", default = 20, help="Times of resampling to estimate confidence intervals. Set to '0' to turn off resampling.(default: %(default)d)")
+	parser_pmi.add_argument('-f', '--fraction', type=int, dest="subsample", default = 0.75, help="Resampling fraction. (default: %(default).2f)")
 	parser_pmi.add_argument('-b', '--background', type=int, dest="bgsize", default = 1.4e9, help="The size of the cis-regulatory genomic regions. This is about 1.4Gb For the human genome. (default: %(default)d)")
+	parser_pmi.add_argument("-o", "--save", action="store_true", help="If set, will save peak-wise coefficients to files (\"input_A_peakwise_scores.tsv\" and \"input_B_peakwise_scores.tsv\").")
 	parser_pmi.add_argument("-d", "--debug",action="store_true", help="Print detailed information for debugging.")
+
+	# create the parser for the "npmi" sub-command
+	parser_npmi.add_argument("bed1", type=str, metavar ="input_A.bed",help=bed_help)
+	parser_npmi.add_argument("bed2", type=str, metavar ="input_B.bed",help=bed_help)
+	parser_npmi.add_argument('-n', '--ndraws', type=int, dest="iter", default = 20, help="Times of resampling to estimate confidence intervals. Set to '0' to turn off resampling.(default: %(default)d)")
+	parser_npmi.add_argument('-f', '--fraction', type=int, dest="subsample", default = 0.75, help="Resampling fraction. (default: %(default).2f)")
+	parser_npmi.add_argument('-b', '--background', type=int, dest="bgsize", default = 1.4e9, help="The size of the cis-regulatory genomic regions. This is about 1.4Gb For the human genome. (default: %(default)d)")
+	parser_npmi.add_argument("-o", "--save", action="store_true", help="If set, will save peak-wise coefficients to files (\"input_A_peakwise_scores.tsv\" and \"input_B_peakwise_scores.tsv\").")
+	parser_npmi.add_argument("-d", "--debug",action="store_true", help="Print detailed information for debugging.")
+
 
 	# create the parser for the "cooccur" sub-command
 	parser_cooccur.add_argument("bed1", type=str, metavar ="input_A.bed",help=bed_help)
@@ -168,11 +182,11 @@ def main():
 			else:
 				logging.basicConfig(format = "%(asctime)s [%(levelname)s]  %(message)s",datefmt='%Y-%m-%d %I:%M:%S', level=logging.INFO)
 			logging.info("Calculate overlapping coefficient (overall) ...")
-			result = bootstrap_coef(args.bed1, args.bed2, score_func = ov_coef, n_draws = args.iter, fraction = args.subsize, bg_size = args.bgsize)
+			result = bootstrap_coef(args.bed1, args.bed2, size_factor = 1/args.subsample, score_func = ov_coef, n_draws = args.iter, fraction = args.subsample, bg_size = args.bgsize)
 			print (result)
 			if args.save:
 				logging.info("Calculate overlapping coefficient (peak-wise) ...")
-				peakwise_ovcoef(args.bed1, args.bed2, score_func = ov_coef, na_label='NA')
+				peakwise_ovcoef(args.bed1, args.bed2, score_func = ov_coef, g = args.bgsize, na_label='NA')
 
 		elif command == 'jaccard':
 			if args.debug:
@@ -180,11 +194,11 @@ def main():
 			else:
 				logging.basicConfig(format = "%(asctime)s [%(levelname)s]  %(message)s",datefmt='%Y-%m-%d %I:%M:%S', level=logging.INFO)
 			logging.info("Calculate Jaccard coefficient (overall) ...")
-			result = bootstrap_coef(args.bed1, args.bed2, score_func = ov_jaccard, n_draws = args.iter, fraction = args.subsize, bg_size = args.bgsize)
+			result = bootstrap_coef(args.bed1, args.bed2, size_factor = 1/args.subsample, score_func = ov_jaccard, n_draws = args.iter, fraction = args.subsample, bg_size = args.bgsize)
 			print (result)
 			if args.save:
 				logging.info("Calculate Jaccard coefficient (peakwise) ...")
-				peakwise_ovcoef(args.bed1, args.bed2, method = ov_jaccard, na_label='NA')
+				peakwise_ovcoef(args.bed1, args.bed2, score_func = ov_jaccard, g = args.bgsize, na_label='NA')
 
 		elif command == 'dice':
 			if args.debug:
@@ -192,11 +206,11 @@ def main():
 			else:
 				logging.basicConfig(format = "%(asctime)s [%(levelname)s]  %(message)s",datefmt='%Y-%m-%d %I:%M:%S', level=logging.INFO)
 			logging.info("Calculate Sørensen–Dice coefficient (overall) ...")
-			result = bootstrap_coef(args.bed1, args.bed2, score_func = ov_sd, n_draws = args.iter, fraction = args.subsize, bg_size = args.bgsize)
+			result = bootstrap_coef(args.bed1, args.bed2, size_factor = 1/args.subsample, score_func = ov_sd, n_draws = args.iter, fraction = args.subsample, bg_size = args.bgsize)
 			print (result)
 			if args.save:
 				logging.info("Calculate Sørensen–Dice coefficient (peakwise) ...")
-				peakwise_ovcoef(args.bed1, args.bed2, method = ov_sd, na_label='NA')
+				peakwise_ovcoef(args.bed1, args.bed2, score_func = ov_sd, g = args.bgsize, na_label = 'NA')
 
 		elif command == 'simpson':
 			if args.debug:
@@ -204,11 +218,35 @@ def main():
 			else:
 				logging.basicConfig(format = "%(asctime)s [%(levelname)s]  %(message)s",datefmt='%Y-%m-%d %I:%M:%S', level=logging.INFO)
 			logging.info("Calculate Szymkiewicz–Simpson coefficient (overall) ...")
-			result = bootstrap_coef(args.bed1, args.bed2, score_func = ov_ss, n_draws = args.iter, fraction = args.subsize, bg_size = args.bgsize)
+			result = bootstrap_coef(args.bed1, args.bed2, size_factor = 1/args.subsample, score_func = ov_ss, n_draws = args.iter, fraction = args.subsample, bg_size = args.bgsize)
 			print (result)
 			if args.save:
 				logging.info("Calculate Szymkiewicz–Simpson coefficient (peakwise) ...")
-				peakwise_ovcoef(args.bed1, args.bed2, method = ov_ss, na_label='NA')
+				peakwise_ovcoef(args.bed1, args.bed2, score_func = ov_ss, g = args.bgsize, na_label = 'NA')
+
+		elif command == 'pmi':
+			if args.debug:
+				logging.basicConfig(format = "%(asctime)s [%(levelname)s]  %(message)s",datefmt='%Y-%m-%d %I:%M:%S', level=logging.DEBUG)
+			else:
+				logging.basicConfig(format = "%(asctime)s [%(levelname)s]  %(message)s",datefmt='%Y-%m-%d %I:%M:%S', level=logging.INFO)
+			logging.info("Calculate the pointwise mutual information (PMI) ...")
+			#result = cal_pmi(args.bed1, args.bed2, bg_size = args.bgsize)
+			result = bootstrap_coef(args.bed1, args.bed2, size_factor = 1, score_func = pmi_value, n_draws = args.iter, fraction = args.subsample, bg_size = args.bgsize)
+			print (result)
+			if args.save:
+				peakwise_ovcoef(args.bed1, args.bed2, score_func = pmi_value, g = args.bgsize, na_label = 'NA')
+
+		elif command == 'npmi':
+			if args.debug:
+				logging.basicConfig(format = "%(asctime)s [%(levelname)s]  %(message)s",datefmt='%Y-%m-%d %I:%M:%S', level=logging.DEBUG)
+			else:
+				logging.basicConfig(format = "%(asctime)s [%(levelname)s]  %(message)s",datefmt='%Y-%m-%d %I:%M:%S', level=logging.INFO)
+			logging.info("Calculate the normalized pointwise mutual information (NPMI) ...")
+			#result = cal_pmi(args.bed1, args.bed2, bg_size = args.bgsize)
+			result = bootstrap_npmi(args.bed1, args.bed2, size_factor = 1/args.subsample, score_func = npmi_value, n_draws = args.iter, fraction = args.subsample, bg_size = args.bgsize)
+			print (result)
+			if args.save:
+				peakwise_ovcoef(args.bed1, args.bed2, score_func = npmi_value, g = args.bgsize, na_label = 'NA')
 
 		elif command == 'srog':
 			if args.debug:
@@ -218,15 +256,6 @@ def main():
 			logging.info("Determine the spacial realtions of genomic (SROG) intervals ...")
 			summary = srog_peak(inbed1 = args.bed1, inbed2 = args.bed2, outfile = args.output, max_dist =  args.max_dist)
 			print (summary)
-
-		elif command == 'pmi':
-			if args.debug:
-				logging.basicConfig(format = "%(asctime)s [%(levelname)s]  %(message)s",datefmt='%Y-%m-%d %I:%M:%S', level=logging.DEBUG)
-			else:
-				logging.basicConfig(format = "%(asctime)s [%(levelname)s]  %(message)s",datefmt='%Y-%m-%d %I:%M:%S', level=logging.INFO)
-			logging.info("Calculate the pointwise mutual information (PMI) and the normalized pointwise mutual information (NPMI) ...")
-			result = cal_pmi(args.bed1, args.bed2, bg_size = args.bgsize)
-			print (result)
 
 		elif command == 'covary':
 			if args.debug:

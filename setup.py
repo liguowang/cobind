@@ -9,7 +9,7 @@ Setup script for cobind  -- collocation analysis of genomics regions.
 
 def main():
     setup(  name = "cobind",
-            version = "0.0.5",
+            version = "0.0.6",
             python_requires='>=3.5',
             py_modules = [ 'psyco_full' ],
             packages = find_packages( 'lib' ),

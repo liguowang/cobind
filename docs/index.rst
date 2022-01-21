@@ -35,6 +35,7 @@ cobind's documentation
    usage/cooccur.rst
    usage/covary.rst
    usage/SROG.rst
+   usage/stat.rst
 
 .. toctree::
    :caption: Liscense

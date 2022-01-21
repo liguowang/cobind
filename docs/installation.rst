@@ -23,30 +23,31 @@ Install
 -------
 Please install `pip <https://pypi.org/project/pip/>`_ (Package Installer for Python) first if you do not have it.
 
-::
- 
- #check if pip is avaiable. 
- $ pip --version
- pip 20.1.1 from /Users/m102324/opt/anaconda3/lib/python3.8/site-packages/pip (python 3.8)
+.. code-block::
+   
+   #check if pip is avaiable. 
+   $ pip --version
+   pip 20.1.1 from /Users/home/opt/anaconda3/lib/python3.8/site-packages/pip (python 3.8)
 
 Then you can install *cobind* using `pip <https://pypi.org/project/pip/>`_ from `PyPI <https://pypi.org/project/cobind/>`_ or `github <https://github.com/liguowang/cobind>`_
 
-::
+.. code-block::
  
- $ pip install cobind
- or 
- $ pip install git+https://github.com/liguowang/cobind.git
+   $ pip install cobind
+   #or 
+   $ pip install git+https://github.com/liguowang/cobind.git
 
 Upgrade
 -------
-::
+.. code-block::
 
- $ pip install cobind --upgrade 
+   $ pip install cobind --upgrade 
 
 Uninstall
 ---------
-::
 
- $ pip uninstall cobind
+.. code-block::
+
+   $ pip uninstall cobind
 
 

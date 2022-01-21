@@ -103,4 +103,3 @@ A-,B-
 
 
 .. [#f1] Note: "cooccur" does NOT necessarily mean "overlap". For example, two transcription factors could bind to the same promoter region without touching each other. 
-

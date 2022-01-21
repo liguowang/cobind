@@ -32,6 +32,9 @@ cobind's documentation
    usage/SS.rst
    usage/PMI.rst
    usage/NPMI.rst
+   usage/cooccur.rst
+   usage/covary.rst
+   usage/SROG.rst
 
 .. toctree::
    :caption: Liscense

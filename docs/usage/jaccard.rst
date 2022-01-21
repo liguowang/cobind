@@ -14,8 +14,8 @@ Calculate the `Jaccard similarity coefficient <https://en.wikipedia.org/wiki/Jac
   :width: 180
   :alt: Alternative text
 
-Command (getting help)
-----------------------
+Usage
+-----
 
 :code:`cobind.py jacard -h`
 
@@ -50,8 +50,8 @@ Command (getting help)
    -d, --debug           Print detailed information for debugging.
 
 
-Command (example)
------------------
+Example
+-------
 
 Calculate the **overall** `Jaccard coefficient <https://en.wikipedia.org/wiki/Jaccard_index>`_ and **peak-wise** `Jaccard coefficient <https://en.wikipedia.org/wiki/Jaccard_index>`_ between CTCF binding sites and RAD21 binding sites.
 

@@ -14,8 +14,8 @@ Calculate the `Szymkiewicz–Simpson coefficient <https://en.wikipedia.org/wiki/
   :width: 180
   :alt: Alternative text
 
-Command (getting help)
-----------------------
+Usage
+-----
 
 :code:`cobind.py simpson -h`
 
@@ -52,8 +52,8 @@ Command (getting help)
     -d, --debug           Print detailed information for debugging.
 
 
-Command (example)
------------------
+Example
+-------
 
 Calculate the **overall** `Simpson coefficient <https://en.wikipedia.org/wiki/Overlap_coefficient>`_ and **peak-wise** `Simpson coefficient <https://en.wikipedia.org/wiki/Overlap_coefficient>`_ between CTCF binding sites and RAD21 binding sites.
 

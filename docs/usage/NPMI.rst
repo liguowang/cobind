@@ -22,8 +22,8 @@ where
 
 
 
-Command (getting help)
-----------------------
+Usage
+-----
 
 :code:`cobind.py npmi -h`
 
@@ -60,8 +60,8 @@ Command (getting help)
     -d, --debug           Print detailed information for debugging.
 
 
-Command (example)
------------------
+Example
+-------
 
 Calculate the **overall** NPMI and **peak-wise** NPMI between CTCF binding sites and RAD21 binding sites.
 

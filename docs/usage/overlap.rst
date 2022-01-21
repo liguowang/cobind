@@ -14,8 +14,8 @@ Calculate the overlap coefficient [#f1]_ between two sets of genomic regions.
   :width: 200
   :alt: Alternative text
 
-Command (getting help)
-----------------------
+Usage
+-----
 
 :code:`cobind.py overlap -h`
 
@@ -50,8 +50,8 @@ Command (getting help)
    -d, --debug           Print detailed information for debugging
 
 
-Command (example)
------------------
+Example
+-------
 
 Calculate the **overall** overlap coefficient and **peak-wise** overlap coefficients between CTCF binding sites and RAD21 binding sites.
 

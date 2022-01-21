@@ -14,8 +14,8 @@ Calculate the `Sørensen–Dice coefficient <https://en.wikipedia.org/wiki/S%C3%
   :width: 180
   :alt: Alternative text
 
-Command (getting help)
-----------------------
+Usage
+-----
 
 :code:`cobind.py dice -h`
 
@@ -52,8 +52,9 @@ Command (getting help)
     -d, --debug           Print detailed information for debugging.
 
 
-Command (example)
------------------
+
+Example
+-------
 
 Calculate the **overall** `Dice coefficient <https://en.wikipedia.org/wiki/S%C3%B8rensen%E2%80%93Dice_coefficient>`_ and **peak-wise** `Dice coefficient <https://en.wikipedia.org/wiki/S%C3%B8rensen%E2%80%93Dice_coefficient>`_ between CTCF binding sites and RAD21 binding sites.
 

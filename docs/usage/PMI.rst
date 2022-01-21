@@ -22,8 +22,8 @@ where
 
 
 
-Command (getting help)
-----------------------
+Usage
+-----
 
 :code:`cobind.py pmi -h`
 
@@ -60,8 +60,9 @@ Command (getting help)
     -d, --debug           Print detailed information for debugging.
 
 
-Command (example)
------------------
+
+Example
+-------
 
 Calculate the **overall** `PMI <https://en.wikipedia.org/wiki/Pointwise_mutual_information>`_ and **peak-wise** `PMI <https://en.wikipedia.org/wiki/Pointwise_mutual_information>`_ between CTCF binding sites and RAD21 binding sites.
 

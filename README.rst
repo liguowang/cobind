@@ -1,8 +1,8 @@
-|Generic badge|
+|PyPI status|
 
-.. |Generic badge| image:: https://img.shields.io/badge/docs-pass-green.svg
-   :target:
-
+.. |PyPI status| image:: https://img.shields.io/pypi/status/ansicolortags.svg
+   :target: https://pypi.python.org/pypi/ansicolortags/
+   
 Install cobind using pip3 
 ----------------------------
 ::

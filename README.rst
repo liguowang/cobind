@@ -1,6 +1,6 @@
 |Documentation Status|
 
-.. |Generic badge| image:: https://img.shields.io/badge/<docs>-<pass>-<green>.svg
+.. |Generic badge| image:: https://img.shields.io/badge/docs-pass-green.svg
    :target:
 
 Install cobind using pip3 

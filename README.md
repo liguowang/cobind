@@ -2,7 +2,7 @@
 [![GitHub issues](https://img.shields.io/github/issues/liguowang/cobind)](https://github.com/liguowang/cobind/issues)
 [![GitHub license](https://img.shields.io/github/license/liguowang/cobind)](https://github.com/liguowang/cobind/blob/main/LICENSE)
 
-### Install cobind using pip
+### Install cobind using [pip](https://pip.pypa.io/en/stable/)
 
  `$ pip install cobind`
  or 

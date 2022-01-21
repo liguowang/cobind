@@ -1,8 +1,8 @@
 |Documentation Status|
 
 .. |Documentation Status| image:: https://readthedocs.org/projects/ansicolortags/badge/?version=latest
-   :target: http://ansicolortags.readthedocs.io/?badge=latest
-   
+   :target: https://cobind.readthedocs.io/en/latest/
+
 |PyPI status|
 
 .. |PyPI status| image:: https://img.shields.io/pypi/status/ansicolortags.svg
@@ -12,6 +12,11 @@
 
 .. |PyPI pyversions| image:: https://img.shields.io/pypi/pyversions/ansicolortags.svg
    :target: https://pypi.python.org/pypi/ansicolortags/
+
+|GitHub license|
+
+.. |GitHub license| image:: https://img.shields.io/github/license/Naereen/StrapDown.js.svg
+   :target: https://github.com/liguowang/cobind/blob/main/LICENSE
 
 
 Install cobind using pip3 

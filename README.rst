@@ -1,3 +1,8 @@
+|Documentation Status|
+
+.. |Documentation Status| image:: https://readthedocs.org/projects/ansicolortags/badge/?version=latest
+   :target: http://ansicolortags.readthedocs.io/?badge=latest
+   
 |PyPI status|
 
 .. |PyPI status| image:: https://img.shields.io/pypi/status/ansicolortags.svg

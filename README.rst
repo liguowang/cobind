@@ -1,5 +1,8 @@
 |Documentation Status|
 
+.. |Generic badge| image:: https://img.shields.io/badge/<docs>-<pass>-<green>.svg
+   :target:
+
 .. |Documentation Status| image:: https://readthedocs.org/projects/ansicolortags/badge/?version=latest
 :target: https://cobind.readthedocs.io/en/latest/
 

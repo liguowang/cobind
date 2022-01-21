@@ -2,22 +2,17 @@
 
 .. |Documentation Status| image:: https://readthedocs.org/projects/ansicolortags/badge/?version=latest
    :target: https://cobind.readthedocs.io/en/latest/
-
+  
 |Forks|
 
 .. |forks| image:: https://img.shields.io/github/forks/liguowang/cobind
    :target: https://github.com/liguowang/cobind/network
-
+  
 |PyPI status|
 
 .. |PyPI status| image:: https://img.shields.io/pypi/status/ansicolortags.svg
    :target: https://pypi.python.org/pypi/ansicolortags/
-
-|PyPI pyversions|
-
-.. |PyPI pyversions| image:: https://img.shields.io/pypi/pyversions/ansicolortags.svg
-   :target: https://pypi.python.org/pypi/ansicolortags/
-
+  
 |GitHub license|
 
 .. |GitHub license| image:: https://img.shields.io/github/license/Naereen/StrapDown.js.svg

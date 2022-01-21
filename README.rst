@@ -1,8 +1,7 @@
 |Documentation Status|
 
-.. |Documentation Status| image:: https://readthedocs.org/projects/ansicolortags/badge/?version=latest
-   :target: https://cobind.readthedocs.io/en/latest/  
-  
+.. |Documentation Status| image:: https://readthedocs.org/projects/ansicolortags/badge/?version=latest :target: https://cobind.readthedocs.io/en/latest/  
+
 |Forks|
 
 .. |forks| image:: https://img.shields.io/github/forks/liguowang/cobind

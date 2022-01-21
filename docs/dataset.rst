@@ -78,10 +78,10 @@ These files can be used as genomic "background".
    * - Dataset
      - md5sum
      - Genomic Size
-   * - `remap2022_CisRegulatoryModules_hg38_v1_0.bed.gz <https://data.cyverse.org/dav-anon/iplant/home/liguow/cobind_files/remap2022_CisRegulatoryModules_hg38_v1_0.bed.gz>`_
+   * - `remap2022_CRM_hg38_v1_0.bed.gz <https://data.cyverse.org/dav-anon/iplant/home/liguow/cobind_files/remap2022_CisRegulatoryModules_hg38_v1_0.bed.gz>`_
      - 4717178cd730471f5ac897838c55847c
      - 1.48 gigabase
-   * - `ENCODE_CandidateCisRegulatoryElements_hg38.bed.gz <https://data.cyverse.org/dav-anon/iplant/home/liguow/cobind_files/ENCODE_CandidateCisRegulatoryElements_hg38.bed.gz>`_
+   * - `ENCODE_CCRE_hg38.bed.gz <https://data.cyverse.org/dav-anon/iplant/home/liguow/cobind_files/ENCODE_CandidateCisRegulatoryElements_hg38.bed.gz>`_
      - a572f25b1f7a51283591f4afd8f0c3b7
      - 253 megabase
    * - `GeneHancer_v4.4_hg38.bed.gz <https://data.cyverse.org/dav-anon/iplant/home/liguow/cobind_files/GeneHancer_v4.4_hg38.bed.gz>`_
@@ -99,7 +99,7 @@ These files can be used as genomic "background".
    * - Dataset
      - md5sum  
      - Genomic Size
-   * - `remap2022_CisRegulatloryModules_mm39_v1_0.bed.gz <https://data.cyverse.org/dav-anon/iplant/home/liguow/cobind_files/remap2022_CisRegulatoryModules_mm39_v1_0.bed.gz>`_
+   * - `remap2022_CRM_mm39_v1_0.bed.gz <https://data.cyverse.org/dav-anon/iplant/home/liguow/cobind_files/remap2022_CisRegulatoryModules_mm39_v1_0.bed.gz>`_
      - 9c20058b6ab324f2292029566e59993a
      -
 
@@ -111,7 +111,7 @@ These files can be used as genomic "background".
    * - Dataset
      - md5sum 
      - Genomic Size
-   * - `remap2022_CisRegulatoryModules_dm6_v1_0.bed.gz <https://data.cyverse.org/dav-anon/iplant/home/liguow/cobind_files/remap2022_CisRegulatoryModules_dm6_v1_0.bed.gz>`_
+   * - `remap2022_CRM_dm6_v1_0.bed.gz <https://data.cyverse.org/dav-anon/iplant/home/liguow/cobind_files/remap2022_CisRegulatoryModules_dm6_v1_0.bed.gz>`_
      - 3633180a8cba0495147682cc9b288aca
      -
   

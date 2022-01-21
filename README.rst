@@ -1,4 +1,4 @@
-|Documentation Status|
+|Generic badge|
 
 .. |Generic badge| image:: https://img.shields.io/badge/docs-pass-green.svg
    :target:

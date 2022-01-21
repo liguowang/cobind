@@ -1,11 +1,7 @@
 |Documentation Status|
 
-.. |Documentation Status| image:: https://readthedocs.org/projects/ansicolortags/badge/?version=latest
-   :target: https://cobind.readthedocs.io/en/latest/ 
-
-   .. image:: https://img.shields.io/github/issues/liguowang/cobind
-   :alt: GitHub issues
-   :target: https://github.com/liguowang/cobind/issues
+.. |Documentation Status| image:: https://readthedocs.org/projects/ansicolortags/badge/?version=latest :target: https://cobind.readthedocs.io/en/latest/
+.. image:: https://img.shields.io/github/issues/liguowang/cobind   :alt: GitHub issues   :target: https://github.com/liguowang/cobind/issues
 
 
 Install cobind using pip3 

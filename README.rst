@@ -3,6 +3,8 @@
 .. |Documentation Status| image:: https://readthedocs.org/projects/ansicolortags/badge/?version=latest
    :target: https://cobind.readthedocs.io/en/latest/
 
+.. |forks| image:: https://img.shields.io/github/forks/liguowang/cobind   :alt: GitHub forks   :target: https://github.com/liguowang/cobind/network
+
 |PyPI status|
 
 .. |PyPI status| image:: https://img.shields.io/pypi/status/ansicolortags.svg

@@ -12,6 +12,8 @@
 
  `$ pip3 install cobind --upgrade`
 
+### Uninstall
+ `pip -y uninstall cobind`
 
 ### Documentation
 

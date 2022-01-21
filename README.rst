@@ -4,6 +4,7 @@
    :target: https://cobind.readthedocs.io/en/latest/
 
 |PyPI status|
+
 .. |PyPI status| image:: https://img.shields.io/pypi/status/ansicolortags.svg
    :target: https://pypi.python.org/pypi/ansicolortags/
 

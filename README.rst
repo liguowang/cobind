@@ -3,6 +3,8 @@
 .. |Documentation Status| image:: https://readthedocs.org/projects/ansicolortags/badge/?version=latest
    :target: https://cobind.readthedocs.io/en/latest/
 
+https://img.shields.io/github/issues/liguowang/cobind
+
 Install cobind using pip3 
 ----------------------------
 ::

@@ -1,5 +1,8 @@
 |Documentation Status|
 
+.. |Documentation Status| image:: https://readthedocs.org/projects/ansicolortags/badge/?version=latest
+   :target: https://cobind.readthedocs.io/en/latest/
+
 Install cobind using pip3 
 ----------------------------
 ::
@@ -17,3 +20,5 @@ Upgrade
 
 Documentation
 --------------
+
+https://cobind.readthedocs.io/en/latest/

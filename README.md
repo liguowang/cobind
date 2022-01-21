@@ -2,15 +2,15 @@
 [![GitHub issues](https://img.shields.io/github/issues/liguowang/cobind)](https://github.com/liguowang/cobind/issues)
 [![GitHub license](https://img.shields.io/github/license/liguowang/cobind)](https://github.com/liguowang/cobind/blob/main/LICENSE)
 
-### Install cobind using pip3 
+### Install cobind using pip
 
- `$ pip3 install cobind`
+ `$ pip install cobind`
  or 
- `$ pip3 install git+https://github.com/liguowang/cobind.git`
+ `$ pip install git+https://github.com/liguowang/cobind.git`
  
 ### Upgrade
 
- `$ pip3 install cobind --upgrade`
+ `$ pip install cobind --upgrade`
 
 ### Uninstall
  `pip -y uninstall cobind`

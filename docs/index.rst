@@ -38,9 +38,9 @@ cobind's documentation
    usage/stat.rst
 
 .. toctree::
-   :caption: Liscense
+   :caption: License
 
-   liscense
+   license
 
 .. toctree::
    :caption: Reference

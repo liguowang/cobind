@@ -115,4 +115,4 @@ column 9 (Score)
   The peakwise overlap coefficient.
 
 
-.. [#f1] Do not confuse with `Szymkiewicz–Simpson coefficient <https://en.wikipedia.org/wiki/Overlap_coefficient>`_, which is called "overlap coefficent" in Wikipedia, but was named as the "SS coefficient" in our cobind package.
+.. [#f1] Do not confuse with `Szymkiewicz–Simpson coefficient <https://en.wikipedia.org/wiki/Overlap_coefficient>`_, which is called "overlap coefficient" in Wikipedia, but was named as the "SS coefficient" in our cobind package.

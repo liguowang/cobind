@@ -1,7 +1,7 @@
 Introduction
 ============
 
-Genomic features and genome analysis results are generally represented as genomic intervals, for examples,
+Genomic features and genome analysis results are generally represented as genomic intervals, for example,
 genes, exons, promoters, enhancers, transcription factor binding sites, DNA motifs, CpG islands, 
 nucleosomes, heterochromatin, DNA repeats, SNVs, `INDELs <https://en.wikipedia.org/wiki/Indel>`_.
 
@@ -20,5 +20,5 @@ while the extent of overlapping between two genomic intervals is a continuous me
   that A's binding sites overlap better with B than C? The answer is "no" because B and C might have different numbers of TFBS. The answer is still "no" even
   B and C have the same number of TFBS, because the length of TFBS might be significantly different between B and C. 
 
-These drawbacks make the direct comparison (or meta analysis) of genomic overlapping analysis results problematic. `Cobind <https://cobind.readthedocs.io/en/latest/>`_ is designed to address these problems and provides objective, rigorous quantification of a genomic region overlapping.
+These drawbacks make the direct comparison (or meta-analysis) of genomic overlapping analysis results problematic. `Cobind <https://cobind.readthedocs.io/en/latest/>`_ is designed to address these problems and provides objective, rigorous quantification of a genomic region overlapping.
 

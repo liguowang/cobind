@@ -4,7 +4,7 @@ Definitions
 Symbols definitions
 -------------------
 
-We have two sets of genomic intervals **A** and **B**. The genomic background is **G** (e.g., all the cis-regulatory elements in the genome).
+We have two sets of genomic intervals, **A** and **B**. The genomic background is **G** (e.g., all the cis-regulatory elements in the genome).
 In Figure 1 below, for simplicity, both A and B contain only 1 genomic region.  
 
 .. image:: _static/set_symbols.jpg
@@ -43,9 +43,9 @@ There are six different spacial relations between two genomic regions (A and B):
 
 Overlap coefficient (O)
 -----------------------
-The overlap coefficient between A and B is calculated as the ratio between *intersection of A and B* and the *geometric mean of A and B*.
+The overlap coefficient between A and B is calculated as the ratio between the *intersection of A and B*, and the *geometric mean of A and B*.
 
- - O(A,B) is a value between [0, 1] with 0 indicating 'no overlap', and 1 indicating '100% overlap' (i.e., A and B are identical). 
+ - O(A,B) is a value between [0, 1], with 0 indicating 'no overlap', and 1 indicating '100% overlap' (i.e., A and B are identical). 
  - O(A, B) is defined as 0 when \|A\| = 0 or \|B\| = 0, or  \|A\| = \|B\| = 0.
 
 .. image:: _static/ov_coef_1.jpg
@@ -93,7 +93,7 @@ The Jaccard distance *Dj* is calculated as:
   :alt: Alternative text
 
 
-Similar to O(A,B)m, we have **overall Jaccard coefficient** and **peakwise Jaccard coefficient**.
+Similar to O(A,B), we have an **overall Jaccard coefficient** and **peakwise Jaccard coefficient**.
 
 overall Jaccard coefficient
   The Jaccard coefficient between two **sets** of genomic regions. 
@@ -194,7 +194,7 @@ Coefficients comparison
 Pointwise mutual information (PMI)
 ----------------------------------
 `Pointwise mutual information (PMI) <https://en.wikipedia.org/wiki/Pointwise_mutual_information>`_ is one of the standard association measures in collocation analysis. 
-It measures how much the observed overlaps differ from what we would expect them to be. Assume A and B represent two sets of genomic regions bound by `transcription factor <https://en.wikipedia.org/wiki/Transcription_factor>`_ A and B; respectively, PMI measures if A and B bind together or separately.
+It measures how much the observed overlaps differ from what we would expect them to be. Assume A and B represent two sets of genomic regions bound by `transcription factors <https://en.wikipedia.org/wiki/Transcription_factor>`_ A and B; respectively, PMI measures if A and B bind together or separately.
 
 
 PMI is calculated as:

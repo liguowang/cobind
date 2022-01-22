@@ -1,7 +1,7 @@
 Installation
 =============
 
-cobind are written in Python. Python3 (v3.5.x) is required to run all programs in
+cobind is written in Python. Python3 (v3.5.x) is required to run all programs in
 cobind.
 
 Dependencies
@@ -25,11 +25,11 @@ Please install `pip <https://pypi.org/project/pip/>`_ (Package Installer for Pyt
 
 .. code-block::
    
-   #check if pip is avaiable. 
+   #check if pip is available. 
    $ pip --version
    pip 20.1.1 from /Users/home/opt/anaconda3/lib/python3.8/site-packages/pip (python 3.8)
 
-Then you can install *cobind* using `pip <https://pypi.org/project/pip/>`_ from `PyPI <https://pypi.org/project/cobind/>`_ or `github <https://github.com/liguowang/cobind>`_
+Then you can install *cobind* using `pip <https://pypi.org/project/pip/>`_ from `PyPI <https://pypi.org/project/cobind/>`_ or `GitHub <https://github.com/liguowang/cobind>`_
 
 .. code-block::
  

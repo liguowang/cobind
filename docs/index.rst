@@ -26,6 +26,7 @@ cobind's documentation
    :glob:
    :maxdepth: 2
 
+   usage/cobind.rst
    usage/overlap.rst
    usage/jaccard.rst
    usage/SD.rst

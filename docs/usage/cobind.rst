@@ -1,5 +1,5 @@
-cobind
-=======
+cobind (overview)
+=================
 
 Description
 -------------

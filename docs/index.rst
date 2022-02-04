@@ -39,12 +39,29 @@ cobind's documentation
    usage/stat.rst
 
 .. toctree::
+   :caption: Evaluation
+
+   comparison
+
+.. toctree::
    :caption: License
 
    license
 
 .. toctree::
+   :caption: Acknowledgements
+   
+   acknowledgements
+
+.. toctree::
+   :caption: Contact
+
+   contact
+
+.. toctree::
    :caption: Reference
 
    reference
+
+
 

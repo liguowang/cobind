@@ -41,7 +41,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'cobind'
-copyright = u'2021, Liguo Wang'
+copyright = u'2022, Liguo Wang'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -127,7 +127,7 @@ html_theme_options = {
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
-html_title = "Cobind documentation"
+html_title = "Cobind: Collocation Analysis of Genomics Intervals"
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 html_short_title = "cobind"
@@ -148,7 +148,7 @@ html_static_path = ['_static']
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
-html_last_updated_fmt = 'Jan 23, 2022'
+html_last_updated_fmt = ''
 
 # If true, SmartyPants will be used to convert quotes and dashes to
 # typographically correct entities.

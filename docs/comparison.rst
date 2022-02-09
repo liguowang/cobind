@@ -1,5 +1,92 @@
-Comparison
-============
+
+Coefficients comparison
+------------------------
+
+The table below gives the lower and upper bounds of the 6 metrics and their major drawbacks.
+
+
+.. list-table::
+   :widths: 5,20,20,35
+   :header-rows: 1
+
+   * - *Index*
+     - *Lower bound*
+     - *Upper bound*
+     - *Comments*
+   * - O(A,B)
+     - 0 (no overlap)
+     - 1 (A = B)
+     -   
+   * - J(A,B)
+     - 0 (no overlap)
+     - 1 (A = B)
+     - Bias towards the **larger** interval
+   * - SD(A,B)
+     - 0 (no overlap)
+     - 1 (A = B)
+     - Bias towards the **larger** interval
+   * - SS(A,B)
+     - 0 (no overlap)
+     - 1 (A = B, A ∈ B, or B ∈ A)
+     - Bias towards the **smaller** interval
+   * - PMI
+     - -inf (no overlap)
+     - min(-log(p(A)), -log(p(B)))
+     - No fixed bound
+   * - NPMI
+     - -1 (no overlap)
+     - 1 (A = B)
+     -   
+     
+.. list-table:: **O(A,B)** vs **J(A,B)** vs **SD(A,B)** vs **SS(A,B)**
+   :widths: 15,15,15,15,15,15,15,15,20
+   :header-rows: 1
+
+   * - *SROG*
+     - \|A\|
+     - \|B\|
+     - \|A ∩ B\|
+     - \|A ∪ B\|
+     - *O*
+     - *J*
+     - *SD*
+     - *SS*
+   * - A equals B
+     - 1000
+     - 1000
+     - 1000
+     - 1000
+     - 1
+     - 1
+     - 1
+     - 1
+   * - A disjoint B 
+     - 1000
+     - 1000
+     - 0
+     - 2000
+     - 0
+     - 0
+     - 0
+     - 0
+   * - A overlaps B 
+     - 100
+     - 1000
+     - 50
+     - 1050
+     - 0.158
+     - 0.0476
+     - 0.0909
+     - 0.5
+   * - A within B 
+     - 100
+     - 1000
+     - 100
+     - 1000
+     - 0.316
+     - 0.1
+     - 0.182
+     - 1
 
 
 Compare different metrics

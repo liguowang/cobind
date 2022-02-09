@@ -133,63 +133,6 @@ Szymkiewicz–Simpson coefficient (SS)
   :alt: Alternative text
 
 
-Coefficients comparison
-------------------------
-
- - **O(A,B)**, **J(A,B)**, and **SD(A,B)** are all within [0, 1] with 0 indicating 'no overlap', and 1 indicating '100% overlap' (i.e., A equals B).
- - **SS(A,B)** is different, with 0 indicating 'no overlap', and 1 indicating "A equals B", or "A within B" or "B within A" .
- - When the sizes of two genomic regions are significantly different, the **SS(A,B)** gives more weight to the smaller genomic region, while the **J(A,B)** and **SD(A,B)** give more weight to the larger genomic region, **O(A,B)** is a compromised index between the two extremes. 
-
-.. list-table:: **O(A,B)** vs **J(A,B)** vs **SD(A,B)** vs **SS(A,B)**
-   :widths: 15,15,15,15,15,15,15,15,20
-   :header-rows: 1
-
-   * - *SROG*
-     - \|A\|
-     - \|B\|
-     - \|A ∩ B\|
-     - \|A ∪ B\|
-     - *O*
-     - *J*
-     - *SD*
-     - *SS*
-   * - A equals B
-     - 1000
-     - 1000
-     - 1000
-     - 1000
-     - 1
-     - 1
-     - 1
-     - 1
-   * - A disjoint B 
-     - 1000
-     - 1000
-     - 0
-     - 2000
-     - 0
-     - 0
-     - 0
-     - 0
-   * - A overlaps B 
-     - 100
-     - 1000
-     - 50
-     - 1050
-     - 0.158
-     - 0.0476
-     - 0.0909
-     - 0.5
-   * - A within B 
-     - 100
-     - 1000
-     - 100
-     - 1000
-     - 0.316
-     - 0.1
-     - 0.182
-     - 1
-
 
 Pointwise mutual information (PMI)
 ----------------------------------
@@ -237,7 +180,13 @@ Note, after normalization, NPMI is confined to [-1, 1]:
   :width: 250
   :alt: Alternative text
 
+Which metric to use? 
+---------------------
 
+Based on our evaluation, the **Overlap coefficient (O)** and **NPMI** are the best two metrics one can use to quantify the overlap (colocation)
+between two sets of genomic intervals.
+
+`Metric evaluation <https://cobind.readthedocs.io/en/latest/comparison.html>`_
 
 
 

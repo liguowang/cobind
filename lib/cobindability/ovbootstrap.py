@@ -7,7 +7,7 @@ Created on Wed Jan  5 13:06:22 2022
 """
 
 import sys
-from cobindability.BED import bed_genomic_size, bed_overlap_size, bedtolist, bed_counts
+from cobindability.BED import bed_genomic_size, bed_overlap_size, bed_to_list, bed_counts
 #from cobindability.coefcal import ov_coef, ov_jaccard, ov_ss, ov_sd
 from os.path import basename
 import logging
@@ -71,8 +71,8 @@ def bootstrap_coef(file1, file2, score_func, size_factor, n_draws=20, fraction =
 
 	results = {}
 
-	file1_lst = bedtolist (file1)
-	file2_lst = bedtolist (file2)
+	file1_lst = bed_to_list (file1)
+	file2_lst = bed_to_list (file2)
 
 	results['A.name'] = basename(file1)
 	results['B.name'] = basename(file2)
@@ -170,8 +170,8 @@ def bootstrap_npmi(file1, file2, score_func, size_factor, n_draws=20, fraction =
 
 	results = {}
 
-	file1_lst = bedtolist (file1)
-	file2_lst = bedtolist (file2)
+	file1_lst = bed_to_list (file1)
+	file2_lst = bed_to_list (file2)
 
 	results['A.name'] = basename(file1)
 	results['B.name'] = basename(file2)

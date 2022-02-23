@@ -20,10 +20,10 @@ __email__ = "wang.liguo@mayo.edu"
 __status__ = "Development"
 
 
-def unionBed3(inbed):
+def union_bed3(inbed):
 	"""
-	Merge/union genomic intervals. If input is a BED file, only consider the
-	first three columns (chrom, start, end), other columns will be ignored.
+	Merge or union genomic intervals. Only consider the first three columns
+	(chrom, start, end), other columns will be ignored.
 
 	Parameters
 	----------
@@ -38,7 +38,7 @@ def unionBed3(inbed):
 
 	Examples
 	--------
-	>>> unionBed3([('chr1', 1, 10), ('chr1', 3, 15), ('chr1', 20, 35), ('chr1', 20, 50)])
+	>>> union_bed3([('chr1', 1, 10), ('chr1', 3, 15), ('chr1', 20, 35), ('chr1', 20, 50)])
 	[('chr1', 1, 15), ('chr1', 20, 50)]
 
 	"""
@@ -70,7 +70,7 @@ def unionBed3(inbed):
 	return unioned_intervals
 
 
-def intersectBed3(inbed1,inbed2):
+def intersect_bed3(inbed1,inbed2):
 	"""
 	Return the shared genomic intervals beetween inbed1 and inbed2. Inputs are
 	two BED files or two lists of genomic intervals. If input is a BED file,
@@ -93,7 +93,7 @@ def intersectBed3(inbed1,inbed2):
 
 	Examples
 	--------
-	>>> intersectBed3([('chr1', 1, 10), ('chr1', 20, 35)], [('chr1',3, 15), ('chr1',20, 50)])
+	>>> intersect_bed3([('chr1', 1, 10), ('chr1', 20, 35)], [('chr1',3, 15), ('chr1',20, 50)])
 	[('chr1', 3, 10), ('chr1', 20, 35)]
 	"""
 	shared_intervals = []
@@ -149,7 +149,7 @@ def intersectBed3(inbed1,inbed2):
 	return shared_intervals
 
 
-def subtractBed3(inbed1,inbed2):
+def subtract_bed3(inbed1,inbed2):
 	"""
 	Subtract inbed2 from inbed1 (inbed1 - inbed2)
 
@@ -169,7 +169,7 @@ def subtractBed3(inbed1,inbed2):
 
 	Examples
 	--------
-	>>> subtractBed3([('chr1', 1, 10), ('chr1', 20, 35)], [('chr1',3, 15), ('chr1',20, 50)])
+	>>> subtract_bed3([('chr1', 1, 10), ('chr1', 20, 35)], [('chr1',3, 15), ('chr1',20, 50)])
 	[('chr1', 1, 3)]
 
 	"""
@@ -195,7 +195,7 @@ def subtractBed3(inbed1,inbed2):
 			if type(inbed1) is list:
 				return inbed1
 			else:
-				return bedtolist(inbed1)
+				return bed_to_list(inbed1)
 		else:
 			bitsets2 = binned_bitsets_from_list(inbed2)
 	elif  type(inbed2) is str:
@@ -374,6 +374,13 @@ def bed_overlap_size(bed1,bed2):
 		File name of the second BED file. Can also be a list, such as
 		[(chr1 100 200), (chr2 150  300), (chr2 1000 1200)]
 
+	Example
+	-------
+	>>> input_data1 = [('chr1', 1, 10), ('chr1', 20, 35)]
+	>>> input_data2 = [('chr1',3, 15), ('chr1',20, 50)]
+	>>> bed_overlap_size(input_data1, input_data2)
+	22
+
 	Returns
 	-------
 	Int. Overlapped size.
@@ -403,7 +410,7 @@ def bed_overlap_size(bed1,bed2):
 			overlap_size += end - start
 	return overlap_size
 
-def bedinfo(infile):
+def bed_info(infile):
 	"""
 	Basic information of genomic intervals.
 	"""
@@ -436,7 +443,7 @@ def bedinfo(infile):
 	return bed_infor
 
 
-def bedtolist(bedfile):
+def bed_to_list(bedfile):
 	"""
 	Convert BED file into a list.
 	"""
@@ -492,17 +499,17 @@ def compare_bed(inbed1, inbed2):
 	"""
 
 	logging.info("Read and union BED file: \"%s\"" % inbed1)
-	bed1_union = unionBed3(inbed1)
+	bed1_union = union_bed3(inbed1)
 	#logging.info("Original regions of %s : %d" % (inbed1, len(inbed1)))
 	logging.info("Unioned regions of \"%s\" : %d" % (inbed1, len(bed1_union)))
 
 	logging.info("Read and union BED file: \"%s\"" % inbed2)
-	bed2_union = unionBed3(inbed2)
+	bed2_union = union_bed3(inbed2)
 	#logging.info("Original regions of %s : %d" % (inbed2, len(inbed2)))
 	logging.info("Unioned regions of \"%s\" : %d" % (inbed2, len(bed2_union)))
 
 	logging.info("Merge BED files \"%s\" and \"%s\"" % (inbed1, inbed2))
-	bed12_union = unionBed3(bed1_union + bed2_union)
+	bed12_union = union_bed3(bed1_union + bed2_union)
 	logging.info("Unioned regions of two BED files : %d" % len(bed12_union))
 
 
@@ -578,15 +585,15 @@ def peakwise_ovcoef(inbed1, inbed2, score_func, g, na_label='NA'):
 	"""
 	#pattern = re.compile(".bed$", re.IGNORECASE)
 	logging.info("Read and union BED file: \"%s\"" % inbed1)
-	bed1_union = unionBed3(inbed1)
+	bed1_union = union_bed3(inbed1)
 	logging.info("Unioned regions of \"%s\" : %d" % (inbed1, len(bed1_union)))
 
 	logging.info("Read and union BED file: \"%s\"" % inbed2)
-	bed2_union = unionBed3(inbed2)
+	bed2_union = union_bed3(inbed2)
 	logging.info("Unioned regions of \"%s\" : %d" % (inbed2, len(bed2_union)))
 
 	#logging.info("Merge BED files \"%s\" and \"%s\"" % (inbed1, inbed2))
-	#bed12_union = unionBed3(bed1_union + bed2_union)
+	#bed12_union = union_bed3(bed1_union + bed2_union)
 	#logging.info("Unioned regions of two BED files : %d" % len(bed12_union))
 
 	logging.info("Build interval tree for unioned BED file: \"%s\"" % inbed1)
@@ -693,23 +700,28 @@ def cooccur_peak(inbed1, inbed2, inbed_bg, outfile, n_cut=1, p_cut=0.0):
 	-------
 	None
 	"""
-
+	results = {}
+	inbed1_name = os.path.basename(inbed1)
+	inbed2_name = os.path.basename(inbed2)
+	results['A.name'] = inbed1_name
+	results['B.name'] = inbed2_name
 	logging.info("Read and union BED file: \"%s\"" % inbed1)
-	bed1_union = unionBed3(inbed1)
-	logging.info("Number of unioned regions : %d" % (len(bed1_union)))
+	bed1_union = union_bed3(inbed1)
+	results['A.count'] =  len(bed1_union)
 
 	logging.info("Read and union BED file: \"%s\"" % inbed2)
-	bed2_union = unionBed3(inbed2)
-	logging.info("Number of unioned regions : %d" % (len(bed2_union)))
+	bed2_union = union_bed3(inbed2)
+	results['B.count'] =  len(bed2_union)
 
-	if inbed_bg is None:
-		logging.info("Merge two input BED files \"%s\" and \"%s\" as the background" % (inbed1, inbed2))
-		background = unionBed3(bed1_union + bed2_union)
-		logging.info("Number of unioned background regions : %d" % (len(background)))
-	else:
-		logging.info("Read and union BED file: \"%s\"" % inbed_bg)
-		background = unionBed3(inbed_bg)
-		logging.info("Number of unioned background regions  : %d" % len(background))
+	#if inbed_bg is None:
+	#	logging.info("Merge two input BED files \"%s\" and \"%s\" as the background" % (inbed1, inbed2))
+	#	background = union_bed3(bed1_union + bed2_union)
+	#	#logging.info("Number of unioned background regions : %d" % (len(background)))
+	#	results['G.count'] =  len(background)
+	#else:
+	logging.info("Read and union background BED file: \"%s\"" % inbed_bg)
+	background = union_bed3(inbed_bg)
+	results['G.count'] =  len(background)
 
 
 	logging.info("Build interval tree for : \"%s\"" % inbed1)
@@ -733,7 +745,7 @@ def cooccur_peak(inbed1, inbed2, inbed_bg, outfile, n_cut=1, p_cut=0.0):
 	neither = 0
 	OUT = open(outfile, 'w')
 
-	results = {}
+
 	for chrom, start, end in background:
 		line = chrom + '\t' + str(start) + '\t' + str(end)
 		bed1_flag = False
@@ -826,17 +838,16 @@ def cooccur_peak(inbed1, inbed2, inbed_bg, outfile, n_cut=1, p_cut=0.0):
 				print (line + '\tCooccur', file=OUT)
 			else:
 				bed1_only += 1
-				print (line + '\t%s_only' % os.path.basename(inbed1), file=OUT)
+				print (line + '\t%s_only' % inbed1_name, file=OUT)
 		else:
 			if bed2_flag:
 				bed2_only += 1
-				print (line + '\t%s_only' % os.path.basename(inbed2), file=OUT)
+				print (line + '\t%s_only' % inbed2_name, file=OUT)
 			else:
 				neither += 1
 				print (line + '\tNeither', file=OUT)
 	#print (bed1_only, bed2_only, cooccur, neither)
-	results['A.name'] = os.path.basename(inbed1)
-	results['B.name'] = os.path.basename(inbed2)
+
 	results['A+,B-'] = bed1_only
 	results['A-,B+'] = bed2_only
 	results['A+,B+'] = cooccur
@@ -854,7 +865,7 @@ def cooccur_peak(inbed1, inbed2, inbed_bg, outfile, n_cut=1, p_cut=0.0):
 	return pd.Series(data=results, name = "Fisher's exact test result")
 
 
-def bedtofile(bed_list, bed_file):
+def bed_to_file(bed_list, bed_file):
 	''' Save list of genomic regions to file'''
 	OUT = open(bed_file,'w')
 	for tmp in bed_list:
@@ -1064,8 +1075,8 @@ def srog_peak(inbed1, inbed2, outfile, n_up = 1, n_down = 1, max_dist = 25000000
 
 if __name__=='__main__':
 	#(a, b, common) = compare_bed(sys.argv[1], sys.argv[2])
-	#bedtofile(a,'a')
-	#bedtofile(b,'b')
-	#bedtofile(common,'common')
+	#bed_to_file(a,'a')
+	#bed_to_file(b,'b')
+	#bed_to_file(common,'common')
 	a = cooccur_peak(sys.argv[1], sys.argv[2], sys.argv[3])
 	print (a)

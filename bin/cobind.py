@@ -125,9 +125,9 @@ def main():
 	parser_cooccur.add_argument("bed1", type=str, metavar ="input_A.bed",help=bed_help)
 	parser_cooccur.add_argument("bed2", type=str, metavar ="input_B.bed",help=bed_help)
 	parser_cooccur.add_argument("bed3", type=str, metavar ="background.bed",help="Genomic regions as the background (e.g., all promoters, all enhancers).")
-	parser_cooccur.add_argument("output", type=str, metavar ="output.tsv",help="For each genomic region in the background BED file, add another column indicating if this region is \"input_A specific\", \"input_B specific\", \"co-occur\" or \"neither\". ")
-	parser_cooccur.add_argument('--ncut', type=int, dest="n_cut",  default = 1, help="The minimum overlap size. default: %(default)d)")
-	parser_cooccur.add_argument('--pcut', type=float, dest="p_cut",  default = 0.0, help="The minimum overlap percentage. default: %(default)f)")
+	parser_cooccur.add_argument("output", type=str, metavar ="output.tsv",help="For each genomic region in the \"background.bed\" file, add another column indicating if this region is \"input_A specific (i.e., A+B-)\", \"input_B specific (i.e., A-B+)\", \"co-occur (i.e., A+B+)\" or \"neither (i.e, A-B-)\". ")
+	parser_cooccur.add_argument('--ncut', type=int, dest="n_cut",  default = 1, help="The minimum overlap size. (default: %(default)d)")
+	parser_cooccur.add_argument('--pcut', type=float, dest="p_cut",  default = 0.0, help="The minimum overlap percentage. (default: %(default)f)")
 	parser_cooccur.add_argument("-d", "--debug",action="store_true", help="Print detailed information for debugging.")
 
 	# create the parser for the "covary" sub-command
@@ -141,14 +141,14 @@ def main():
 	parser_covary.add_argument('--topx', type=float, dest="top_X",  default = 1.0, help="Fraction (if 0 < top_X <= 1) or number (if top_X > 1) of genomic regions used to calculate Pearson, Spearman, Kendall's correlations. If TOP_X == 1 (i.e., 100%%), all the genomic regions will be used to calculate correlations. (default: %(default)s)")
 	parser_covary.add_argument('--min_sig', type=float, dest="min_signal", default = 0, help="Genomic region with summary statistic score <= this will be removed. (default: %(default)s)")
 	parser_covary.add_argument("--exact", dest="exact", action="store_true", help="If set, calculate the \"exact\" summary statistic score rather than \"zoom-level\" score for each genomic region.")
-	parser_covary.add_argument("--keepna", dest="keepna", action="store_true", help="If set, a genomic region will be kept even it does not have summary statistical score in either of the two bigWig files. This flag only affects the output .tsv files.")
+	parser_covary.add_argument("--keepna", dest="keepna", action="store_true", help="If set, a genomic region will be kept even it does not have summary statistical score in either of the two bigWig files. This flag only affects the output TSV files.")
 	parser_covary.add_argument("-d", "--debug",action="store_true", help="Print detailed information for debugging.")
 
 	# create the parser for the "srog" sub-command
 	parser_srog.add_argument("bed1", type=str, metavar ="input_A.bed",help="Genomic regions in BED, BED-like or bigBed format. If 'name' (the 4th column) is not provided, the default name is \"chrom:start-end\". If strand (the 6th column) is not provided, the default strand is \"+\".")
 	parser_srog.add_argument("bed2", type=str, metavar ="input_B.bed",help="Genomic regions in BED, BED-like or bigBed format. If 'name' (the 4th column) is not provided, the default name is \"chrom:start-end\". If strand (the 6th column) is not provided, the default strand is \"+\". ")
 	parser_srog.add_argument("output", type=str, metavar ="output.tsv",help="Generate spatial relation code (disjoint, touch, equal, overlap, contain, within) for each genomic interval in \"input_A.bed\".")
-	parser_cooccur.add_argument('--dist', type=int, dest="max_dist",  default = 250000000, help="When intervals are disjoint, find the closest up- and down-stream intervals that are no further than `max_dist` away. default: %(default)d)")
+	parser_srog.add_argument('--dist', type=int, dest="max_dist",  default = 250000000, help="When intervals are disjoint, find the closest up- and down-stream intervals that are no further than `max_dist` away. default: %(default)d)")
 	parser_srog.add_argument("-d", "--debug",action="store_true", help="Print detailed information for debugging.")
 
 

@@ -9,7 +9,7 @@ Created on Tue Jan 11 14:17:50 2022
 import sys
 import logging
 import pandas as pd
-from cobindability.BED import bed_overlap_size, bedtolist, bedinfo
+from cobindability.BED import bed_overlap_size, bed_to_list, bed_info
 from cobindability.coefcal import ov_coef, ov_jaccard, ov_ss, ov_sd, pmi_value, npmi_value
 from cobindability import version
 
@@ -59,12 +59,12 @@ def ov_stats(file1, file2, bg_size = 1400000000):
 
 	"""
 	results = {}
-	file1_lst = bedtolist (file1)
-	file2_lst = bedtolist (file2)
+	file1_lst = bed_to_list (file1)
+	file2_lst = bed_to_list (file2)
 
 
 	logging.info("Gathering information for \"%s\" ..." % file1)
-	info1 = bedinfo(file1)
+	info1 = bed_info(file1)
 	results['A.name'] = info1['Name']
 	results['A.interval_count'] = info1['Count']
 	results['A.interval_total_size'] = info1['Total_size']
@@ -77,7 +77,7 @@ def ov_stats(file1, file2, bg_size = 1400000000):
 	uniqBase1 = info1['Genomic_size']
 
 	logging.info("Gathering information for \"%s\" ..." % file2)
-	info2 = bedinfo(file2)
+	info2 = bed_info(file2)
 	results['B.name'] = info2['Name']
 	results['B.interval_count'] = info2['Count']
 	results['B.interval_total_size'] = info2['Total_size']

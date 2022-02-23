@@ -3,13 +3,13 @@ from distutils.core import setup
 from setuptools import *
 
 """
-Setup script for cobind  -- collocation analysis of genomics regions.
+Setup script for cobind  -- collocation analysis of genomics intervals.
 """
 
 
 def main():
     setup(  name = "cobind",
-            version = "0.0.6",
+            version = "1.0.0",
             python_requires='>=3.5',
             py_modules = [ 'psyco_full' ],
             packages = find_packages( 'lib' ),
@@ -24,12 +24,12 @@ def main():
             platforms = ['Linux','MacOS'],
             requires = [],
             install_requires = ['scipy', 'numpy', 'pandas', 'bx-python','pyBigWig'],
-            description = "collocation analysis of genomics regions",
-            url = "",
+            description = "collocation analysis of genomics intervals",
+            url = "https://cobind.readthedocs.io/en/latest/",
             zip_safe = False,
             dependency_links = [],
             classifiers=[
-                'Development Status :: 4 - Development',
+                'Development Status :: 4 - Beta',
                 'Environment :: Console',
                 'Intended Audience :: Science/Research',
                 'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',

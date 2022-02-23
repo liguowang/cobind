@@ -92,9 +92,10 @@ The table below gives the lower and upper bounds of the 6 metrics and their majo
 Compare different metrics
 --------------------------
 
-`CTCF <https://en.wikipedia.org/wiki/CTCF>`_ (CCCTC-binding factor) co-localizes with `cohesin <https://en.wikipedia.org/wiki/Cohesin>`_ complex (including SMC1, SMC3, RAD21/SCC1, STAG1/SA1, STAG2/SA2) to establish chromatin loops and regulate gene expression. 
+70-95% of `CTCF <https://en.wikipedia.org/wiki/CTCF>`_ binding sites are also bound by `cohesin <https://en.wikipedia.org/wiki/Cohesin>`_ complex (including SMC1, SMC3, RAD21/SCC1, STAG1/SA1, STAG2/SA2) to establish chromatin loops and regulate gene expression [#f1]_ [#f2]_. 
 
-We evaluate the overlaps between `CTCF <https://en.wikipedia.org/wiki/CTCF>`_  binding sites and the binding sites of 1200 other transcription factors. 
+We evaluated the overlaps between `CTCF <https://en.wikipedia.org/wiki/CTCF>`_ binding sites and the binding sites of 1200 other transcription factors, to see if cohesin proteins were 
+ranked on the top of the list. 
 
 Based on the ranks of cohesin complex proteins, `Overlap coefficient (O) <https://cobind.readthedocs.io/en/latest/usage/overlap.html>`_ and `NPMI <https://cobind.readthedocs.io/en/latest/usage/NPMI.html>`_ are the best two metrics 
 to quantify overlapping. 
@@ -114,3 +115,6 @@ In the Figure below, we compared NPMI (panel A) to three different cutoffs (pane
 .. image:: _static/rank_comparison.png
   :width: 950
   :alt: Alternative text
+
+.. [#f1] Pugacheva EM, Kubo N, Loukinov D, et al. CTCF mediates chromatin looping via N-terminal domain-dependent cohesin retention. Proc Natl Acad Sci U S A. 2020;117(4):2020-2031. doi:10.1073/pnas.1911708117
+.. [#f2] Xiao T, Li X, Felsenfeld G. The Myc-associated zinc finger protein (MAZ) works together with CTCF to control cohesin positioning and genome organization. Proc Natl Acad Sci U S A. 2021;118(7):e2023127118. doi:10.1073/pnas.2023127118

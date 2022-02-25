@@ -21,45 +21,47 @@ Usage
 
 ::
 
- usage: cobind.py simpson [-h] [-n ITER] [-f SUBSAMPLE] [-b BGSIZE] [-o] [-d] input_A.bed input_B.bed
+ usage: cobind.py simpson [-h] [-n ITER] [-f SUBSAMPLE] [-b BGSIZE] [-o] [-d]
+                          input_A.bed input_B.bed
  
-  positional arguments:
-    input_A.bed           Genomic regions in BED, BED-like or bigBed format. The BED-like format
-                          includes: 'bed3', 'bed4', 'bed6', 'bed12', 'bedgraph', 'narrowpeak',
-                          'broadpeak', 'gappedpeak'. BED and BED-like format can be plain text,
-                          compressed (.gz, .z, .bz, .bz2, .bzip2) or remote (http://, https://,
-                          ftp://) files. Do not compress BigBed foramt. BigBed file can also be a
-                          remote file.
-    input_B.bed           Genomic regions in BED, BED-like or bigBed format. The BED-like format
-                          includes: 'bed3', 'bed4', 'bed6', 'bed12', 'bedgraph', 'narrowpeak',
-                          'broadpeak', 'gappedpeak'. BED and BED-like format can be plain text,
-                          compressed (.gz, .z, .bz, .bz2, .bzip2) or remote (http://, https://,
-                          ftp://) files. Do not compress BigBed foramt. BigBed file can also be a
-                          remote file.
-  
-  optional arguments:
-    -h, --help            show this help message and exit
-    -n ITER, --ndraws ITER
-                          Times of resampling to estimate confidence intervals. Set to '0' to turn
-                          off resampling.(default: 20)
-    -f SUBSAMPLE, --fraction SUBSAMPLE
-                          Resampling fraction. (default: 0.75)
-    -b BGSIZE, --background BGSIZE
-                          The size of the cis-regulatory genomic regions. This is about 1.4Gb For the
-                          human genome. (default: 1400000000)
-    -o, --save            If set, will save peak-wise coefficients to files
-                          ("input_A_peakwise_scores.tsv" and "input_B_peakwise_scores.tsv").
-    -d, --debug           Print detailed information for debugging.
+ positional arguments:
+   input_A.bed           Genomic regions in BED, BED-like or bigBed format. The BED-like
+                         format includes: 'bed3', 'bed4', 'bed6', 'bed12', 'bedgraph',
+                         'narrowpeak', 'broadpeak', 'gappedpeak'. BED and BED-like format
+                         can be plain text, compressed (.gz, .z, .bz, .bz2, .bzip2) or
+                         remote (http://, https://, ftp://) files. Do not compress BigBed
+                         foramt. BigBed file can also be a remote file.
+   input_B.bed           Genomic regions in BED, BED-like or bigBed format. The BED-like
+                         format includes: 'bed3', 'bed4', 'bed6', 'bed12', 'bedgraph',
+                         'narrowpeak', 'broadpeak', 'gappedpeak'. BED and BED-like format
+                         can be plain text, compressed (.gz, .z, .bz, .bz2, .bzip2) or
+                         remote (http://, https://, ftp://) files. Do not compress BigBed
+                         foramt. BigBed file can also be a remote file.
+ 
+ optional arguments:
+   -h, --help            show this help message and exit
+   -n ITER, --ndraws ITER
+                         Times of resampling to estimate confidence intervals. Set to '0'
+                         to turn off resampling.(default: 20)
+   -f SUBSAMPLE, --fraction SUBSAMPLE
+                         Resampling fraction. (default: 0.75)
+   -b BGSIZE, --background BGSIZE
+                         The size of the cis-regulatory genomic regions. This is about
+                         1.4Gb For the human genome. (default: 1400000000)
+   -o, --save            If set, will save peak-wise coefficients to files
+                         ("input_A_peakwise_scores.tsv" and
+                         "input_B_peakwise_scores.tsv").
+   -d, --debug           Print detailed information for debugging.
 
 
 Example
 -------
 
-Calculate the **overall** `Simpson coefficient <https://en.wikipedia.org/wiki/Overlap_coefficient>`_ and **peak-wise** `Simpson coefficient <https://en.wikipedia.org/wiki/Overlap_coefficient>`_ between CTCF binding sites and RAD21 binding sites.
+Calculate the **overall** `Simpson coefficient <https://en.wikipedia.org/wiki/Overlap_coefficient>`_ and **peak-wise** `Simpson coefficient <https://en.wikipedia.org/wiki/Overlap_coefficient>`_ between `CTCF binding sites <https://cobind.readthedocs.io/en/latest/dataset.html#ctcf-chip-seq>`_ and `RAD21 binding sites <https://cobind.readthedocs.io/en/latest/dataset.html#rad21-chip-seq>`_.
 
 :code:`python3 ../bin/cobind.py simpson CTCF_ENCFF660GHM.bed RAD21_ENCFF057JFH.bed --save`
 
-The overall Simpson coefficient between *CTCF_ENCFF660GHM.bed* and *RAD21_ENCFF057JFH.bed* was printed to screen
+The overall Simpson coefficient between :code:`CTCF_ENCFF660GHM.bed` and :code:`RAD21_ENCFF057JFH.bed` was printed to screen
 
 ::
 
@@ -81,14 +83,10 @@ The overall Simpson coefficient between *CTCF_ENCFF660GHM.bed* and *RAD21_ENCFF0
  2022-01-16 08:53:10 [INFO]  Unioned regions of "CTCF_ENCFF660GHM.bed" : 58584
  2022-01-16 08:53:10 [INFO]  Read and union BED file: "RAD21_ENCFF057JFH.bed"
  2022-01-16 08:53:10 [INFO]  Unioned regions of "RAD21_ENCFF057JFH.bed" : 31955
- 2022-01-16 08:53:10 [INFO]  Build interval tree for unioned BED file: "CTCF_ENCFF660GHM.bed"
- 2022-01-16 08:53:10 [INFO]  Build interval tree for unioned BED file: "RAD21_ENCFF057JFH.bed"
- 2022-01-16 08:53:10 [INFO]  Calculate the overlap coefficient of each genomic region in CTCF_ENCFF660GHM.bed ...
- 2022-01-16 08:53:12 [INFO]  Save peakwise scores to CTCF_ENCFF660GHM.bed_peakwise_scores.tsv ...
- 2022-01-16 08:53:12 [INFO]  Calculate the overlap coefficient of each genomic region in RAD21_ENCFF057JFH.bed ...
- 2022-01-16 08:53:14 [INFO]  Save peakwise scores to RAD21_ENCFF057JFH.bed_peakwise_scores.tsv ...
+ ...
 
-If :code:`--save` was specified, the peakwise coefficients were saved to *CTCF_ENCFF660GHM.bed_peakwise_scores.tsv* and *RAD21_ENCFF057JFH.bed_peakwise_scores.tsv*, respectively.
+If :code:`--save` was specified, the peakwise coefficients were saved to :code:`CTCF_ENCFF660GHM.bed_peakwise_scores.tsv` and :code:`RAD21_ENCFF057JFH.bed_peakwise_scores.tsv`, respectively.
+
 ::
 
  $ head -5 CTCF_ENCFF660GHM.bed_peakwise_scores.tsv

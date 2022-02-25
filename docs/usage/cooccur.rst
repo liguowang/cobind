@@ -3,7 +3,7 @@ Cooccurrence
 
 Description
 -------------
-Use `Fisher's exact test <https://en.wikipedia.org/wiki/Fisher%27s_exact_test>`_ to evaluate if two sets of genomic intervals (A and B) are significantly cooccured [#f1]_. Genomic intervals (**g**) in the background BED file will be divided into 4 groups: **a** (A specific), **b** (B specific), **c** (i.e., A and B cooccur), and **n** (neith A nor B). 
+Use `Fisher's exact test <https://en.wikipedia.org/wiki/Fisher%27s_exact_test>`_ to evaluate if two sets of genomic intervals (A and B) are significantly cooccured [#f1]_. Genomic intervals (**g**) in the background BED file will be divided into 4 groups: **a** (A specific), **b** (B specific), **c** (A and B cooccur), and **n** (neith A nor B). 
 
 +------------+--------+------+--------------------+
 |            | Not A  | A    | Total              |
@@ -36,27 +36,35 @@ Usage
 :code:`cobind.py cooccur -h`
 
 ::
- 
- usage: cobind.py cooccur [-h] [--ncut N_CUT] [--pcut P_CUT] [-d] [--dist MAX_DIST] input_A.bed input_B.bed background.bed output.tsv
+
+ usage: cobind.py cooccur [-h] [--ncut N_CUT] [--pcut P_CUT] [-d]
+                          input_A.bed input_B.bed background.bed output.tsv
  
  positional arguments:
-   input_A.bed      Genomic regions in BED, BED-like or bigBed format. The BED-like format includes: 'bed3', 'bed4', 'bed6', 'bed12',
-                    'bedgraph', 'narrowpeak', 'broadpeak', 'gappedpeak'. BED and BED-like format can be plain text, compressed (.gz,
-                    .z, .bz, .bz2, .bzip2) or remote (http://, https://, ftp://) files. Do not compress BigBed foramt. BigBed file
-                    can also be a remote file.
-   input_B.bed      Genomic regions in BED, BED-like or bigBed format. The BED-like format includes: 'bed3', 'bed4', 'bed6', 'bed12',
-                    'bedgraph', 'narrowpeak', 'broadpeak', 'gappedpeak'. BED and BED-like format can be plain text, compressed (.gz,
-                    .z, .bz, .bz2, .bzip2) or remote (http://, https://, ftp://) files. Do not compress BigBed foramt. BigBed file
-                    can also be a remote file.
-   background.bed   Genomic regions as the background (e.g., all promoters, all enhancers).
-   output.tsv       For each genomic region in the "background.bed" file, add another column indicating if this region is "input_A
-                    specific (i.e., A+B-)", "input_B specific (i.e., A-B+)", "co-occur (i.e., A+B+)" or "neither (i.e, A-B-)".
+   input_A.bed     Genomic regions in BED, BED-like or bigBed format. The BED-like format
+                   includes: 'bed3', 'bed4', 'bed6', 'bed12', 'bedgraph', 'narrowpeak',
+                   'broadpeak', 'gappedpeak'. BED and BED-like format can be plain text,
+                   compressed (.gz, .z, .bz, .bz2, .bzip2) or remote (http://, https://,
+                   ftp://) files. Do not compress BigBed foramt. BigBed file can also be
+                   a remote file.
+   input_B.bed     Genomic regions in BED, BED-like or bigBed format. The BED-like format
+                   includes: 'bed3', 'bed4', 'bed6', 'bed12', 'bedgraph', 'narrowpeak',
+                   'broadpeak', 'gappedpeak'. BED and BED-like format can be plain text,
+                   compressed (.gz, .z, .bz, .bz2, .bzip2) or remote (http://, https://,
+                   ftp://) files. Do not compress BigBed foramt. BigBed file can also be
+                   a remote file.
+   background.bed  Genomic regions as the background (e.g., all promoters, all
+                   enhancers).
+   output.tsv      For each genomic region in the "background.bed" file, add another
+                   column indicating if this region is "input_A specific (i.e., A+B-)",
+                   "input_B specific (i.e., A-B+)", "co-occur (i.e., A+B+)" or "neither
+                   (i.e, A-B-)".
  
  optional arguments:
-   -h, --help       show this help message and exit
-   --ncut N_CUT     The minimum overlap size. (default: 1)
-   --pcut P_CUT     The minimum overlap percentage. (default: 0.000000)
-   -d, --debug      Print detailed information for debugging.
+   -h, --help      show this help message and exit
+   --ncut N_CUT    The minimum overlap size. (default: 1)
+   --pcut P_CUT    The minimum overlap percentage. (default: 0.000000)
+   -d, --debug     Print detailed information for debugging.
 
 
 Example
@@ -65,7 +73,7 @@ Example
 :code:`cobind.py cooccur CTCF_ENCFF660GHM.bed RAD21_ENCFF057JFH.bed hg38_gene_hancer_v4.4.bed output.tsv`
 
 ::
-
+ 
  2022-01-20 01:24:40 [INFO]  Calculate the co-occurrence of two sets of genomic intervals ...
  2022-01-20 01:24:40 [INFO]  Read and union BED file: "CTCF_ENCFF660GHM.bed"
  2022-01-20 01:24:41 [INFO]  Read and union BED file: "RAD21_ENCFF057JFH.bed"
@@ -102,4 +110,4 @@ A-,B-
 
 
 
-.. [#f1] Note: "cooccur" does NOT necessarily mean "overlap". For example, two transcription factors could bind to the same promoter region without touching each other. 
+.. [#f1] Note: "cooccur" does NOT necessarily mean "overlap" or "cobinding". For example, two transcription factors could bind to the same promoter region without touching each other. 

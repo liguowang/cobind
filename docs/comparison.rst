@@ -1,15 +1,15 @@
 
-Coefficients comparison
-------------------------
+Compare different metrics
+--------------------------
 
-The table below gives the lower and upper bounds of the 6 metrics and their major drawbacks.
+The table below gives the lower and upper bounds of the 6 metrics and their major drawbacks if any.
 
 
 .. list-table::
    :widths: 5,20,20,35
    :header-rows: 1
 
-   * - *Index*
+   * - *Metric*
      - *Lower bound*
      - *Upper bound*
      - *Comments*
@@ -89,8 +89,8 @@ The table below gives the lower and upper bounds of the 6 metrics and their majo
      - 1
 
 
-Compare different metrics
---------------------------
+CTCF: Demonstration
+-------------------
 
 70-95% of `CTCF <https://en.wikipedia.org/wiki/CTCF>`_ binding sites are also bound by `cohesin <https://en.wikipedia.org/wiki/Cohesin>`_ complex (including SMC1, SMC3, RAD21/SCC1, STAG1/SA1, STAG2/SA2) to establish chromatin loops and regulate gene expression [#f1]_ [#f2]_. 
 
@@ -105,8 +105,8 @@ to quantify overlapping.
   :alt: Alternative text
 
 
-Compare NPMI to "percent of overlap"
-------------------------------------
+CTCF: Compare NPMI to "percent of overlap"
+------------------------------------------
 
 "Percent of overlap" is a tradional and widely used approach to quantify the overlap between two sets (A and B) of genomic intervals. First, one need to set an arbitrary cutoff to call if two genomic intervals are overlapped. Then, calculate what percent of genomic intervals from set A are overlapped with set B. Obviously, the "percent of genomic intervals overlapped" is conditioned on the cutoff. 
 

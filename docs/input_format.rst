@@ -7,8 +7,7 @@ Input file and data format
 BED format
 ----------
 `BED (Browser Extensible Data) <https://genome.ucsc.edu/FAQ/FAQformat.html#format1>`_ 
-format is commonly used to describe genomic intervals. BED files used by **cobind** must 
-have at least the first three columns::
+format is commonly used to describe genomic intervals. Standard BED file has 12 columns, but **cobind** only requires the first three columns (all the other columns are optional)::
 
  # BED3 format (chrom, start, end)
  chr1    629149    629391

@@ -1,40 +1,42 @@
 Definitions
 ============
 
+
 Symbols definitions
 -------------------
+Say, we have two sets of genomic intervals **A** and **B**, and the genomic background is **G**.
+In Figure 1 below, both A and B contain only 1 genomic region for the purpose of clarity, but the definitions
+are still applicable if **A** and **B** contain many intervals. 
 
-We have two sets of genomic intervals, **A** and **B**. The genomic background is **G** (e.g., all the cis-regulatory elements in the genome).
-In Figure 1 below, for simplicity, both A and B contain only 1 genomic region.  
+Symbols are defined as:
 
 .. image:: _static/set_symbols.jpg
   :width: 600
   :alt: Figure_1
 
 
-Symbols are defined as:
-
 \|A\|
-  All the **non-redundant** bases covered by genomic interval A. For example, if A contains two genomic intervals: "chr1 0 10", "chr1 5 15", then \|A\| = 15. 
+  The `cardinality <https://en.wikipedia.org/wiki/Cardinality>`_ of **A** (i.e., all the **non-redundant** bases covered by **A**). For example, if A contains two genomic intervals: "chr1 0 10", "chr1 5 15", then \|A\| = 15. 
 \|B\|
-  All the **non-redundant** bases covered by genomic interval B.
+  The `cardinality <https://en.wikipedia.org/wiki/Cardinality>`_ of **B** (i.e., all the **non-redundant** bases covered by **B**).
 \|G\|
-  The genomic background (user defined). Depending on the context, this can be *all the cis-regulatory elements*, *all the promoters*, *all the TF binding sites* in the genome.
+  The genomic background. Depending on the context, this can be *the whole genome*, *all the cis-regulatory elements*, *all the promoters*, *all the TF binding sites* in the genome, etc. **A** and **B** must be the subsets of **G**. 
 \|A ∪ B\|
-  Union (A or B). In A or B (or both).
+  Union of A and B (i.e., bases covered by A or B).
 \|A ∩ B\|
-  Intersection (A and B). In both A and B.
+  Intersection of A and B (i.e., bases covered by A and B simultaneously). This is commonly used to measure the *collocation* of A and B.
 \|A − B\|
-  Difference (A not B). in A but not in B.
+  Difference (A not B) (i.e., bases covered by only A but not B).
 \|B − A\|
-  Difference (B not A). in B but not in A.
+  Difference (B not A) (i.e., bases covered by only B but not A).
 \|A ∪ B\|^𝐶
-  Complement of \|A ∪ B\| (Neither A nor B).
+  Complement of \|A ∪ B\| (i.e., bases NOT covered by A or B).
+
 
 Spacial Relations of Genomic regions (SROG)
 -------------------------------------------
 
-There are six different spacial relations between two genomic regions (A and B): 
+There are six different spacial relations between two genomic regions (A and B). As illustrated below:
 
 .. image:: _static/srog.jpg
   :width: 700
@@ -43,10 +45,8 @@ There are six different spacial relations between two genomic regions (A and B):
 
 Overlap coefficient (O)
 -----------------------
-The overlap coefficient between A and B is calculated as the ratio between the *intersection of A and B*, and the *geometric mean of A and B*.
-
- - O(A,B) is a value between [0, 1], with 0 indicating 'no overlap', and 1 indicating '100% overlap' (i.e., A and B are identical). 
- - O(A, B) is defined as 0 when \|A\| = 0 or \|B\| = 0, or  \|A\| = \|B\| = 0.
+The overlap coefficient between A and B is calculated as the ratio between \|A ∩ B\| and the *geometric mean of \|A\| and \|B\|*.
+O(A,B) is a value between [0, 1], with 0 indicating 'no overlap', and 1 indicating '100% overlap' (i.e., A and B are identical). O(A, B) is defined as 0 when \|A\| = 0 or \|B\| = 0, or  \|A\| = \|B\| = 0.
 
 .. image:: _static/ov_coef_1.jpg
   :width: 250
@@ -56,24 +56,23 @@ The overlap coefficient between A and B is calculated as the ratio between the *
   :width: 200
   :alt: Alternative text
 
+Overall overlap coefficient
+  The overlap coefficient between two **sets** of genomic regions. For example, you can use the *overall overlap coefficient* to measure the cobindability of two transcription factors. 
 
-The geometrical interpretation of O^2 is illustrated as below:
+peakwise overlap coefficient
+  The overlap coefficient between **two** genomic intervals (A protein-bound genomic region is called "peak" in `ChIP-seq <https://en.wikipedia.org/wiki/ChIP_sequencing>`_ experiment). 
+
+Interpretation
+  If *A* equals *B*, *O* measures the percent of overlap between *A* and *B*.
 
 .. image:: _static/ov_coef_2.jpg
   :width: 600
   :alt: Alternative text
 
-Overall overlap coefficient
-  The overlap coefficient between two **sets** of genomic regions. For example, you can use the *overall overlap coefficient* to measure the cobindability of two transcription factors. 
-
-peakwise overlap coefficient
-  The overlap coefficient between two genomic regions (A protein-bound genomic region is called "peak" in `ChIP-seq <https://en.wikipedia.org/wiki/ChIP_sequencing>`_ experiment). 
-
-
 
 Jaccard coefficient (J)
 -------------------------
-The `Jaccard similarity coefficient <https://en.wikipedia.org/wiki/Jaccard_index>`_, also known as the Jaccard index. It is the ratio between **intersection** and **union**.
+The `Jaccard similarity coefficient <https://en.wikipedia.org/wiki/Jaccard_index>`_, also known as the Jaccard index. It is the ratio between **intersection** and **union**. J(A, B) is defined as 0 when \|A\| = 0 or \|B\| = 0, or  \|A\| = \|B\| = 0.
 
 
 .. image:: _static/jaccard_1.jpg
@@ -84,7 +83,6 @@ The `Jaccard similarity coefficient <https://en.wikipedia.org/wiki/Jaccard_index
   :width: 180
   :alt: Alternative text
 
-J(A, B) is defined as 0 when \|A\| = 0 or \|B\| = 0, or  \|A\| = \|B\| = 0.
 
 The Jaccard distance *Dj* is calculated as:
 
@@ -98,13 +96,12 @@ Similar to O(A,B), we have an **overall Jaccard coefficient** and **peakwise Jac
 overall Jaccard coefficient
   The Jaccard coefficient between two **sets** of genomic regions. 
 peakwise Jaccard coefficient
-  The Jaccard coefficient between two genomic regions (A protein-bound genomic region is called "peak" in `ChIP-seq <https://en.wikipedia.org/wiki/ChIP_sequencing>`_ experiment).
-
+  The Jaccard coefficient between **two** genomic intervals.
 
 
 Sørensen–Dice coefficient (SD)
 ------------------------------
-`Sørensen–Dice coefficient <https://en.wikipedia.org/wiki/S%C3%B8rensen%E2%80%93Dice_coefficient>`_,  also called *Sørensen–Dice index*, *Sørensen index* or *Dice's coefficient*.
+`Sørensen–Dice coefficient <https://en.wikipedia.org/wiki/S%C3%B8rensen%E2%80%93Dice_coefficient>`_,  also called *Sørensen–Dice index*, *Sørensen index* or *Dice's coefficient*. SD(A, B) is defined as 0 when \|A\| = 0 or \|B\| = 0, or  \|A\| = \|B\| = 0.
 
 .. image:: _static/SD_1.jpg
   :width: 200
@@ -114,11 +111,10 @@ Sørensen–Dice coefficient (SD)
   :width: 180
   :alt: Alternative text
 
-SD(A, B) is defined as 0 when \|A\| = 0 or \|B\| = 0, or  \|A\| = \|B\| = 0.
-
 Jaccard coefficient (J) can be converted into Sørensen–Dice coefficient (SD) and vice versa:
 
 *J = SD/(2-SD)* and *SD = 2J/(1+J)*
+
 
 Szymkiewicz–Simpson coefficient (SS)
 -------------------------------------
@@ -131,7 +127,6 @@ Szymkiewicz–Simpson coefficient (SS)
 .. image:: _static/SS_bound.jpg
   :width: 180
   :alt: Alternative text
-
 
 
 Pointwise mutual information (PMI)
@@ -166,6 +161,7 @@ Note, PMI has no boundaries:
   :width: 500
   :alt: Alternative text
 
+
 Normalized pointwise mutual information (NPMI)
 ----------------------------------------------
 Normalized pointwise mutual information (NPMI) is calculated as:
@@ -180,10 +176,11 @@ Note, after normalization, NPMI is confined to [-1, 1]:
   :width: 250
   :alt: Alternative text
 
+
 Which metric to use? 
 ---------------------
 
-Based on our evaluation, the **Overlap coefficient (O)** and **NPMI** are the best two metrics one can use to quantify the overlap (colocation)
+Based on our evaluation, the **Overlap coefficient (O)** and **NPMI** are the best two metrics one can use to quantify the overlap (collocation)
 between two sets of genomic intervals.
 
 `Metric evaluation <https://cobind.readthedocs.io/en/latest/comparison.html>`_

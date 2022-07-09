@@ -4,33 +4,19 @@ Introduction
 Introductionn
 -------------
 
-Genomic features and genome analysis results are generally represented as genomic intervals, for example,
-genes, exons, promoters, enhancers, transcription factor binding sites, DNA motifs, CpG islands, 
-nucleosomes, heterochromatin, DNA repeats, SNVs, `INDELs <https://en.wikipedia.org/wiki/Indel>`_.
+Collocated genomic intervals indicate biological association. Therefore, overlapping analysis of genomic intervals has been widely used to QC, integrate, and impute the function of genomic intervals. 
 
-Overlapping two sets of genomic intervals is a routine task in 
-genomic analysis. Many tools have been developed to facilitate these operations, such as `Bedtools <https://bedtools.readthedocs.io/en/latest/index.html>`_, `PyRanges <https://github.com/biocore-NTNU/pyranges>`_, and `GenomicRanges <http://www.bioconductor.org/packages/release/bioc/html/GenomicRanges.html>`_.
+The conventional approach to measure the "overlap between genomic intervals" involves arbitrary thresholds to decide the total number of overlapped genomic regions, which leads to biased, non-reproducible, and incomparable results. Specifically,
 
+ * The result derived from this *threshold-and-count* approach is non-reproducible and incomparable, as different thresholds produce different results.
+ * The overlapping between two intervals is a continuous variable, whereas the thresholded approach reduces it into a binary variable. Casting the one-dimensional intervals as zero-dimensional points loses the information and sensitivity needed to accurately evaluate the collocation strength.
+ * The absolute or relative counts is biased by the size and the total number of intervals.
 
-Overlapping two lists of genomic intervals is NOT like overlapping two lists of gene symbols; the result of overlapping two gene symbols is binary,
-while the extent of overlapping between two genomic intervals is a continuous measure. Usually, the *percentage of overlap* is used to quantify the overlapping between two sets of genomic intervals. Although this has been widely used, such an oversimplified measurement has several serious drawbacks. 
+Cobind provides six threshold-free metrics to quantify the *strength of genomic overlapping* rigorously. 
 
-- Issue 1: Subjective. We have to *arbitrarily* define a threshold in order to call if two genomic intervals are overlapped or not. One nucleotide overlap? Ten nucleotide overlap? or 10% overlap?
-
-- Issue 2: Non-symmetric. Assuming we identified 1000 TFBSs for protein A and 10,000 TFBSs for protein B, and we found 500 sites were overlapped with at least one nucleotide. We found 50% (500/1000) of A's binding sites were overlapped with B, while only 5% (500/10000) of B's binding sites were overlapped with A. And the situation becomes even worse when the sizes of two overlapped genomic intervals are significantly different. 
-
-- Issue 3: Incomparable. Suppose we did another analysis and found only 20% of A's binding sites were overlapped with **protein C**. Can we reach the conclusion 
-  that A's binding sites overlap better with B than C? The answer is "no" because B and C might have different numbers of TFBS. The answer is still "no" even
-  B and C have the same number of TFBS, because the length of TFBS might be significantly different between B and C. 
-
-These drawbacks make the direct comparison (or meta-analysis) of genomic overlapping analysis results problematic. `Cobind <https://cobind.readthedocs.io/en/latest/>`_ is designed to address these problems and provides objective, rigorous quantification of a genomic region overlapping.
-
-Potential applications
-----------------------
-
-Below are several scenarios describing the potential applications of `cobind <https://cobind.readthedocs.io/en/latest/>`_:
-
- - Evaluate the *overall overlapping* or *element-wise overlapping* between two sets of genomic intervals.
- - Test the co-occurrence of two sets of genomic intervals.
- - Identify the cofactors of a transcription factor.
- - Nominate master regulators of tissue (or cell-type) specific open chromatin regions identified from `ATAC-seq <https://en.wikipedia.org/wiki/ATAC-seq>`_ or single cell ATAC-seq.
+ * `the Collocation coefficient (C) <https://cobind.readthedocs.io/en/latest/definition.html#collocation-coefficient-c>`_
+ * `the Jaccard coefficient (J) <https://cobind.readthedocs.io/en/latest/definition.html#jaccard-coefficient-j>`_
+ * `the Sørensen–Dice coefficient (SD) <https://cobind.readthedocs.io/en/latest/definition.html#sorensendice-coefficient-sd>`_
+ * `the Szymkiewicz–Simpson coefficient (SS) <https://cobind.readthedocs.io/en/latest/definition.html#szymkiewiczsimpson-coefficient-ss>`_
+ * `the Pointwise Mutual Information (PMI) <https://cobind.readthedocs.io/en/latest/definition.html#pointwise-mutual-information-pmi>`_
+ * `the Normalized Pointwise Mutual Information (NPMI) <https://cobind.readthedocs.io/en/latest/definition.html#normalized-pointwise-mutual-information-npmi>`_

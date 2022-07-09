@@ -1,7 +1,7 @@
 Metadata-Version: 2.1
 Name: cobind
 Version: 1.0.0
-Summary: collocation analysis of genomics regions
+Summary: collocation analysis of genomics intervals
 Home-page: https://cobind.readthedocs.io/en/latest/
 Author: Liguo Wang
 Author-email: wangliguo78@gmail.com

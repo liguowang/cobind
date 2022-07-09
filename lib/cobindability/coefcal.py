@@ -22,7 +22,7 @@ __status__ = "Development"
 
 def ov_coef(x, y, xy, g):
 	"""
-	Calculate the overlap coefficient.
+	Calculate the collocation coefficient.
 
 	Parameters
 	----------
@@ -38,7 +38,7 @@ def ov_coef(x, y, xy, g):
 	Returns
 	-------
 	float
-		Overlap coefficient.
+		Collocation coefficient.
 	"""
 	if xy > x or xy > y:
 		logging.error("Invalid parameters.")

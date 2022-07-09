@@ -30,7 +30,7 @@ __status__ = "Development"
 def bootstrap_coef(file1, file2, score_func, size_factor, n_draws=20, fraction = 0.75, bg_size = 1.4e9):
 	"""
 	Calculate the following indices:
-	- overlap coefficient,
+	- Collocation coefficient,
 	- Jaccard's coefficient (https://en.wikipedia.org/wiki/Jaccard_index),
 	- Szymkiewicz–Simpson coefficient, (https://en.wikipedia.org/wiki/Overlap_coefficient),
 	- Sørensen–Dice coefficient (https://en.wikipedia.org/wiki/Sørensen–Dice_coefficient),
@@ -56,7 +56,10 @@ def bootstrap_coef(file1, file2, score_func, size_factor, n_draws=20, fraction =
 		The fraction of subsample. The default is 0.75 (75% of the orignal genomic reginos will be selected).
 	bg_size : int, optional
 		The effective background genome size. About 1.4Gb of the human genome are. The default is 1.4e9.
-
+	
+	Note
+	----
+		For the bootstrap process works properly, the overlapped genomic intervals in file1 and file2 must be merged.
 	Returns
 	-------
 	pandas.Series

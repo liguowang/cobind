@@ -50,8 +50,8 @@ def ov_stats(file1, file2, bg_size = 1400000000):
 	-------
 	pandas.Series
 		Pandas Series of 'coef_obs', 'coef_exp','coef_ratio', 'coef_ratio_low', 'coef_ratio_high'.
-		'coef_obs' : Observed overlap coefficient between two BED files.
-		'coef_exp' : Expected overlap coefficient between two BED files.
+		'coef_obs' : Observed collocation coefficient between two BED files.
+		'coef_exp' : Expected collocation coefficient between two BED files.
 		'coef_ratio' : Ratio between 'coef_obs' and 'coef_exp'.
 		'coef_ratio_low' : The lower bound of 95% confidence interval of 'coef_ratio'.
 		'coef_ratio_high' : The upper bound of 95% confidence interval of 'coef_ratio'.
@@ -89,7 +89,7 @@ def ov_stats(file1, file2, bg_size = 1400000000):
 	results['B.interval_size_SD'] = info2['STD']
 	uniqBase2 = info2['Genomic_size']
 
-	#calculate overall overlap coef
+	#calculate overall collocation coef
 	logging.debug("Calculating overlapped bases ...")
 	overlapBases = bed_overlap_size(file1_lst, file2_lst)
 
@@ -106,7 +106,7 @@ def ov_stats(file1, file2, bg_size = 1400000000):
 	results['Neither_A_nor_B.size'] = bg_size - uniqBase1 - uniqBase2 + overlapBases
 
 
-	results['coef.Overlap'] = ov_coef(uniqBase1, uniqBase2, overlapBases, bg_size)
+	results['coef.Collocation'] = ov_coef(uniqBase1, uniqBase2, overlapBases, bg_size)
 	results['coef.Jaccard'] = ov_jaccard(uniqBase1, uniqBase2, overlapBases, bg_size)
 	results['coef.Dice'] = ov_sd(uniqBase1, uniqBase2, overlapBases, bg_size)
 	results['coef.SS'] = ov_ss(uniqBase1, uniqBase2, overlapBases, bg_size)

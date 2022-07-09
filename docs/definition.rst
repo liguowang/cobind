@@ -43,10 +43,10 @@ There are six different spacial relations between two genomic regions (A and B).
   :alt: Alternative text
 
 
-Overlap coefficient (O)
------------------------
-The overlap coefficient between A and B is calculated as the ratio between \|A ∩ B\| and the *geometric mean of \|A\| and \|B\|*.
-O(A,B) is a value between [0, 1], with 0 indicating 'no overlap', and 1 indicating '100% overlap' (i.e., A and B are identical). O(A, B) is defined as 0 when \|A\| = 0 or \|B\| = 0, or  \|A\| = \|B\| = 0.
+Collocation coefficient (C)
+---------------------------
+The collocation coefficient between A and B is calculated as the ratio between \|A ∩ B\| and the *geometric mean of \|A\| and \|B\|*.
+C(A,B) is a value between [0, 1], with 0 indicating 'no overlap', and 1 indicating '100% overlap' (i.e., A and B are identical). C(A, B) is defined as 0 when \|A\| = 0 or \|B\| = 0, or  \|A\| = \|B\| = 0.
 
 .. image:: _static/ov_coef_1.jpg
   :width: 250
@@ -56,18 +56,12 @@ O(A,B) is a value between [0, 1], with 0 indicating 'no overlap', and 1 indicati
   :width: 200
   :alt: Alternative text
 
-Overall overlap coefficient
-  The overlap coefficient between two **sets** of genomic regions. For example, you can use the *overall overlap coefficient* to measure the cobindability of two transcription factors. 
+Overall collocation coefficient
+  The collocation coefficient between two **sets** of genomic regions. For example, you can use the *overall collocation coefficient* to measure the cobindability of two transcription factors. 
 
-peakwise overlap coefficient
-  The overlap coefficient between **two** genomic intervals (A protein-bound genomic region is called "peak" in `ChIP-seq <https://en.wikipedia.org/wiki/ChIP_sequencing>`_ experiment). 
+peakwise collocation coefficient
+  The collocation coefficient between **two** genomic intervals (A protein-bound genomic region is called "peak" in `ChIP-seq <https://en.wikipedia.org/wiki/ChIP_sequencing>`_ experiment). 
 
-Interpretation
-  If *A* equals *B*, *O* measures the percent of overlap between *A* and *B*.
-
-.. image:: _static/ov_coef_2.jpg
-  :width: 600
-  :alt: Alternative text
 
 
 Jaccard coefficient (J)
@@ -180,7 +174,7 @@ Note, after normalization, NPMI is confined to [-1, 1]:
 Which metric to use? 
 ---------------------
 
-Based on our evaluation, the **Overlap coefficient (O)** and **NPMI** are the best two metrics one can use to quantify the overlap (collocation)
+Based on our evaluation, the **Collocation coefficient (C)** and **NPMI** are the best two metrics one can use to quantify the overlap (collocation)
 between two sets of genomic intervals.
 
 `Metric evaluation <https://cobind.readthedocs.io/en/latest/comparison.html>`_

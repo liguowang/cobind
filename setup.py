@@ -32,7 +32,7 @@ def main():
                 'Development Status :: 4 - Beta',
                 'Environment :: Console',
                 'Intended Audience :: Science/Research',
-                'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
+                'License :: OSI Approved :: MIT License',
                 'Operating System :: MacOS :: MacOS X',
                 'Operating System :: POSIX',
                 'Programming Language :: Python',

@@ -18,7 +18,7 @@ from cobindability.coefcal import ov_coef, ov_jaccard, ov_ss, ov_sd, pmi_value, 
 __author__ = "Liguo Wang"
 __copyright__ = "Copyleft"
 __credits__ = []
-__license__ = "GPL"
+__license__ = "MIT"
 __version__ = version.version
 __maintainer__ = "Liguo Wang"
 __email__ = "wang.liguo@mayo.edu"

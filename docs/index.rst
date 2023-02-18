@@ -44,6 +44,11 @@ cobind's documentation
    comparison
 
 .. toctree::
+   :caption: Performance
+
+   performance
+
+.. toctree::
    :caption: License
 
    license

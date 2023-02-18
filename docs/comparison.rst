@@ -37,7 +37,9 @@ The table below gives the lower and upper bounds of the 6 metrics and their majo
      - -1 (no overlap)
      - 1 (A = B)
      -   
-     
+
+The table below compares the intersection-based metrics. **C**, **J**, **SD**, and **SS**. All the four metrics are bounded by 0 and 1. When the size of the two genomic intervals are significanlty different, **C** is less sensitive to the extreme, and gives a compromised score compared to **J**/**SD** and **SS**.
+
 .. list-table:: **C(A,B)** vs **J(A,B)** vs **SD(A,B)** vs **SS(A,B)**
    :widths: 15,15,15,15,15,15,15,15,20
    :header-rows: 1
@@ -87,6 +89,8 @@ The table below gives the lower and upper bounds of the 6 metrics and their majo
      - 0.1
      - 0.182
      - 1
+
+
 
 
 CTCF: Demonstration

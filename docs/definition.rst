@@ -87,6 +87,10 @@ The Jaccard distance *Dj* is calculated as:
 
 Similar to O(A,B), we have an **overall Jaccard coefficient** and **peakwise Jaccard coefficient**.
 
+.. note::
+   The Jaccard coefficient implemented here is slightly different from `BEDTools<https://bedtools.readthedocs.io/en/latest/content/tools/jaccard.html>`_ :code:`jaccard` function.
+   When calculating the union, BEDTools only use the intervals that are overlapped with each other, while we use all the intervals.
+
 overall Jaccard coefficient
   The Jaccard coefficient between two **sets** of genomic regions. 
 peakwise Jaccard coefficient

@@ -60,13 +60,13 @@ These files can be used as genomic "background".
    
    * - Dataset (Human, GRCh38/hg38)
      - md5sum
-   * - `remap2022_CRM_hg38_v1_0.bed.gz <https://data.cyverse.org/dav-anon/iplant/home/liguow/cobind_files/remap2022_CisRegulatoryModules_hg38_v1_0.bed.gz>`_
+   * - `remap2022_CRM_hg38_v1_0.bed.gz <https://sourceforge.net/projects/cobind/files/data/remap2022_CRM_hg38_v1_0.bed.gz>`_
      - 4717178cd730471f5ac897838c55847c
-   * - `ENCODE_CCRE_hg38.bed.gz <https://data.cyverse.org/dav-anon/iplant/home/liguow/cobind_files/ENCODE_CandidateCisRegulatoryElements_hg38.bed.gz>`_
+   * - `ENCODE_CCRE_hg38.bed.gz <https://sourceforge.net/projects/cobind/files/data/ENCODE_CCRE_hg38.bed.gz>`_
      - a572f25b1f7a51283591f4afd8f0c3b7
-   * - `GeneHancer_v4.4_hg38.bed.gz <https://data.cyverse.org/dav-anon/iplant/home/liguow/cobind_files/GeneHancer_v4.4_hg38.bed.gz>`_
+   * - `GeneHancer_v4.4_hg38.bed.gz <https://sourceforge.net/projects/cobind/files/data/GeneHancer_v4.4_hg38.bed.gz>`_
      - e6fbecf8f637db49ce12d1390c6285b6
-   * - `CpG_island_hg38.bed.gz <https://data.cyverse.org/dav-anon/iplant/home/liguow/cobind_files/CpG_island_hg38.bed.gz>`_
+   * - `CpG_island_hg38.bed.gz <https://sourceforge.net/projects/cobind/files/data/CpG_island_hg38.bed.gz>`_
      - 8c783529fb4a8f86b1d90d70afa6a1f7
 
 
@@ -76,7 +76,7 @@ These files can be used as genomic "background".
    
    * - Dataset (Mouse, GRCm39/mm39)
      - md5sum  
-   * - `remap2022_CRM_mm39_v1_0.bed.gz <https://data.cyverse.org/dav-anon/iplant/home/liguow/cobind_files/remap2022_CisRegulatoryModules_mm39_v1_0.bed.gz>`_
+   * - `remap2022_CRM_mm39_v1_0.bed.gz <https://sourceforge.net/projects/cobind/files/data/remap2022_CRM_mm39_v1_0.bed.gz>`_
      - 9c20058b6ab324f2292029566e59993a
 
 
@@ -86,7 +86,7 @@ These files can be used as genomic "background".
    
    * - Dataset (Fly, dm6)
      - md5sum 
-   * - `remap2022_CRM_dm6_v1_0.bed.gz <https://data.cyverse.org/dav-anon/iplant/home/liguow/cobind_files/remap2022_CisRegulatoryModules_dm6_v1_0.bed.gz>`_
+   * - `remap2022_CRM_dm6_v1_0.bed.gz <https://sourceforge.net/projects/cobind/files/data/remap2022_CRM_dm6_v1_0.bed.gz>`_
      - 3633180a8cba0495147682cc9b288aca
   
 

@@ -39,7 +39,7 @@ def main():
                 'Topic :: Scientific/Engineering :: Bio-Informatics',
             ],
 
-            keywords='genome regions, overlap coefficient, cooccur, pointwise mutual information',
+            keywords='genome regions, collocation, overlap, cooccur',
              )
 
 

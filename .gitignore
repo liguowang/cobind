@@ -2,4 +2,5 @@ test/*
 dist/*
 data/*
 docs/_build/*
-
+.eggs/*
+cobind.egg-info/*

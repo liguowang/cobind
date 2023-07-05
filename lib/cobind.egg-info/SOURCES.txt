@@ -18,6 +18,7 @@ docs/installation.rst
 docs/introduction.rst
 docs/license.rst
 docs/make.bat
+docs/performance.rst
 docs/reference.rst
 docs/_static/SD_1.jpeg
 docs/_static/SD_1.jpg
@@ -74,6 +75,7 @@ lib/cobindability/findbed.py
 lib/cobindability/ireader.py
 lib/cobindability/ovbootstrap.py
 lib/cobindability/ovstat.py
+lib/cobindability/utils.py
 lib/cobindability/version.py
 lib/cobindability/__pycache__/BED.cpython-38.pyc
 lib/cobindability/__pycache__/__init__.cpython-38.pyc

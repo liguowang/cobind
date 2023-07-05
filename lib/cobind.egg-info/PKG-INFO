@@ -5,20 +5,16 @@ Summary: collocation analysis of genomics intervals
 Home-page: https://cobind.readthedocs.io/en/latest/
 Author: Liguo Wang
 Author-email: wangliguo78@gmail.com
-License: UNKNOWN
 Keywords: genome regions,overlap coefficient,cooccur,pointwise mutual information
 Platform: Linux
 Platform: MacOS
 Classifier: Development Status :: 4 - Beta
 Classifier: Environment :: Console
 Classifier: Intended Audience :: Science/Research
-Classifier: License :: OSI Approved :: GNU General Public License v2 (GPLv2)
+Classifier: License :: OSI Approved :: MIT License
 Classifier: Operating System :: MacOS :: MacOS X
 Classifier: Operating System :: POSIX
 Classifier: Programming Language :: Python
 Classifier: Topic :: Scientific/Engineering :: Bio-Informatics
 Requires-Python: >=3.5
 License-File: LICENSE
-
-UNKNOWN
-

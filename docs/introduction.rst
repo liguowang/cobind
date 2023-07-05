@@ -12,7 +12,7 @@ The conventional approach to measure the "overlap between genomic intervals" inv
  * The overlapping between two intervals is a continuous variable, whereas the thresholded approach reduces it into a binary variable. Casting the one-dimensional intervals as zero-dimensional points loses the information and sensitivity needed to accurately evaluate the collocation strength.
  * The absolute or relative counts is biased by the size and the total number of intervals.
 
-Cobind provides six threshold-free metrics to quantify the *strength of genomic overlapping* rigorously. 
+To address these limitations, **cobind** offers six threshold-free metrics that rigorously quantify the strength of genomic overlapping. These metrics aim to provide more reliable and comparable results without the need for arbitrary thresholds.
 
  * `the Collocation coefficient (C) <https://cobind.readthedocs.io/en/latest/definition.html#collocation-coefficient-c>`_
  * `the Jaccard coefficient (J) <https://cobind.readthedocs.io/en/latest/definition.html#jaccard-coefficient-j>`_

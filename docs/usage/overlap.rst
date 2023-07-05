@@ -78,14 +78,19 @@ The overall collocation coefficient between :code:`CTCF_ENCFF660GHM.bed` and :co
  A_and_B.size                      4939485
  Coef                               0.4241
  Coef(expected)                     0.0083
- Coef(95% CI)              [0.4227,0.4282]
+ Coef(95% CI)              [0.4223,0.4275]
  dtype: object
- 2022-02-24 08:06:55 [INFO]  Calculate collocation coefficient (peak-wise) ...
- 2022-02-24 08:06:55 [INFO]  Read and union BED file: "CTCF_ENCFF660GHM.bed"
- 2022-02-24 08:06:56 [INFO]  Unioned regions of "CTCF_ENCFF660GHM.bed" : 58584
- 2022-02-24 08:06:56 [INFO]  Read and union BED file: "RAD21_ENCFF057JFH.bed"
- 2022-02-24 08:06:56 [INFO]  Unioned regions of "RAD21_ENCFF057JFH.bed" : 31955
- ...
+ 2023-07-04 08:08:18 [INFO]  Calculate collocation coefficient (peak-wise) ...
+ 2023-07-04 08:08:18 [INFO]  Read and union BED file: "CTCF_ENCFF660GHM.bed"
+ 2023-07-04 08:08:18 [INFO]  Unioned regions of "CTCF_ENCFF660GHM.bed" : 58584
+ 2023-07-04 08:08:18 [INFO]  Read and union BED file: "RAD21_ENCFF057JFH.bed"
+ 2023-07-04 08:08:19 [INFO]  Unioned regions of "RAD21_ENCFF057JFH.bed" : 31955
+ 2023-07-04 08:08:19 [INFO]  Build interval tree for unioned BED file: "CTCF_ENCFF660GHM.bed"
+ 2023-07-04 08:08:19 [INFO]  Build interval tree for unioned BED file: "RAD21_ENCFF057JFH.bed"
+ 2023-07-04 08:08:19 [INFO]  Calculate the overlap coefficient of each genomic region in CTCF_ENCFF660GHM.bed ...
+ 2023-07-04 08:08:21 [INFO]  Save peakwise scores to CTCF_ENCFF660GHM.bed_peakwise_scores.tsv ...
+ 2023-07-04 08:08:21 [INFO]  Calculate the overlap coefficient of each genomic region in RAD21_ENCFF057JFH.bed ...
+ 2023-07-04 08:08:22 [INFO]  Save peakwise scores to RAD21_ENCFF057JFH.bed_peakwise_scores.tsv ...
 
 
 If :code:`--save` was specified, the peakwise collocation coefficients were saved to :code:`CTCF_ENCFF660GHM.bed_peakwise_scores.tsv` and :code:`RAD21_ENCFF057JFH.bed_peakwise_scores.tsv`, respectively.

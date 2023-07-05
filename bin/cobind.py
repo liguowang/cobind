@@ -37,6 +37,12 @@ def main():
         This file is used to save the log information. By default, if no file \
         is specified (None), the log information will be printed to the \
         screen."
+    nameA_help = "\
+        Name to represent 1st set of genomic interval. If not \
+        specified (None), the file name (\"input_A.bed\") will be used."
+    nameB_help = "\
+        Name to represent the 2nd set of genomic interval. If not \
+        specified (None), the file name (\"input_B.bed\") will be used."
     # sub commands and help.
     commands = {
         'overlap': "Calculate the collocation coefficient (C) between two \
@@ -109,6 +115,10 @@ def main():
     parser_overlap.add_argument(
         "bed2", type=str, metavar="input_B.bed", help=bed_help)
     parser_overlap.add_argument(
+        '--nameA', type=str, default=None, help=nameA_help)
+    parser_overlap.add_argument(
+        '--nameB', type=str, default=None, help=nameB_help)
+    parser_overlap.add_argument(
         '-n', '--ndraws', type=int, dest="iter", default=20,
         help="Times of resampling to estimate confidence intervals. \
             Set to '0' to turn off resampling. For the resampling process \
@@ -138,6 +148,10 @@ def main():
         "bed1", type=str, metavar="input_A.bed", help=bed_help)
     parser_jaccard.add_argument(
         "bed2", type=str, metavar="input_B.bed", help=bed_help)
+    parser_jaccard.add_argument(
+        '--nameA', type=str, default=None, help=nameA_help)
+    parser_jaccard.add_argument(
+        '--nameB', type=str, default=None, help=nameB_help)
     parser_jaccard.add_argument(
         '-n', '--ndraws', type=int, dest="iter", default=20,
         help="Times of resampling to estimate confidence intervals. Set to \
@@ -169,6 +183,10 @@ def main():
     parser_dice.add_argument(
         "bed2", type=str, metavar="input_B.bed", help=bed_help)
     parser_dice.add_argument(
+        '--nameA', type=str, default=None, help=nameA_help)
+    parser_dice.add_argument(
+        '--nameB', type=str, default=None, help=nameB_help)
+    parser_dice.add_argument(
         '-n', '--ndraws', type=int, dest="iter", default=20,
         help="Times of resampling to estimate confidence intervals. Set to \
             '0' to turn off resampling. For the resampling process to work \
@@ -198,6 +216,10 @@ def main():
         "bed1", type=str, metavar="input_A.bed", help=bed_help)
     parser_simpson.add_argument(
         "bed2", type=str, metavar="input_B.bed", help=bed_help)
+    parser_simpson.add_argument(
+        '--nameA', type=str, default=None, help=nameA_help)
+    parser_simpson.add_argument(
+        '--nameB', type=str, default=None, help=nameB_help)
     parser_simpson.add_argument(
         '-n', '--ndraws', type=int, dest="iter", default=20,
         help="Times of resampling to estimate confidence intervals. Set to \
@@ -229,6 +251,10 @@ def main():
     parser_pmi.add_argument(
         "bed2", type=str, metavar="input_B.bed", help=bed_help)
     parser_pmi.add_argument(
+        '--nameA', type=str, default=None, help=nameA_help)
+    parser_pmi.add_argument(
+        '--nameB', type=str, default=None, help=nameB_help)
+    parser_pmi.add_argument(
         '-n', '--ndraws', type=int, dest="iter", default=20,
         help="Times of resampling to estimate confidence intervals. Set to \
             '0' to turn off resampling. For the resampling process to work \
@@ -259,6 +285,10 @@ def main():
     parser_npmi.add_argument(
         "bed2", type=str, metavar="input_B.bed", help=bed_help)
     parser_npmi.add_argument(
+        '--nameA', type=str, default=None, help=nameA_help)
+    parser_npmi.add_argument(
+        '--nameB', type=str, default=None, help=nameB_help)
+    parser_npmi.add_argument(
         '-n', '--ndraws', type=int, dest="iter", default=20,
         help="Times of resampling to estimate confidence intervals. Set to \
             '0' to turn off resampling. For the resampling process to work \
@@ -288,6 +318,14 @@ def main():
         "bed1", type=str, metavar="input_A.bed", help=bed_help)
     parser_cooccur.add_argument(
         "bed2", type=str, metavar="input_B.bed", help=bed_help)
+    parser_cooccur.add_argument(
+        '--nameA', type=str, default=None,
+        help="Name to represent 1st set of genomic interval. If not specified\
+            \"A\" will be used.")
+    parser_cooccur.add_argument(
+        '--nameB', type=str, default=None,
+        help="Name to represent 2nd set of genomic interval. If not specified\
+            \"B\" will be used.")
     parser_cooccur.add_argument(
         "bed3", type=str, metavar="background.bed",
         help="Genomic regions as the background (e.g., all promoters, \
@@ -334,6 +372,14 @@ def main():
         specific regions and their bigWig scores), and \
         \"output_prefix_common.tsv\"(input_A.bed and input_B.bed overlapped \
         regions and their bigWig scores).")
+    parser_covary.add_argument(
+        '--nameA', type=str, default=None,
+        help="Name of the 1st set of genomic interval, if not proviced, \
+            \"bedA\" will be used. Only affects the name of output file.")
+    parser_covary.add_argument(
+        '--nameB', type=str, default=None,
+        help="Name of the 2nd set of genomic interval, if not proviced, \
+            \"bedB\" will be used. Only affects the name of output file.")
     parser_covary.add_argument(
         "--na", type=str, dest="na_label", default='nan',
         help="Symbols used to represent the missing values. \
@@ -406,6 +452,10 @@ def main():
     parser_stat.add_argument(
         "bed2", type=str, metavar="input_B.bed", help=bed_help)
     parser_stat.add_argument(
+        '--nameA', type=str, default=None, help=nameA_help)
+    parser_stat.add_argument(
+        '--nameB', type=str, default=None, help=nameB_help)
+    parser_stat.add_argument(
         '-b', '--background', type=int, dest="bgsize",
         default=1.4e9, help="The size of the cis-regulatory genomic \
             regions. This is about 1.4Gb For the human genome. \
@@ -426,7 +476,10 @@ def main():
         command = sys.argv[1]
         if command == 'stat':
             config_log(switch=args.debug, logfile=args.log)
-            info = ov_stats(args.bed1, args.bed2, bg_size=args.bgsize)
+            info = ov_stats(args.bed1, args.bed2,
+                            name1=args.nameA,
+                            name2=args.nameB,
+                            bg_size=args.bgsize)
             print(info)
 
         elif command == 'overlap':
@@ -434,6 +487,8 @@ def main():
             logging.info("Calculate collocation coefficient (overall) ...")
             result = bootstrap_coef(args.bed1,
                                     args.bed2,
+                                    name1=args.nameA,
+                                    name2=args.nameB,
                                     size_factor=1/args.subsample,
                                     score_func=ov_coef,
                                     n_draws=args.iter,
@@ -445,6 +500,8 @@ def main():
                     "Calculate collocation coefficient (peak-wise) ...")
                 peakwise_ovcoef(args.bed1,
                                 args.bed2,
+                                name1=args.nameA,
+                                name2=args.nameB,
                                 score_func=ov_coef,
                                 g=args.bgsize,
                                 na_label='NA')
@@ -454,6 +511,8 @@ def main():
             logging.info("Calculate Jaccard coefficient (overall) ...")
             result = bootstrap_coef(args.bed1,
                                     args.bed2,
+                                    name1=args.nameA,
+                                    name2=args.nameB,
                                     size_factor=1/args.subsample,
                                     score_func=ov_jaccard,
                                     n_draws=args.iter,
@@ -464,6 +523,8 @@ def main():
                 logging.info("Calculate Jaccard coefficient (peakwise) ...")
                 peakwise_ovcoef(args.bed1,
                                 args.bed2,
+                                name1=args.nameA,
+                                name2=args.nameB,
                                 score_func=ov_jaccard,
                                 g=args.bgsize,
                                 na_label='NA')
@@ -473,6 +534,8 @@ def main():
             logging.info("Calculate Sørensen–Dice coefficient (overall) ...")
             result = bootstrap_coef(args.bed1,
                                     args.bed2,
+                                    name1=args.nameA,
+                                    name2=args.nameB,
                                     size_factor=1/args.subsample,
                                     score_func=ov_sd, n_draws=args.iter,
                                     fraction=args.subsample,
@@ -483,6 +546,8 @@ def main():
                     "Calculate Sørensen–Dice coefficient (peakwise) ...")
                 peakwise_ovcoef(args.bed1,
                                 args.bed2,
+                                name1=args.nameA,
+                                name2=args.nameB,
                                 score_func=ov_sd,
                                 g=args.bgsize,
                                 na_label='NA')
@@ -493,6 +558,8 @@ def main():
                 "Calculate Szymkiewicz–Simpson coefficient (overall) ...")
             result = bootstrap_coef(args.bed1,
                                     args.bed2,
+                                    name1=args.nameA,
+                                    name2=args.nameB,
                                     size_factor=1/args.subsample,
                                     score_func=ov_ss,
                                     n_draws=args.iter,
@@ -504,6 +571,8 @@ def main():
                     "Calculate Szymkiewicz–Simpson coefficient (peakwise) ...")
                 peakwise_ovcoef(args.bed1,
                                 args.bed2,
+                                name1=args.nameA,
+                                name2=args.nameB,
                                 score_func=ov_ss,
                                 g=args.bgsize,
                                 na_label='NA')
@@ -515,6 +584,8 @@ def main():
             # result = cal_pmi(args.bed1, args.bed2, bg_size=args.bgsize)
             result = bootstrap_coef(args.bed1,
                                     args.bed2,
+                                    name1=args.nameA,
+                                    name2=args.nameB,
                                     size_factor=1,
                                     score_func=pmi_value,
                                     n_draws=args.iter,
@@ -524,6 +595,8 @@ def main():
             if args.save:
                 peakwise_ovcoef(args.bed1,
                                 args.bed2,
+                                name1=args.nameA,
+                                name2=args.nameB,
                                 score_func=pmi_value,
                                 g=args.bgsize,
                                 na_label='NA')
@@ -531,11 +604,12 @@ def main():
         elif command == 'npmi':
             config_log(switch=args.debug, logfile=args.log)
             logging.info(
-                "Calculate the normalized pointwise mutual information \
-                    (NPMI) ...")
+                "Calculate the normalized pointwise mutual information (NPMI)")
             # result=cal_pmi(args.bed1, args.bed2, bg_size=args.bgsize)
             result = bootstrap_npmi(args.bed1,
                                     args.bed2,
+                                    name1=args.nameA,
+                                    name2=args.nameB,
                                     size_factor=1/args.subsample,
                                     score_func=npmi_value,
                                     n_draws=args.iter,
@@ -543,7 +617,10 @@ def main():
                                     bg_size=args.bgsize)
             print(result)
             if args.save:
-                peakwise_ovcoef(args.bed1, args.bed2,
+                peakwise_ovcoef(args.bed1,
+                                args.bed2,
+                                name1=args.nameA,
+                                name2=args.nameB,
                                 score_func=npmi_value,
                                 g=args.bgsize,
                                 na_label='NA')
@@ -551,8 +628,7 @@ def main():
         elif command == 'srog':
             config_log(switch=args.debug, logfile=args.log)
             logging.info(
-                "Determine the spacial realtions of genomic \
-                    (SROG) intervals ...")
+                "Determine the spacial realtions of genomic (SROG) intervals")
             summary = srog_peak(inbed1=args.bed1,
                                 inbed2=args.bed2,
                                 outfile=args.output,
@@ -561,7 +637,8 @@ def main():
 
         elif command == 'covary':
             config_log(switch=args.debug, logfile=args.log)
-            a_uniq_lst, b_uniq_lst, common_lst = compare_bed(args.bed1, args.bed2)
+            a_uniq_lst, b_uniq_lst, common_lst = compare_bed(
+                args.bed1, args.bed2)
             logging.info("Calculate covariabilities of overlapped regions ...")
             c_corr = bigwig_corr(bed=common_lst,
                                  bw1=args.bw1,
@@ -576,11 +653,16 @@ def main():
             print(c_corr.T)
 
             logging.info(
-                "Calculate covariabilities of \"%s\" unique regions ..." % args.bed1)
+                "Calculate covariabilities of \"%s\" unique regions ..."
+                % args.bed1)
+            if args.nameA is not None:
+                outfile_A = args.output + '_' + args.nameA + '_unique.tsv'
+            else:
+                outfile_A = args.output + '_bedA_unique.tsv'
             a_corr = bigwig_corr(bed=a_uniq_lst,
                                  bw1=args.bw1,
                                  bw2=args.bw2,
-                                 outfile=args.output + '_bedA_unique.tsv',
+                                 outfile=outfile_A,
                                  na_label=args.na_label,
                                  score_type=args.score_type,
                                  exact_scores=args.exact,
@@ -590,11 +672,16 @@ def main():
             print(a_corr.T)
 
             logging.info(
-                "Calculate covariabilities of \"%s\" unique regions ..." % args.bed2)
+                "Calculate covariabilities of \"%s\" unique regions ..."
+                % args.bed2)
+            if args.nameB is not None:
+                outfile_B = args.output + '_' + args.nameB + '_unique.tsv'
+            else:
+                outfile_B = args.output + '_bedB_unique.tsv'
             b_corr = bigwig_corr(bed=b_uniq_lst,
                                  bw1=args.bw1,
                                  bw2=args.bw2,
-                                 outfile=args.output + '_bedB_unique.tsv',
+                                 outfile=outfile_B,
                                  na_label=args.na_label,
                                  score_type=args.score_type,
                                  exact_scores=args.exact,
@@ -606,9 +693,11 @@ def main():
         elif command == 'cooccur':
             config_log(switch=args.debug, logfile=args.log)
             logging.info(
-                "Calculate the co-occurrence of two sets of genomic intervals ...")
+                "Calculate the co-occurrence of two sets of genomic intervals")
             results = cooccur_peak(inbed1=args.bed1,
                                    inbed2=args.bed2,
+                                   name1=args.nameA,
+                                   name2=args.nameB,
                                    inbed_bg=args.bed3,
                                    outfile=args.output,
                                    n_cut=args.n_cut,

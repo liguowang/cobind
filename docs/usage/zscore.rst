@@ -15,7 +15,7 @@ Calculate Z-score as an overall measurement for these six metrics
  - pointwise mutual information (PMI)
  - normalized pointwise mutual information (NPMI)
 
-First, values of the six metrics were converted into Z-scores by :math: `Z_i = \frac{(x – μ)}{σ}`, where μ and σ are the average and standard deviation of the score, and i \in {C, J, SD, SS, PMI, NPMI}. Then, the combined Z-score is defined as: 
+First, values of the six metrics were converted into Z-scores by :math:`Z_i = \frac{(x – μ)}{σ}`, where μ and σ are the average and standard deviation of the score, and i \in {C, J, SD, SS, PMI, NPMI}. Then, the combined Z-score is defined as: 
 
 :raw-math:`$$ Z = \frac{\sum{Z_i}}{\sqrt{6}} $$`
 

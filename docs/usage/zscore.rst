@@ -17,9 +17,7 @@ Calculate Z-score as an overall measurement for these six metrics
 
 , scores of the six metrics were converted into Z-scores by Zi = (x – μ)/σ, where μ and σ are the average and standard deviation of the score, and i  {C, J, SD, SS, PMI, NPMI}. The combined Z-score is defined as: 
 
-:raw-math:`$$ \sum{Z_i}{\sqrt{6}} $$`
-
-Z=(∑Z_i )/√6
+:raw-math:`$$ \frac{\sum{Z_i}}{\sqrt{6}} $$`
 
 
 Usage

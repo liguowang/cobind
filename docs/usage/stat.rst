@@ -31,27 +31,44 @@ Usage
 
 ::
  
- usage: cobind.py stat [-h] [-b BGSIZE] [-d] input_A.bed input_B.bed
- 
+ usage: cobind.py stat [-h] [--nameA NAMEA] [--nameB NAMEB] [-b BGSIZE]
+                       [-l log_file] [-d]
+                       input_A.bed input_B.bed
+
  positional arguments:
-   input_A.bed           Genomic regions in BED, BED-like or bigBed format. The BED-like
-                         format includes: 'bed3', 'bed4', 'bed6', 'bed12', 'bedgraph',
-                         'narrowpeak', 'broadpeak', 'gappedpeak'. BED and BED-like format
-                         can be plain text, compressed (.gz, .z, .bz, .bz2, .bzip2) or
-                         remote (http://, https://, ftp://) files. Do not compress BigBed
-                         foramt. BigBed file can also be a remote file.
-   input_B.bed           Genomic regions in BED, BED-like or bigBed format. The BED-like
-                         format includes: 'bed3', 'bed4', 'bed6', 'bed12', 'bedgraph',
-                         'narrowpeak', 'broadpeak', 'gappedpeak'. BED and BED-like format
-                         can be plain text, compressed (.gz, .z, .bz, .bz2, .bzip2) or
-                         remote (http://, https://, ftp://) files. Do not compress BigBed
-                         foramt. BigBed file can also be a remote file.
- 
- optional arguments:
+   input_A.bed           Genomic regions in BED, BED-like or bigBed format. The
+                         BED-like format includes:'bed3', 'bed4', 'bed6',
+                         'bed12', 'bedgraph', 'narrowpeak', 'broadpeak',
+                         'gappedpeak'. BED and BED-like format can be plain
+                         text, compressed (.gz, .z, .bz, .bz2, .bzip2) or
+                         remote (http://, https://, ftp://) files. Do not
+                         compress BigBed foramt. BigBed file can also be a
+                         remote file.
+   input_B.bed           Genomic regions in BED, BED-like or bigBed format. The
+                         BED-like format includes:'bed3', 'bed4', 'bed6',
+                         'bed12', 'bedgraph', 'narrowpeak', 'broadpeak',
+                         'gappedpeak'. BED and BED-like format can be plain
+                         text, compressed (.gz, .z, .bz, .bz2, .bzip2) or
+                         remote (http://, https://, ftp://) files. Do not
+                         compress BigBed foramt. BigBed file can also be a
+                         remote file.
+
+ options:
    -h, --help            show this help message and exit
+   --nameA NAMEA         Name to represent 1st set of genomic interval. If not
+                         specified (None), the file name ("input_A.bed") will
+                         be used.
+   --nameB NAMEB         Name to represent the 2nd set of genomic interval. If
+                         not specified (None), the file name ("input_B.bed")
+                         will be used.
    -b BGSIZE, --background BGSIZE
-                         The size of the cis-regulatory genomic regions. This is about
-                         1.4Gb For the human genome. (default: 1400000000)
+                         The size of the cis-regulatory genomic regions. This
+                         is about 1.4Gb For the human genome. (default:
+                         1400000000)
+   -l log_file, --log log_file
+                         This file is used to save the log information. By
+                         default, if no file is specified (None), the log
+                         information will be printed to the screen.
    -d, --debug           Print detailed information for debugging.
 
 

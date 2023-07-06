@@ -37,34 +37,48 @@ Usage
 
 ::
 
- usage: cobind.py cooccur [-h] [--ncut N_CUT] [--pcut P_CUT] [-d]
+ usage: cobind.py cooccur [-h] [--nameA NAMEA] [--nameB NAMEB] [--ncut N_CUT]
+                          [--pcut P_CUT] [-l log_file] [-d]
                           input_A.bed input_B.bed background.bed output.tsv
- 
+
  positional arguments:
-   input_A.bed     Genomic regions in BED, BED-like or bigBed format. The BED-like format
-                   includes: 'bed3', 'bed4', 'bed6', 'bed12', 'bedgraph', 'narrowpeak',
-                   'broadpeak', 'gappedpeak'. BED and BED-like format can be plain text,
-                   compressed (.gz, .z, .bz, .bz2, .bzip2) or remote (http://, https://,
-                   ftp://) files. Do not compress BigBed foramt. BigBed file can also be
-                   a remote file.
-   input_B.bed     Genomic regions in BED, BED-like or bigBed format. The BED-like format
-                   includes: 'bed3', 'bed4', 'bed6', 'bed12', 'bedgraph', 'narrowpeak',
-                   'broadpeak', 'gappedpeak'. BED and BED-like format can be plain text,
-                   compressed (.gz, .z, .bz, .bz2, .bzip2) or remote (http://, https://,
-                   ftp://) files. Do not compress BigBed foramt. BigBed file can also be
-                   a remote file.
-   background.bed  Genomic regions as the background (e.g., all promoters, all
-                   enhancers).
-   output.tsv      For each genomic region in the "background.bed" file, add another
-                   column indicating if this region is "input_A specific (i.e., A+B-)",
-                   "input_B specific (i.e., A-B+)", "co-occur (i.e., A+B+)" or "neither
-                   (i.e, A-B-)".
- 
- optional arguments:
-   -h, --help      show this help message and exit
-   --ncut N_CUT    The minimum overlap size. (default: 1)
-   --pcut P_CUT    The minimum overlap percentage. (default: 0.000000)
-   -d, --debug     Print detailed information for debugging.
+   input_A.bed           Genomic regions in BED, BED-like or bigBed format. The
+                         BED-like format includes:'bed3', 'bed4', 'bed6',
+                         'bed12', 'bedgraph', 'narrowpeak', 'broadpeak',
+                         'gappedpeak'. BED and BED-like format can be plain
+                         text, compressed (.gz, .z, .bz, .bz2, .bzip2) or
+                         remote (http://, https://, ftp://) files. Do not
+                         compress BigBed foramt. BigBed file can also be a
+                         remote file.
+   input_B.bed           Genomic regions in BED, BED-like or bigBed format. The
+                         BED-like format includes:'bed3', 'bed4', 'bed6',
+                         'bed12', 'bedgraph', 'narrowpeak', 'broadpeak',
+                         'gappedpeak'. BED and BED-like format can be plain
+                         text, compressed (.gz, .z, .bz, .bz2, .bzip2) or
+                         remote (http://, https://, ftp://) files. Do not
+                         compress BigBed foramt. BigBed file can also be a
+                         remote file.
+   background.bed        Genomic regions as the background (e.g., all
+                         promoters, all enhancers).
+   output.tsv            For each genomic region in the "background.bed" file,
+                         add another column indicating if this region is
+                         "input_A specific (i.e., A+B-)", "input_B specific
+                         (i.e., A-B+)", "co-occur (i.e., A+B+)" or "neither
+                         (i.e, A-B-)".
+
+ options:
+   -h, --help            show this help message and exit
+   --nameA NAMEA         Name to represent 1st set of genomic interval. If not
+                         specified "A" will be used.
+   --nameB NAMEB         Name to represent 2nd set of genomic interval. If not
+                         specified "B" will be used.
+   --ncut N_CUT          The minimum overlap size. (default: 1)
+   --pcut P_CUT          The minimum overlap percentage. (default: 0.000000)
+   -l log_file, --log log_file
+                         This file is used to save the log information. By
+                         default, if no file is specified (None), the log
+                         information will be printed to the screen.
+   -d, --debug           Print detailed information for debugging.
 
 
 Example

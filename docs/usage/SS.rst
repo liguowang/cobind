@@ -21,36 +21,54 @@ Usage
 
 ::
 
- usage: cobind.py simpson [-h] [-n ITER] [-f SUBSAMPLE] [-b BGSIZE] [-o] [-d]
+ usage: cobind.py simpson [-h] [--nameA NAMEA] [--nameB NAMEB] [-n ITER]
+                          [-f SUBSAMPLE] [-b BGSIZE] [-o] [-l log_file] [-d]
                           input_A.bed input_B.bed
- 
+
  positional arguments:
-   input_A.bed           Genomic regions in BED, BED-like or bigBed format. The BED-like
-                         format includes: 'bed3', 'bed4', 'bed6', 'bed12', 'bedgraph',
-                         'narrowpeak', 'broadpeak', 'gappedpeak'. BED and BED-like format
-                         can be plain text, compressed (.gz, .z, .bz, .bz2, .bzip2) or
-                         remote (http://, https://, ftp://) files. Do not compress BigBed
-                         foramt. BigBed file can also be a remote file.
-   input_B.bed           Genomic regions in BED, BED-like or bigBed format. The BED-like
-                         format includes: 'bed3', 'bed4', 'bed6', 'bed12', 'bedgraph',
-                         'narrowpeak', 'broadpeak', 'gappedpeak'. BED and BED-like format
-                         can be plain text, compressed (.gz, .z, .bz, .bz2, .bzip2) or
-                         remote (http://, https://, ftp://) files. Do not compress BigBed
-                         foramt. BigBed file can also be a remote file.
- 
- optional arguments:
+   input_A.bed           Genomic regions in BED, BED-like or bigBed format. The
+                         BED-like format includes:'bed3', 'bed4', 'bed6',
+                         'bed12', 'bedgraph', 'narrowpeak', 'broadpeak',
+                         'gappedpeak'. BED and BED-like format can be plain
+                         text, compressed (.gz, .z, .bz, .bz2, .bzip2) or
+                         remote (http://, https://, ftp://) files. Do not
+                         compress BigBed foramt. BigBed file can also be a
+                         remote file.
+   input_B.bed           Genomic regions in BED, BED-like or bigBed format. The
+                         BED-like format includes:'bed3', 'bed4', 'bed6',
+                         'bed12', 'bedgraph', 'narrowpeak', 'broadpeak',
+                         'gappedpeak'. BED and BED-like format can be plain
+                         text, compressed (.gz, .z, .bz, .bz2, .bzip2) or
+                         remote (http://, https://, ftp://) files. Do not
+                         compress BigBed foramt. BigBed file can also be a
+                         remote file.
+
+ options:
    -h, --help            show this help message and exit
+   --nameA NAMEA         Name to represent 1st set of genomic interval. If not
+                         specified (None), the file name ("input_A.bed") will
+                         be used.
+   --nameB NAMEB         Name to represent the 2nd set of genomic interval. If
+                         not specified (None), the file name ("input_B.bed")
+                         will be used.
    -n ITER, --ndraws ITER
-                         Times of resampling to estimate confidence intervals. Set to '0'
-                         to turn off resampling.(default: 20)
+                         Times of resampling to estimate confidence intervals.
+                         Set to '0' to turn off resampling. For the resampling
+                         process to work properly, overlapped intervals in each
+                         bed file must be merged. (default: 20)
    -f SUBSAMPLE, --fraction SUBSAMPLE
                          Resampling fraction. (default: 0.75)
    -b BGSIZE, --background BGSIZE
-                         The size of the cis-regulatory genomic regions. This is about
-                         1.4Gb For the human genome. (default: 1400000000)
+                         The size of the cis-regulatory genomic regions. This
+                         is about 1.4Gb For the human genome. (default:
+                         1400000000)
    -o, --save            If set, will save peak-wise coefficients to files
                          ("input_A_peakwise_scores.tsv" and
                          "input_B_peakwise_scores.tsv").
+   -l log_file, --log log_file
+                         This file is used to save the log information. By
+                         default, if no file is specified (None), the log
+                         information will be printed to the screen.
    -d, --debug           Print detailed information for debugging.
 
 

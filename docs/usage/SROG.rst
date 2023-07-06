@@ -18,25 +18,32 @@ Usage
 
 ::
  
- usage: cobind.py srog [-h] [--dist MAX_DIST] [-d] input_A.bed input_B.bed output.tsv
- 
- positional arguments:
-   input_A.bed      Genomic regions in BED, BED-like or bigBed format. If 'name' (the 4th
-                    column) is not provided, the default name is "chrom:start-end". If
-                    strand (the 6th column) is not provided, the default strand is "+".
-   input_B.bed      Genomic regions in BED, BED-like or bigBed format. If 'name' (the 4th
-                    column) is not provided, the default name is "chrom:start-end". If
-                    strand (the 6th column) is not provided, the default strand is "+".
-   output.tsv       Generate spatial relation code (disjoint, touch, equal, overlap,
-                    contain, within) for each genomic interval in "input_A.bed".
- 
- optional arguments:
-   -h, --help       show this help message and exit
-   --dist MAX_DIST  When intervals are disjoint, find the closest up- and down-stream
-                    intervals that are no further than `max_dist` away. default:
-                    250000000)
-   -d, --debug      Print detailed information for debugging.
+ usage: cobind.py srog [-h] [--dist MAX_DIST] [-l log_file] [-d]
+                       input_A.bed input_B.bed output.tsv
 
+ positional arguments:
+   input_A.bed           Genomic regions in BED, BED-like or bigBed format. If
+                         'name' (the 4th column) is not provided, the default
+                         name is "chrom:start-end". If strand (the 6th column)
+                         is not provided, the default strand is "+".
+   input_B.bed           Genomic regions in BED, BED-like or bigBed format. If
+                         'name' (the 4th column) is not provided, the default
+                         name is "chrom:start-end". If strand (the 6th column)
+                         is not provided, the default strand is "+".
+   output.tsv            Generate spatial relation code (disjoint, touch,
+                         equal, overlap, contain, within) for each genomic
+                         interval in "input_A.bed".
+
+ options:
+   -h, --help            show this help message and exit
+   --dist MAX_DIST       When intervals are disjoint, find the closest up- and
+                         down-stream intervals that are no further than
+                         `max_dist` away. default: 250000000)
+   -l log_file, --log log_file
+                         This file is used to save the log information. By
+                         default, if no file is specified (None), the log
+                         information will be printed to the screen.
+   -d, --debug           Print detailed information for debugging.
 
 Example
 -------

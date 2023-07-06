@@ -21,8 +21,8 @@ Usage
 
 ::
  
- usage: cobind.py jaccard [-h] [-n ITER] [-f SUBSAMPLE] [-b BGSIZE] [-o]
-                          [-l log_file] [-d]
+ usage: cobind.py jaccard [-h] [--nameA NAMEA] [--nameB NAMEB] [-n ITER]
+                          [-f SUBSAMPLE] [-b BGSIZE] [-o] [-l log_file] [-d]
                           input_A.bed input_B.bed
 
  positional arguments:
@@ -45,6 +45,12 @@ Usage
 
  options:
    -h, --help            show this help message and exit
+   --nameA NAMEA         Name to represent 1st set of genomic interval. If not
+                         specified (None), the file name ("input_A.bed") will
+                         be used.
+   --nameB NAMEB         Name to represent the 2nd set of genomic interval. If
+                         not specified (None), the file name ("input_B.bed")
+                         will be used.
    -n ITER, --ndraws ITER
                          Times of resampling to estimate confidence intervals.
                          Set to '0' to turn off resampling. For the resampling

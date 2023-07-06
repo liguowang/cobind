@@ -50,6 +50,8 @@ Usage
 Example
 -------
 
+First, download the test file: `<CTCF_vs_ReMap.tsv> https://sourceforge.net/projects/cobind/files/data/CTCF_vs_ReMap.tsv`
+
 :code:`cobind.py zscore CTCF_vs_ReMap.tsv output.tsv`
 
 ::

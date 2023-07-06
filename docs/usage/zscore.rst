@@ -1,6 +1,3 @@
-.. role:: raw-math(raw)
-    :format: latex html
-
 Z-score
 ============
 
@@ -15,9 +12,12 @@ Calculate Z-score as an overall measurement for these six metrics
  - pointwise mutual information (PMI)
  - normalized pointwise mutual information (NPMI)
 
-First, values of the six metrics were converted into Z-scores by :raw-math:`$ Z_i = \frac{(x – μ)}{σ} $`, where μ and σ are the average and standard deviation of the score, and i \in {C, J, SD, SS, PMI, NPMI}. Then, the combined Z-score is defined as: 
+First, values of the six metrics were converted into Z-scores by Z_i = (x – μ)/σ, where μ and σ are the average and standard deviation of the score, and i belongs to {C, J, SD, SS, PMI, NPMI}. Then, the combined Z-score is defined as: 
 
-:raw-math:`$$ Z = \frac{\sum{Z_i}}{\sqrt{6}} $$`
+.. image:: ../_static/zscore.jpg
+  :width: 180
+  :alt: Alternative text
+
 
 
 Usage
@@ -55,7 +55,7 @@ Example
 ::
   
  2023-07-06 10:20:35 [INFO]  Calculate Z-scores from "CTCF_vs_ReMap.tsv"
- 2023-07-06 10:20:35 [INFO]  Save Z-scores to "output.tsv"
+
                C      J     SD     SS     PMI    NPMI
   TF_name
   RAD21   0.1446 0.0224 0.0438 0.9326  2.0074  0.3417
@@ -71,6 +71,8 @@ Example
   GLI1    0.0003 0.0000 0.0000 0.0267 -1.5442 -0.1054
  
   [1207 rows x 6 columns]
+
+  2023-07-06 10:20:35 [INFO]  Save Z-scores to "output.tsv"
                 C       J      SD      SS     PMI    NPMI  Zscore
   TF_name
   RAD21    3.5704  3.3312  3.2881  3.8229  2.0169  2.7221  7.6553

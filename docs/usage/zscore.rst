@@ -1,10 +1,13 @@
+.. role:: raw-math(raw)
+    :format: latex html
+
 Z-score
 ============
 
 Description
 -------------
 
-Calculate Z-score as an overall measurements for these six metrics
+Calculate Z-score as an overall measurement for these six metrics
  - collocation coefficient (C)
  - Jaccard similarity coefficient (J)
  - Sørensen–Dice coefficient (SD)
@@ -12,7 +15,11 @@ Calculate Z-score as an overall measurements for these six metrics
  - pointwise mutual information (PMI)
  - normalized pointwise mutual information (NPMI)
 
+, scores of the six metrics were converted into Z-scores by Zi = (x – μ)/σ, where μ and σ are the average and standard deviation of the score, and i  {C, J, SD, SS, PMI, NPMI}. The combined Z-score is defined as: 
 
+:raw-math:`$$ \sum{Z_i}{\sqrt{6}} $$`
+
+Z=(∑Z_i )/√6
 
 
 Usage

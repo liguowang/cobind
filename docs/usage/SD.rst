@@ -11,7 +11,7 @@ Calculate the `Sørensen–Dice coefficient <https://en.wikipedia.org/wiki/S%C3%
   :alt: Alternative text
 
 .. image:: ../_static/SD_2.jpg
-  :width: 180
+  :width: 60
   :alt: Alternative text
 
 Usage

@@ -57,6 +57,7 @@ def ov_stats(file1, file2, name1 = None, name2 = None, bg_size = 1400000000):
         'coef_ratio_high' : The upper bound of 95% confidence interval of 'coef_ratio'.
 
     """
+    print(name1, name2)
     results = {}
     file1_lst = bed_to_list(file1)
     file2_lst = bed_to_list(file2)

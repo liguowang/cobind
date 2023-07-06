@@ -4,9 +4,9 @@ Definitions
 
 Symbols definitions
 -------------------
-Say, we have two sets of genomic intervals **A** and **B**, and the genomic background is **G**.
-In Figure 1 below, both A and B contain only 1 genomic region for the purpose of clarity, but the definitions
-are still applicable if **A** and **B** contain many intervals. 
+We have two sets of genomic intervals **A** and **B**, and the genomic background is **G**.
+In Figure 1 below, both A and B contain only one genomic region for the purpose of clarity, but the definitions
+are still applicable if **A** and **B** have many intervals. 
 
 Symbols are defined as:
 
@@ -116,7 +116,7 @@ Jaccard coefficient (J) can be converted into Sørensen–Dice coefficient (SD) 
 
 Szymkiewicz–Simpson coefficient (SS)
 -------------------------------------
-`Szymkiewicz–Simpson coefficient <https://en.wikipedia.org/wiki/Overlap_coefficient>`_ is defined as the size of the intersection divided by the smaller of the size of the two sets.
+`Szymkiewicz–Simpson coefficient <https://en.wikipedia.org/wiki/Overlap_coefficient>`_ is defined as the size of the intersection divided by the smaller size of the two sets.
 
 .. image:: _static/SS.jpg
   :width: 250
@@ -151,7 +151,7 @@ PMI = 0
 PMI > 0
   Indicates that the overlapping between A and B is in a frequency *higher* than what we would expect if A and B are independent (i.e, A and B tend to bind together). 
 PMI < 0
-  Indicates that the overlapping between A and B is in frequency *lower* than what we would expect if A and B are independent. (i.e., A and B tend to bind separately). 
+  Indicates that the overlapping between A and B is in frequency *lower* than what we would expect if A and B were independent. (i.e., A and B tend to bind separately). 
 
 Note, PMI has no boundaries:
 

@@ -12,7 +12,7 @@ from cobindability import version
 from cobindability.ovbootstrap import bootstrap_coef, bootstrap_npmi
 from cobindability.coefcal import ov_coef, ov_jaccard, ov_ss, ov_sd
 from cobindability.coefcal import pmi_value, npmi_value
-from cobindability.utils import config_log
+from cobindability.utils import config_log, cal_zscores
 
 __author__ = "Liguo Wang"
 __copyright__ = "Copyleft"
@@ -21,7 +21,7 @@ __license__ = "MIT"
 __version__ = version.version
 __maintainer__ = "Liguo Wang"
 __email__ = "wang.liguo@mayo.edu"
-__status__ = "Development"
+__status__ = "Production"
 
 
 def main():
@@ -72,6 +72,10 @@ def main():
             regions, and calculate overlapping measurements, including \"C\", \
             \"J\", \"SD\", \"SS\", \"PMI\", \"NPMI\", without bootstrap \
             resampling or generating peakwise measurements.",
+        'zscore': "Calculate Z-score of six overlapping measurements, \
+            inlcuding \"C\", \"J\", \"SD\", \"SS\", \"PMI\", \"NPMI\". The \
+            aim is to provide an overall measurement of the collocation \
+            strength."
     }
 
     # create parse
@@ -108,6 +112,8 @@ def main():
         'srog', help=commands['srog'])
     parser_stat = sub_parsers.add_parser(
         'stat', help=commands['stat'])
+    parser_zscore = sub_parsers.add_parser(
+        'zscore', help=commands['zscore'])
 
     # create the parser for the "overlap" sub-command
     parser_overlap.add_argument(
@@ -467,6 +473,25 @@ def main():
         "-d", "--debug", action="store_true",
         help="Print detailed information for debugging.")
 
+    # create the parser for the "zscore" sub-command
+    parser_zscore.add_argument(
+        "input", type=str, metavar="input_file.tsv",
+        help="Input dataframe with row names and column names. Must separate \
+            different columns with tab. If  \"C\", \"J\", \"SD\", \"SS\", \
+            \"PMI\", \"NPMI\" are used as the column names, only these six \
+            columns will be used to calculate the z-score, othersise, all \
+            numerical columns in the dataframe will be used.")
+    parser_zscore.add_argument(
+        "output", type=str, metavar="output_file.tsv",
+        help="Output dataframe with Zscores as the last column.")
+    parser_zscore.add_argument(
+        "-l", "--log", type=str, metavar="log_file", default=None,
+        help=log_help)
+
+    parser_zscore.add_argument(
+        "-d", "--debug", action="store_true",
+        help="Print detailed information for debugging.")
+
     args = parser.parse_args()
 
     if len(sys.argv) == 1:
@@ -703,6 +728,10 @@ def main():
                                    n_cut=args.n_cut,
                                    p_cut=args.p_cut)
             print(results)
+
+        elif command == 'zscore':
+            config_log(switch=args.debug, logfile=args.log)
+            cal_zscores(args.input, args.output)
 
 
 if __name__ == '__main__':

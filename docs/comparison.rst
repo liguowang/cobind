@@ -98,7 +98,7 @@ CTCF: Demonstration
 
 70-95% of `CTCF <https://en.wikipedia.org/wiki/CTCF>`_ binding sites are also bound by `cohesin <https://en.wikipedia.org/wiki/Cohesin>`_ complex (including SMC1, SMC3, RAD21/SCC1, STAG1/SA1, STAG2/SA2) to establish chromatin loops and regulate gene expression [#f1]_ [#f2]_. 
 
-We used CTCF-cohesin as a positive control to evaluate the performance of the conventional threshold-and-count approach as well as six other collocation measurements (including C, J, SD, SS, PMI and NPMI).  We first calculated the scores of these metrics between all the binding sites (defined as cistrome) of `CTCF <https://en.wikipedia.org/wiki/CTCF>`_ with those cistromes of ~1200 TFs curated in the `ReMap <https://remap2022.univ-amu.fr/>`_ database. Then, we calculate the `Zscore <https://cobind.readthedocs.io/en/latest/usage/zscore.html>`_ as an overall mesurement of the cobindability.
+We used CTCF-cohesin as a positive control to evaluate the performance of the six collocation measurements (including C, J, SD, SS, PMI and NPMI).  We first calculated the scores of these metrics between all the binding sites (defined as cistrome) of `CTCF <https://en.wikipedia.org/wiki/CTCF>`_ with those cistromes of 1207 TFs curated in the `ReMap <https://remap2022.univ-amu.fr/>`_ database. Then, we calculate the `Zscore <https://cobind.readthedocs.io/en/latest/usage/zscore.html>`_ as an overall measurement of the cobindability.
 
 .. image:: _static/CTCF.png
   :width: 800

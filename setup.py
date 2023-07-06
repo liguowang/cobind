@@ -29,7 +29,7 @@ def main():
             zip_safe = False,
             dependency_links = [],
             classifiers=[
-                'Development Status :: 4 - Beta',
+                'Development Status :: 5 - Production/Stable',
                 'Environment :: Console',
                 'Intended Audience :: Science/Research',
                 'License :: OSI Approved :: MIT License',

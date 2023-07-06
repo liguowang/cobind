@@ -37,6 +37,7 @@ cobind's documentation
    usage/covary.rst
    usage/SROG.rst
    usage/stat.rst
+   usage/zscore.rst
 
 .. toctree::
    :caption: Evaluation

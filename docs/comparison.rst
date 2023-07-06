@@ -98,14 +98,14 @@ CTCF: Demonstration
 
 70-95% of `CTCF <https://en.wikipedia.org/wiki/CTCF>`_ binding sites are also bound by `cohesin <https://en.wikipedia.org/wiki/Cohesin>`_ complex (including SMC1, SMC3, RAD21/SCC1, STAG1/SA1, STAG2/SA2) to establish chromatin loops and regulate gene expression [#f1]_ [#f2]_. 
 
-We used CTCF-cohesin as a positive control to evaluate the performance of the conventional threshold-and-count approach as well as six other collocation measurements (including C, J, SD, SS, PMI and NPMI).  We first calculated the scores of these metrics between all the binding sites (defined as cistrome) of `CTCF <https://en.wikipedia.org/wiki/CTCF>`_ with those cistromes of ~1200 TFs curated in the `ReMap <https://remap2022.univ-amu.fr/>`_ database. Then, we compared the performances of these measurements to rank these 1200 TFs, assuming that **a better approach would be able to rank CTCF’s cofactors (cohensin proteins) higher in the list**. 
+We used CTCF-cohesin as a positive control to evaluate the performance of the conventional threshold-and-count approach as well as six other collocation measurements (including C, J, SD, SS, PMI and NPMI).  We first calculated the scores of these metrics between all the binding sites (defined as cistrome) of `CTCF <https://en.wikipedia.org/wiki/CTCF>`_ with those cistromes of ~1200 TFs curated in the `ReMap <https://remap2022.univ-amu.fr/>`_ database. Then, we calculate the `Zscore <https://cobind.readthedocs.io/en/latest/usage/zscore.html>`_ as an overall mesurement of the cobindability.
 
-.. image:: _static/rank_comparison.png
+.. image:: _static/CTCF.png
   :width: 800
   :alt: Alternative text
 
 
-**(A)** Collocation between CTCF binding sites and the binding sites of 1200 TFs were evaluated uing the conventional approach. With conventional approach, one first need to set an arbitrary cutoff to call if two genomic intervals are overlapped. And then calculate what percent of CTCF peaks that are overlapped with each TF. Six different thresholds were applied. Only the top 20 TFs were displayed. **(B)** Collocation between CTCF binding sites and the binding sites of 1200 TFs were evaluated uing six collocation metrics (including C, J, SD, SS, PMI and NPMI). 
+**(A)** Collocation between CTCF binding sites and the binding sites of 1207 TFs were evaluated uing the six measurements as well as the zscore. Only the top 20 TFs were displayed.
 
 
 

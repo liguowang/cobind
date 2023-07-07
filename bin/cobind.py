@@ -479,11 +479,11 @@ def main():
         help="Input dataframe with row names and column names. Must separate \
             different columns with tab. If  \"C\", \"J\", \"SD\", \"SS\", \
             \"PMI\", \"NPMI\" are used as the column names, only these six \
-            columns will be used to calculate the z-score, othersise, all \
+            columns will be used to calculate the Z-score, otherwise, all \
             numerical columns in the dataframe will be used.")
     parser_zscore.add_argument(
         "output", type=str, metavar="output_file.tsv",
-        help="Output dataframe with Zscores as the last column.")
+        help="Output dataframe with Z-scores as the last column.")
     parser_zscore.add_argument(
         "-l", "--log", type=str, metavar="log_file", default=None,
         help=log_help)

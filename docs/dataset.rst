@@ -68,6 +68,8 @@ These files can be used as genomic "background".
      - e6fbecf8f637db49ce12d1390c6285b6
    * - `CpG_island_hg38.bed.gz <https://sourceforge.net/projects/cobind/files/data/CpG_island_hg38.bed.gz>`_
      - 8c783529fb4a8f86b1d90d70afa6a1f7
+   * - `CTCF_vs_ReMap.tsv <https://sourceforge.net/projects/cobind/files/data/CTCF_vs_ReMap.tsv>`_
+     - f9fc4dc5a03645c923a04475f8df8706
 
 
 .. list-table::

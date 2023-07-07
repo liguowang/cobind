@@ -69,13 +69,12 @@ def main():
             regions. SROG codes include 'disjoint','touch','equal','overlap',\
             'contain', 'within'.",
         'stat': "Wrapper function. Report basic statistics of genomic \
-            regions, and calculate overlapping measurements, including \"C\", \
-            \"J\", \"SD\", \"SS\", \"PMI\", \"NPMI\", without bootstrap \
+            regions, and calculate overlapping measurements (including \"C\", \
+            \"J\", \"SD\", \"SS\", \"PMI\", \"NPMI\"), without bootstrap \
             resampling or generating peakwise measurements.",
-        'zscore': "Calculate Z-score of six overlapping measurements, \
-            inlcuding \"C\", \"J\", \"SD\", \"SS\", \"PMI\", \"NPMI\". The \
-            aim is to provide an overall measurement of the collocation \
-            strength."
+        'zscore': "Calculate Z-score of six overlapping measurements \
+            (inlcuding \"C\", \"J\", \"SD\", \"SS\", \"PMI\", \"NPMI\"), to \
+            provide an overall measurement of the collocation strength."
     }
 
     # create parse

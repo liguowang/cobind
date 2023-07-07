@@ -41,14 +41,14 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'cobind'
-copyright = u'2022, Liguo Wang'
+copyright = u'2023, Liguo Wang'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
 # The short X.Y version.
-version = '1.0.0'
+version = '1.0.1'
 # The full version, including alpha/beta/rc tags.
 release = ''
 
@@ -127,7 +127,7 @@ html_theme_options = {
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
-html_title = "Cobind: Collocation Analysis of Genomics Intervals"
+html_title = "Cobind: Quantitative analysis of the genomic overlaps"
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 html_short_title = "cobind"

@@ -34,9 +34,9 @@ Usage
                          separate different columns with tab. If "C", "J",
                          "SD", "SS", "PMI", "NPMI" are used as the column
                          names, only these six columns will be used to
-                         calculate the z-score, othersise, all numerical
+                         calculate the Z-score, otherwise, all numerical
                          columns in the dataframe will be used.
-   output_file.tsv       Output dataframe with Zscores as the last column.
+   output_file.tsv       Output dataframe with Z-scores as the last column.
 
  options:
    -h, --help            show this help message and exit

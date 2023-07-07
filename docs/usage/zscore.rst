@@ -4,7 +4,8 @@ Z-score
 Description
 -------------
 
-Calculate Z-score as an overall measurement for these six metrics
+Calculate Z-score as an overall measurement for these six metrics. The Z-score approach becomes valuable , for example, when we are comparing a query TF with multiple other TFs to identify potential co-factors.
+
  - collocation coefficient (C)
  - Jaccard similarity coefficient (J)
  - Sørensen–Dice coefficient (SD)

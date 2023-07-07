@@ -1,7 +1,7 @@
 Performance (CPU & memory usage)
 =================================
 
-The CPU time & memory usage for running `cobind.py stat` between two bed file with different number of peaks.
+The CPU time & memory usage for running `cobind.py stat <https://cobind.readthedocs.io/en/latest/usage/stat.html>`_ between two bed file with different number of intervals.
 
 CPU model: Intel(R) Xeon(R) Gold 6248 CPU @ 2.50GHz
 

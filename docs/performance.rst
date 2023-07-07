@@ -9,10 +9,10 @@ CPU model: Intel(R) Xeon(R) Gold 6248 CPU @ 2.50GHz
    :widths: 15,20,20,20
    :header-rows: 1
 
-   * - *n of intervals in A*
-     - *n of intervals in B*
+   * - *# of intervals in A*
+     - *# of intervals in B*
      - *Real time (seconds)*
-     - *Max memory (Gb)*
+     - *Max memory (GB)*
 
    * - 100,000
      - 100,000
@@ -50,7 +50,7 @@ CPU model: Intel(R) Xeon(R) Gold 6248 CPU @ 2.50GHz
      - 900,000
      - 27.262
      - 1.166
-   * - 1000,000
-     - 1000,000
+   * - 1,000,000
+     - 1,000,000
      - 29.472
      - 1.220

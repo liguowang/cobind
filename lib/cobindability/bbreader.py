@@ -6,7 +6,6 @@ read bigBed files.
 
 """
 
-
 import pyBigWig
 from cobindability import version
 
@@ -21,11 +20,11 @@ __status__ = "Development"
 
 
 def bbreader(fname):
-	"""
-	read bigBed file
-	"""
-	bb = pyBigWig.open(fname)
-	chrom_dict = bb.chroms()
-	for chr in chrom_dict:
-		for start, end, score in bb.entries(chr, 0, chrom_dict[chr]):
-			yield(chr + '\t' + str(start) + '\t' + str(end) + '\t' + score)
+    """
+    read bigBed file
+    """
+    bb = pyBigWig.open(fname)
+    chrom_dict = bb.chroms()
+    for chr in chrom_dict:
+        for start, end, score in bb.entries(chr, 0, chrom_dict[chr]):
+            yield(chr + '\t' + str(start) + '\t' + str(end) + '\t' + score)

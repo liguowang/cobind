@@ -178,8 +178,7 @@ Note, after normalization, NPMI is confined to [-1, 1]:
 Which metric to use? 
 ---------------------
 
-Based on our evaluation, the **Collocation coefficient (C)** and **NPMI** are the best two metrics one can use to quantify the overlap (collocation)
-between two sets of genomic intervals.
+Use the `Z-score <https://cobind.readthedocs.io/en/latest/usage/zscore.html>`_ approach to combine all the six metrics as an overall measure, or choose the **Collocation coefficient (C)** and **NPMI** which generally performs better than other approaches.
 
 `Metric evaluation <https://cobind.readthedocs.io/en/latest/comparison.html>`_
 
